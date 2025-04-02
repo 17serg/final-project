@@ -33,6 +33,7 @@ const styles = {
     fontSize: "1.5rem",
     backgroundColor: "rgb(42, 41, 223)",
     color: "white",
+    borderRadius: "16px",
     "&:hover": {
       backgroundColor: "rgb(32, 31, 173)",
     },
