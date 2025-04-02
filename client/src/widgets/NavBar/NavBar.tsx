@@ -4,24 +4,123 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import { NavLink } from "react-router";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import { NavLink, useLocation } from "react-router";
 import { useUser } from "@/entities/user/hooks/useUser";
 import { UserApi } from "@/entities/user/api/UserApi";
 import { setAccessToken } from "@/shared/lib/axiosInstance";
 import { CLIENT_ROUTES } from "@/shared/enums/clientRoutes";
-import UserCard from "@/entities/user/ui/UserCard";
 
 const styles = {
   navLink: {
-    color: "white",
-    marginRight: "20px",
+    color: "black",
     textDecoration: "none",
+    flex: 1,
+    textAlign: "center" as const,
+    fontSize: "1rem",
+    fontWeight: 500,
+    display: "block",
+    width: "100%",
+    border: "2px solid rgb(42, 41, 223)",
+    borderRadius: "16px",
+    padding: "8px 16px",
+    transition: "all 0.3s ease",
+    textTransform: "none",
+    "&:hover": {
+      backgroundColor: "rgb(42, 41, 223)",
+      color: "white",
+    },
+    "&.active": {
+      backgroundColor: "rgb(42, 41, 223)",
+      color: "white",
+    },
+  },
+  box: {
+    width: "100vw",
+    margin: 0,
+    padding: 0,
+    position: "relative",
+    left: "50%",
+    right: "50%",
+    marginLeft: "-50vw",
+    marginRight: "-50vw",
+  },
+  appBar: {
+    width: "100%",
+    backgroundColor: "transparent",
+    boxShadow: "none",
+  },
+  toolbar: {
+    display: "flex",
+    justifyContent: "space-between",
+    padding: "0 20px",
+  },
+  navContainer: {
+    display: "flex",
+    flex: 1,
+    justifyContent: "space-between",
+    gap: "20px",
+  },
+  siteTitle: {
+    color: "black",
+    textDecoration: "none",
+    fontWeight: "bold",
+    fontSize: "1.5rem",
+    flex: 1,
+    textAlign: "center" as const,
+  },
+  logoutButton: {
+    fontSize: "1rem",
+    fontWeight: 500,
+    flex: 1,
+    textTransform: "none",
+    border: "2px solid rgb(42, 41, 223)",
+    borderRadius: "16px",
+    padding: "8px 16px",
+    transition: "all 0.3s ease",
+    color: "black",
+    "&:hover": {
+      backgroundColor: "rgb(42, 41, 223)",
+      color: "white",
+    },
+  },
+  typography: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+  },
+  menuItem: {
+    fontSize: "1rem",
+    padding: "8px 16px",
+    "&:hover": {
+      backgroundColor: "rgba(42, 41, 223, 0.1)",
+    },
+  },
+  menu: {
+    "& .MuiPaper-root": {
+      width: "100%",
+      marginTop: "4px",
+      borderRadius: "16px",
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    },
   },
 };
 
 export default function NavBar(): React.JSX.Element {
   const { user, setUser } = useUser();
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const location = useLocation();
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>): void => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = (): void => {
+    setAnchorEl(null);
+  };
 
   const logoutHandler = async (): Promise<void> => {
     try {
@@ -34,49 +133,167 @@ export default function NavBar(): React.JSX.Element {
       console.log(error);
     }
   };
+
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-          ></IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <NavLink to="/" style={styles.navLink}>
-              {user ? `Welcome, ${user.name}` : "Guest"}
-            </NavLink>
-            <NavLink to={CLIENT_ROUTES.MAIN} style={styles.navLink}>
-              Main
-            </NavLink>
-            {user && (<>
-            <NavLink to={CLIENT_ROUTES.BOOKS} style={styles.navLink}>
-              Books
-            </NavLink>
-            <NavLink to={CLIENT_ROUTES.ADDBOOK} style={styles.navLink}>
-              AddBook
-            </NavLink>
-            </>)}
-            {!user && (
-              <>
-                <NavLink to={CLIENT_ROUTES.SIGN_UP} style={styles.navLink}>
-                  SignUp
-                </NavLink>
-                <NavLink to={CLIENT_ROUTES.LOGIN} style={styles.navLink}>
-                  Login
-                </NavLink>
-              </>
+    <Box sx={{ flexGrow: 1, ...styles.box }}>
+      <AppBar position="static" sx={styles.appBar}>
+        <Toolbar sx={styles.toolbar}>
+          <Box sx={styles.navContainer}>
+            <Typography variant="h6" component="div" sx={styles.typography}>
+              <NavLink to="/" style={styles.siteTitle}>
+                MotionLab
+              </NavLink>
+            </Typography>
+            <Typography variant="body1" sx={styles.typography}>
+              <Button 
+                component={NavLink} 
+                to={CLIENT_ROUTES.MAIN} 
+                sx={styles.navLink}
+                className={location.pathname === CLIENT_ROUTES.MAIN ? "active" : ""}
+              >
+                О проекте
+              </Button>
+            </Typography>
+            <Typography variant="body1" sx={styles.typography}>
+              <Button 
+                component={NavLink} 
+                to={CLIENT_ROUTES.BOOKS} 
+                sx={styles.navLink}
+                className={location.pathname === CLIENT_ROUTES.BOOKS ? "active" : ""}
+              >
+                Возможности
+              </Button>
+            </Typography>
+            <Typography variant="body1" sx={styles.typography}>
+              <Button
+                onClick={handleClick}
+                sx={{
+                  ...styles.navLink,
+                  backgroundColor: location.pathname.startsWith("/exercises") ? "rgb(42, 41, 223)" : "transparent",
+                  color: location.pathname.startsWith("/exercises") ? "white" : "black",
+                }}
+              >
+                Каталог упражнений
+              </Button>
+              <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                transitionDuration={0}
+                PaperProps={{
+                  sx: {
+                    width: anchorEl ? anchorEl.getBoundingClientRect().width : "auto",
+                    maxHeight: 300,
+                    marginTop: "4px",
+                    borderRadius: "16px",
+                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                    border: "2px solid rgb(42, 41, 223)",
+                    backgroundColor: "white",
+                  },
+                }}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "left",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "left",
+                }}
+              >
+                <MenuItem onClick={handleClose} sx={{
+                  ...styles.menuItem,
+                  "&:hover": {
+                    backgroundColor: "rgb(42, 41, 223)",
+                    color: "white",
+                  },
+                }}>
+                  Упражнения для шеи
+                </MenuItem>
+                <MenuItem onClick={handleClose} sx={{
+                  ...styles.menuItem,
+                  "&:hover": {
+                    backgroundColor: "rgb(42, 41, 223)",
+                    color: "white",
+                  },
+                }}>
+                  Упражнения для спины
+                </MenuItem>
+                <MenuItem onClick={handleClose} sx={{
+                  ...styles.menuItem,
+                  "&:hover": {
+                    backgroundColor: "rgb(42, 41, 223)",
+                    color: "white",
+                  },
+                }}>
+                  Упражнения для рук
+                </MenuItem>
+                <MenuItem onClick={handleClose} sx={{
+                  ...styles.menuItem,
+                  "&:hover": {
+                    backgroundColor: "rgb(42, 41, 223)",
+                    color: "white",
+                  },
+                }}>
+                  Упражнения для ног
+                </MenuItem>
+                <MenuItem onClick={handleClose} sx={{
+                  ...styles.menuItem,
+                  "&:hover": {
+                    backgroundColor: "rgb(42, 41, 223)",
+                    color: "white",
+                  },
+                }}>
+                  Упражнения для пресса
+                </MenuItem>
+                <MenuItem onClick={handleClose} sx={{
+                  ...styles.menuItem,
+                  "&:hover": {
+                    backgroundColor: "rgb(42, 41, 223)",
+                    color: "white",
+                  },
+                }}>
+                  Упражнения для плеч
+                </MenuItem>
+                <MenuItem onClick={handleClose} sx={{
+                  ...styles.menuItem,
+                  "&:hover": {
+                    backgroundColor: "rgb(42, 41, 223)",
+                    color: "white",
+                  },
+                }}>
+                  Общие упражнения
+                </MenuItem>
+              </Menu>
+            </Typography>
+            <Typography variant="body1" sx={styles.typography}>
+              {user ? (
+                <Button 
+                  component={NavLink} 
+                  to={CLIENT_ROUTES.PROFILE} 
+                  sx={styles.navLink}
+                  className={location.pathname === CLIENT_ROUTES.PROFILE ? "active" : ""}
+                >
+                  Профиль
+                </Button>
+              ) : (
+                <Button 
+                  component={NavLink} 
+                  to={CLIENT_ROUTES.SIGN_UP} 
+                  sx={styles.navLink}
+                  className={location.pathname === CLIENT_ROUTES.SIGN_UP ? "active" : ""}
+                >
+                  Войти
+                </Button>
+              )}
+            </Typography>
+            {user && (
+              <Typography variant="body1" sx={styles.typography}>
+                <Button color="inherit" onClick={logoutHandler} sx={styles.logoutButton}>
+                  Logout
+                </Button>
+              </Typography>
             )}
-          </Typography>
-          <UserCard />
-          {user && (
-            <Button color="inherit" onClick={logoutHandler}>
-              Logout
-            </Button>
-          )}
+          </Box>
         </Toolbar>
       </AppBar>
     </Box>
