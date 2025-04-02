@@ -5,6 +5,7 @@ import { useUser } from '@/entities/user/hooks/useUser';
 import { UserApi } from '@/entities/user/api/UserApi';
 import { IUserSignUpData } from '@/entities/user/model';
 import { setAccessToken } from '@/shared/lib/axiosInstance';
+import { CLIENT_ROUTES } from '@/shared/enums/clientRoutes';
 // import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 // import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 // import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -29,7 +30,11 @@ export default function SignUpForm(): React.JSX.Element {
     const response = await UserApi.signup(data);
     if (response.status === 200) setUser(response.data.user);
     setAccessToken(response.data.accessToken);
-    navigate('/');
+    navigate(CLIENT_ROUTES.PROFILE);
+  };
+
+  const handleProfileNavigate = (): void => {
+    navigate(CLIENT_ROUTES.PROFILE);
   };
 
   return (
@@ -67,7 +72,7 @@ export default function SignUpForm(): React.JSX.Element {
       <br />
       <TextField variant="outlined" name="password" label="Password" type="password" />
       <br />
-      <Button variant="outlined" type="submit">
+      <Button variant="outlined" type="submit" onClick={handleProfileNavigate}>
         Sign Up
       </Button>
       <br />

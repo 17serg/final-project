@@ -12,6 +12,7 @@ import { useUser } from "@/entities/user/hooks/useUser";
 import { UserApi } from "@/entities/user/api/UserApi";
 import { setAccessToken } from "@/shared/lib/axiosInstance";
 import { CLIENT_ROUTES } from "@/shared/enums/clientRoutes";
+import ProfileForm from '@/features/ProfileForm/ProfileForm';
 
 const getColorForUser = (email: string): string => {
   const colors = [
@@ -137,6 +138,7 @@ export default function NavBar(): React.JSX.Element {
   const { user, setUser } = useUser();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [profileAnchorEl, setProfileAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [isProfileFormOpen, setIsProfileFormOpen] = React.useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
@@ -161,11 +163,6 @@ export default function NavBar(): React.JSX.Element {
   const handleProfileNavigate = (): void => {
     handleProfileClose();
     navigate(CLIENT_ROUTES.PROFILE);
-  };
-
-  const handleProfileEdit = (): void => {
-    handleProfileClose();
-    navigate(CLIENT_ROUTES.EDITING);
   };
 
   const handleLogout = async (): Promise<void> => {
@@ -373,7 +370,7 @@ export default function NavBar(): React.JSX.Element {
                       </Avatar>
                     </MenuItem>
                     <MenuItem 
-                      onClick={handleProfileEdit} 
+                      onClick={() => setIsProfileFormOpen(true)} 
                       sx={{
                         ...styles.menuItem,
                         "&:hover": {
