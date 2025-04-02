@@ -6,11 +6,36 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { NavLink, useLocation } from "react-router";
+import Avatar from "@mui/material/Avatar";
+import { NavLink, useLocation, useNavigate } from "react-router";
 import { useUser } from "@/entities/user/hooks/useUser";
 import { UserApi } from "@/entities/user/api/UserApi";
 import { setAccessToken } from "@/shared/lib/axiosInstance";
 import { CLIENT_ROUTES } from "@/shared/enums/clientRoutes";
+
+const getColorForUser = (email: string): string => {
+  const colors = [
+    "#FF6B6B", // красный
+    "#4ECDC4", // бирюзовый
+    "#45B7D1", // голубой
+    "#96CEB4", // мятный
+    "#FFEEAD", // кремовый
+    "#D4A5A5", // розовый
+    "#9B59B6", // фиолетовый
+    "#3498DB", // синий
+    "#E67E22", // оранжевый
+    "#2ECC71", // зеленый
+  ];
+  
+  // Создаем числовое значение на основе email
+  const hash = email.split('').reduce((acc, char) => {
+    return char.charCodeAt(0) + ((acc << 5) - acc);
+  }, 0);
+  
+  // Используем это значение для выбора цвета
+  const index = Math.abs(hash) % colors.length;
+  return colors[index];
+};
 
 const styles = {
   navLink: {
@@ -111,8 +136,11 @@ const styles = {
 export default function NavBar(): React.JSX.Element {
   const { user, setUser } = useUser();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [profileAnchorEl, setProfileAnchorEl] = React.useState<null | HTMLElement>(null);
   const location = useLocation();
+  const navigate = useNavigate();
   const open = Boolean(anchorEl);
+  const profileOpen = Boolean(profileAnchorEl);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget);
@@ -122,7 +150,26 @@ export default function NavBar(): React.JSX.Element {
     setAnchorEl(null);
   };
 
-  const logoutHandler = async (): Promise<void> => {
+  const handleProfileClick = (event: React.MouseEvent<HTMLElement>): void => {
+    setProfileAnchorEl(event.currentTarget);
+  };
+
+  const handleProfileClose = (): void => {
+    setProfileAnchorEl(null);
+  };
+
+  const handleProfileNavigate = (): void => {
+    handleProfileClose();
+    navigate(CLIENT_ROUTES.PROFILE);
+  };
+
+  const handleProfileEdit = (): void => {
+    handleProfileClose();
+    navigate(CLIENT_ROUTES.EDITING);
+  };
+
+  const handleLogout = async (): Promise<void> => {
+    handleProfileClose();
     try {
       const response = await UserApi.logout();
       if (response.status === 200) {
@@ -267,32 +314,101 @@ export default function NavBar(): React.JSX.Element {
             </Typography>
             <Typography variant="body1" sx={styles.typography}>
               {user ? (
-                <Button 
-                  component={NavLink} 
-                  to={CLIENT_ROUTES.PROFILE} 
-                  sx={styles.navLink}
-                  className={location.pathname === CLIENT_ROUTES.PROFILE ? "active" : ""}
-                >
-                  Профиль
-                </Button>
+                <>
+                  <Button 
+                    onClick={handleProfileClick}
+                    sx={styles.navLink}
+                    className={location.pathname === CLIENT_ROUTES.PROFILE ? "active" : ""}
+                  >
+                    Профиль
+                  </Button>
+                  <Menu
+                    anchorEl={profileAnchorEl}
+                    open={profileOpen}
+                    onClose={handleProfileClose}
+                    transitionDuration={0}
+                    PaperProps={{
+                      sx: {
+                        width: profileAnchorEl ? profileAnchorEl.getBoundingClientRect().width : "auto",
+                        maxHeight: 300,
+                        marginTop: "4px",
+                        borderRadius: "16px",
+                        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                        border: "2px solid rgb(42, 41, 223)",
+                        backgroundColor: "white",
+                      },
+                    }}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "left",
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "left",
+                    }}
+                  >
+                    <MenuItem 
+                      onClick={handleProfileNavigate} 
+                      sx={{
+                        ...styles.menuItem,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        "&:hover": {
+                          backgroundColor: "rgb(42, 41, 223)",
+                          color: "white",
+                        },
+                      }}
+                    >
+                      Перейти в профиль
+                      <Avatar 
+                        sx={{ 
+                          width: 32, 
+                          height: 32,
+                          bgcolor: getColorForUser(user.email),
+                          border: "2px solid black",
+                        }}
+                      >
+                        {user.name?.[0] || "U"}
+                      </Avatar>
+                    </MenuItem>
+                    <MenuItem 
+                      onClick={handleProfileEdit} 
+                      sx={{
+                        ...styles.menuItem,
+                        "&:hover": {
+                          backgroundColor: "rgb(42, 41, 223)",
+                          color: "white",
+                        },
+                      }}
+                    >
+                      Настройка профиля
+                    </MenuItem>
+                    <MenuItem 
+                      onClick={handleLogout} 
+                      sx={{
+                        ...styles.menuItem,
+                        "&:hover": {
+                          backgroundColor: "rgb(42, 41, 223)",
+                          color: "white",
+                        },
+                      }}
+                    >
+                      Выйти
+                    </MenuItem>
+                  </Menu>
+                </>
               ) : (
                 <Button 
                   component={NavLink} 
-                  to={CLIENT_ROUTES.SIGN_UP} 
+                  to={CLIENT_ROUTES.LOGIN} 
                   sx={styles.navLink}
-                  className={location.pathname === CLIENT_ROUTES.SIGN_UP ? "active" : ""}
+                  className={location.pathname === CLIENT_ROUTES.LOGIN ? "active" : ""}
                 >
                   Войти
                 </Button>
               )}
             </Typography>
-            {user && (
-              <Typography variant="body1" sx={styles.typography}>
-                <Button color="inherit" onClick={logoutHandler} sx={styles.logoutButton}>
-                  Logout
-                </Button>
-              </Typography>
-            )}
           </Box>
         </Toolbar>
       </AppBar>
