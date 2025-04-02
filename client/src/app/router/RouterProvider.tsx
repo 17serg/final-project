@@ -24,6 +24,8 @@ export default function RouterProvider(): React.JSX.Element {
         <Route path={CLIENT_ROUTES.ADDBOOK} element={<AddBookPage />} />
         <Route path={CLIENT_ROUTES.SIGN_UP} element={<SignUpPage />} />
         <Route path={CLIENT_ROUTES.LOGIN} element={<LoginPage />} />
+        <Route path={CLIENT_ROUTES.PROFILE} element={<h1>Profile Page</h1>} />
+        <Route path={CLIENT_ROUTES.ABOUT} element={<h1>About Page</h1>} />
         <Route path={CLIENT_ROUTES.NOT_FOUND} element={<h1>No content</h1>} />
       </Route>
     </Routes>
