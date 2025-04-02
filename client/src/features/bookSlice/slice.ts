@@ -15,11 +15,11 @@ export type BookState = {
   books: IBook[];
   usersBooks: IBook[];
   likedUsersBooks: IBook[];
-//   readedUsersBooks: IBook[];
-    sort: {
-      key: 'order' | 'name';
-      order: 'asc' | 'desc';
-    };
+  //   readedUsersBooks: IBook[];
+  sort: {
+    key: 'order' | 'name';
+    order: 'asc' | 'desc';
+  };
   //   orderedPlaces: PlaceT[];
   isLoadingBooks: boolean;
 };
@@ -28,21 +28,25 @@ const initialState: BookState = {
   books: [],
   usersBooks: [],
   likedUsersBooks: [],
-//   readedUsersBooks: [],
-    sort: {
-      key: 'order',
-      order: 'asc',
-    },
+  //   readedUsersBooks: [],
+  sort: {
+    key: 'order',
+    order: 'asc',
+  },
   //   orderedPlaces: [],
   isLoadingBooks: false,
 };
 
 function applySort(state: BookState): void {
-  state.books = state.books.toSorted((a, b) => {
+  state.books = [...state.books].sort((a: IBook, b: IBook) => {
     if (state.sort.key === 'order') {
-      return state.sort.order === 'asc' ? Date.parse(a.createdAt) - Date.parse(b.createdAt) : Date.parse(b.createdAt) - Date.parse(a.createdAt);
+      return state.sort.order === 'asc'
+        ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     }
-    return state.sort.order === 'asc' ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title);
+    return state.sort.order === 'asc'
+      ? a.title.localeCompare(b.title)
+      : b.title.localeCompare(a.title);
   });
 }
 
@@ -58,14 +62,14 @@ export const bookSlice = createSlice({
         state.sort.order = 'asc';
       }
       applySort(state);
-        // state.books = state.books.toSorted((a, b) => {
-        //   if (state.sort.key === 'order') {
-        //     return state.sort.order === 'asc' ? a.order - b.order : b.order - a.order;
-        //   }
-        //   return state.sort.order === 'asc'
-        //     ? a.title.localeCompare(b.title)
-        //     : b.title.localeCompare(a.title);
-        // });
+      // state.books = state.books.toSorted((a, b) => {
+      //   if (state.sort.key === 'order') {
+      //     return state.sort.order === 'asc' ? a.order - b.order : b.order - a.order;
+      //   }
+      //   return state.sort.order === 'asc'
+      //     ? a.title.localeCompare(b.title)
+      //     : b.title.localeCompare(a.title);
+      // });
     },
   },
   extraReducers: (builder) => {
@@ -100,16 +104,16 @@ export const bookSlice = createSlice({
       .addCase(loadFavouriteBooksThunk.rejected, (state) => {
         state.isLoadingBooks = false;
       })
-    //   .addCase(loadReadedBooksThunk.fulfilled, (state, action) => {
-    //     state.readedUsersBooks = action.payload;
-    //     state.isLoadingBooks = false;
-    //   })
-    //   .addCase(loadReadedBooksThunk.pending, (state) => {
-    //     state.isLoadingBooks = true;
-    //   })
-    //   .addCase(loadReadedBooksThunk.rejected, (state) => {
-    //     state.isLoadingBooks = false;
-    //   })
+      //   .addCase(loadReadedBooksThunk.fulfilled, (state, action) => {
+      //     state.readedUsersBooks = action.payload;
+      //     state.isLoadingBooks = false;
+      //   })
+      //   .addCase(loadReadedBooksThunk.pending, (state) => {
+      //     state.isLoadingBooks = true;
+      //   })
+      //   .addCase(loadReadedBooksThunk.rejected, (state) => {
+      //     state.isLoadingBooks = false;
+      //   })
       .addCase(addBookThunk.fulfilled, (state, action) => {
         state.usersBooks = [...state.usersBooks, action.payload];
         state.books = [...state.books, action.payload];
@@ -155,18 +159,18 @@ export const bookSlice = createSlice({
         }
       })
       .addCase(addReadedThunk.fulfilled, (state, action) => {
-          const newBook = { ...action.payload.data };
-          state.books = [
-            ...state.books.map((book) => (book.id === action.payload.bookId ? newBook : book)),
-          ];
-          state.likedUsersBooks = [
-            ...state.likedUsersBooks.map((book) =>
-              book.id === action.payload.bookId ? newBook : book,
-            ),
-          ];
-          state.usersBooks = [
-            ...state.usersBooks.map((book) => (book.id === action.payload.bookId ? newBook : book)),
-          ];
+        const newBook = { ...action.payload.data };
+        state.books = [
+          ...state.books.map((book) => (book.id === action.payload.bookId ? newBook : book)),
+        ];
+        state.likedUsersBooks = [
+          ...state.likedUsersBooks.map((book) =>
+            book.id === action.payload.bookId ? newBook : book,
+          ),
+        ];
+        state.usersBooks = [
+          ...state.usersBooks.map((book) => (book.id === action.payload.bookId ? newBook : book)),
+        ];
       });
   },
 });
