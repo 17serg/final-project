@@ -5,6 +5,9 @@ export interface IUserLoginData {
   
   export interface IUserSignUpData extends IUserLoginData {
     name: string;
+    surname: string;
+    birthDate: string;
+    trener: boolean;
   }
   
   export interface IUser {
@@ -19,3 +22,4 @@ export interface IUserLoginData {
     user: IUser;
     accessToken: string;
   }
+

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Route, Routes } from "react-router";
 import Layout from "../Layout/Layout";
 import { CLIENT_ROUTES } from "@/shared/enums/clientRoutes";
-import { SignUpPage, LoginPage } from "@/pages";
+import { SignUpPage, LoginPage, SingUpPageTrener } from "@/pages";
 import { MainPage } from "@/pages/MainPage/MainPage";
 import { AddBookPage } from "@/pages/AddBookPage/AddBookPage";
 import { BooksPage } from "@/pages/BooksPage/BooksPage";
@@ -23,6 +23,7 @@ export default function RouterProvider(): React.JSX.Element {
         <Route path={CLIENT_ROUTES.BOOKS} element={<BooksPage />} />
         <Route path={CLIENT_ROUTES.ADDBOOK} element={<AddBookPage />} />
         <Route path={CLIENT_ROUTES.SIGN_UP} element={<SignUpPage />} />
+        <Route path={CLIENT_ROUTES.SIGN_UP_TRENER} element={<SingUpPageTrener />} />
         <Route path={CLIENT_ROUTES.LOGIN} element={<LoginPage />} />
         <Route path={CLIENT_ROUTES.PROFILE} element={<h1>Profile Page</h1>} />
         <Route path={CLIENT_ROUTES.ABOUT} element={<h1>About Page</h1>} />

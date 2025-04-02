@@ -7,4 +7,5 @@ export enum CLIENT_ROUTES {
   PROFILE = "/profile",
   ABOUT = "/about",
   NOT_FOUND = "*",
+  SIGN_UP_TRENER = "/signuptrener"
 }

@@ -8,17 +8,17 @@ const authRouter = express.Router();
 
 authRouter.route('/signup').post(async (req, res) => {
   try {
-    const { name, email, password
+    const { name, email, password, surname ,birthDate, trener
     } = req.body;
-    console.log(req.body)
-    if (!name || !email || !password) {
+    console.log(req.body, '+++++++++++++++++++++++')
+    if (!name || !email || !password || !surname || !birthDate) {
       return res.status(400).json({ message: 'Все поля обязательны' });
     }
     const [user, created] = await User.findOrCreate({
       where: { email },
-      defaults: { name, password: await bcrypt.hash(password, 5)},
+      defaults: { name, surname , birthDate, trener, password: await bcrypt.hash(password, 5)},
     });
-    // console.log(user);
+    console.log(name, '==========================');
 
     if (!created) {
       return res.status(400).json({ message: 'Email уже используется' });
