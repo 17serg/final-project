@@ -1,6 +1,5 @@
 import BookApi from '@/entities/book/api/BookApi';
 import { IBook, IBookCreateData } from '@/entities/book/model';
-import { IUser } from '@/entities/user/model';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
 export const loadAllBooksThunk = createAsyncThunk('books/loadAllBooksThunk', () =>

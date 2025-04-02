@@ -1,17 +1,12 @@
 import BookCard from "@/entities/book/ui/ProductCard/BookCard";
-import { loadFavouriteBooksThunk } from "@/features/bookSlice/thunk";
-import { useAppDispatch, useAppSelector } from "@/shared/lib/reduxHooks";
+import { useAppSelector } from "@/shared/lib/reduxHooks";
 ;
 import { Box, Paper } from "@mui/material";
-import React, { useEffect } from "react";
+import React from "react";
 
 export function BooksPage(): React.JSX.Element {
 
   const books = useAppSelector((state) => state.books.likedUsersBooks);
-    // const dispatch = useAppDispatch()
-    // useEffect(() => {
-    //   dispatch(loadFavouriteBooksThunk())
-    // },[])
 
   return (
     <Paper elevation={0}>

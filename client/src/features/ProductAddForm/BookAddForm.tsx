@@ -2,13 +2,13 @@ import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { Grid2 } from "@mui/material";
-import { IBook, IBookCreateData } from "@/entities/book/model";
-import {  useEffect } from "react";
+import { IBookCreateData } from "@/entities/book/model";
+
 import { useUser } from "@/entities/user/hooks/useUser";
 import BookCard from "@/entities/book/ui/ProductCard/BookCard";
 import { Box, Paper } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "@/shared/lib/reduxHooks";
-import { addBookThunk, loadUserBooksThunk } from "../bookSlice/thunk";
+import { addBookThunk} from "../bookSlice/thunk";
 
 export default function BookAddForm(): React.JSX.Element {
   const books = useAppSelector((state) => state.books.usersBooks);
@@ -18,7 +18,7 @@ export default function BookAddForm(): React.JSX.Element {
   // },[])
 
   const { user } = useUser();
-
+  console.log(user)
   const {
     control,
     handleSubmit,
