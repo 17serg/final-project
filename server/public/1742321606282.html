@@ -1,0 +1,915 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Проект</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-default_background {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-transparentGray { background-color: rgba(227, 226, 224, 0); }
+.select-value-color-translucentGray { background-color: rgba(0, 0, 0, 0.06); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="1185c037-0930-8007-a36d-e37f10a92711" class="page sans"><header><h1 class="page-title">Проект</h1><p class="page-description"></p></header><div class="page-body"><p id="1185c037-0930-8072-a3a3-d8db98e9073e" class="">
+</p><ol type="1" id="1185c037-0930-8093-b618-d7f688341934" class="numbered-list" start="1"><li>Создать папку сервер, перейти в нее <code>cd server</code></li></ol><ol type="1" id="1185c037-0930-805b-8f07-ecb555f04bdb" class="numbered-list" start="2"><li>В терминале <code>npm init -y</code> — создали файл package.json </li></ol><ol type="1" id="1185c037-0930-8086-afa5-eba85f6d077f" class="numbered-list" start="3"><li><code>npx create-gitignore node </code>— создаем gitignore и сразу туда прописываем .env</li></ol><ol type="1" id="1185c037-0930-8097-b93b-d3a1d92af5bc" class="numbered-list" start="4"><li><code>npm init @eslint/config@latest </code>— устанавливаем линтер</li></ol><ol type="1" id="1185c037-0930-8091-8ad9-ee44201137b2" class="numbered-list" start="5"><li><code>npm i sequelize sequelize-cli pg pg-hstore cors dotenv morgan nodemon express</code>— устанавливаем Sequelize, CORS, переменные окружения, экспресс, логгеры</li></ol><ol type="1" id="1185c037-0930-801f-beca-f65c2d114ceb" class="numbered-list" start="6"><li>Также сразу устанавливаем bcrypt(шифрует пароль пользователя в уникальный код), cookie-parser(разбирает заголовок и заполняет req. cookies по сути, <strong>даёт удобный метод для доступа к информации cookie</strong>) и jsonwebtoken(для проверки, что отправленные данные были действительно отправлены авторизованным источником):<br/><br/><code>npm i bcrypt cookie-parser jsonwebtoken </code></li></ol><ol type="1" id="1185c037-0930-809a-9454-e61b0cc073b8" class="numbered-list" start="7"><li>В package.json в скрипты для удобства вставляем:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1185c037-0930-80ca-9ce0-d1d2963bf7c7" class="code"><code class="language-undefined"> 		&quot;db:create&quot;: &quot;npx sequelize db:create&quot;,
+    &quot;db:migrate&quot;: &quot;npx sequelize db:migrate&quot;,
+    &quot;db:undoMigrate&quot;: &quot;npx sequelize db:migrate:undo:all&quot;,
+    &quot;db:seedAll&quot;: &quot;npx sequelize db:seed:all&quot;,
+    &quot;db:drop&quot;: &quot;npx sequelize db:drop&quot;,
+    &quot;db:remigrate&quot;: &quot;npx sequelize db:migrate:undo:all &amp;&amp; npx sequelize db:migrate &amp;&amp; npx sequelize db:seed:all&quot;</code></pre></li></ol><ol type="1" id="1185c037-0930-80b2-b0e4-fbf6a9c35d83" class="numbered-list" start="8"><li>Создаем в корневой директории сервера файл .sequelizerc и в него кладем:</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1185c037-0930-803e-9a2c-e964da8bbffb" class="code"><code class="language-undefined">require(&#x27;dotenv&#x27;).config();
+const path = require(&#x27;path&#x27;);
+
+module.exports = {
+  config: path.resolve(&#x27;db&#x27;, &#x27;config&#x27;, &#x27;database.json&#x27;),
+  &#x27;models-path&#x27;: path.resolve(&#x27;db&#x27;, &#x27;models&#x27;),
+  &#x27;seeders-path&#x27;: path.resolve(&#x27;db&#x27;, &#x27;seeders&#x27;),
+  &#x27;migrations-path&#x27;: path.resolve(&#x27;db&#x27;, &#x27;migrations&#x27;),
+};</code></pre><ol type="1" id="1185c037-0930-80ff-9539-d998a5fa26e4" class="numbered-list" start="8"><li>В package.json кладем в скрипты: <br/><br/><code>&quot;dev&quot;: &quot;nodemon --env-file=.env ./src/app.js --ext js,jsx&quot;</code></li></ol><ol type="1" id="1185c037-0930-809c-8e7e-c9966fe262c4" class="numbered-list" start="9"><li><code>npx sequelize init</code> — создается папка для БД с вложенными папками настроек, миграций, моделей и сидов</li></ol><ol type="1" id="1185c037-0930-804b-bd5f-cb5757d47385" class="numbered-list" start="10"><li>Создаем файл .env и в нём прописываем порт и настройки БД, а также сразу можем положить токены:</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1185c037-0930-80f4-99e5-d6ef333728e5" class="code"><code class="language-undefined">PORT=3000
+DB=postgres://vera:1234@localhost:5432/preexam // тут диалект, юзер БД, пароль к БД и название БД
+SECRET_ACCESS_TOKEN=&#x27;access&#x27; // это пример, лучше посложнее
+SECRET_REFRESH_TOKEN=&#x27;refresh&#x27; // это пример, лучше посложнее</code></pre><ol type="1" id="1185c037-0930-8088-bd71-c5e31471a4bd" class="numbered-list" start="11"><li>В папке db → папка config → database.json — меняем содержимое раздела <strong>development</strong></li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1185c037-0930-8026-ac7c-f032652e2fab" class="code"><code class="language-undefined">&quot;development&quot;: {
+    &quot;use_env_variable&quot;: &quot;DB&quot;
+  },
+  </code></pre><ol type="1" id="1185c037-0930-809c-920d-c91b7bc62316" class="numbered-list" start="12"><li>Создаем БД : <code><strong>npm run db:create -&gt; </strong></code><code><span style="border-bottom:0.05em solid">создаем модели, пример:</span></code><code><strong>npx sequelize-cli model:generate --name Student --attributes first_name:string,last_name:string,age:integer</strong></code><code><span style="border-bottom:0.05em solid">, прописываем связи и накатываем миграции: </span></code><code><strong>npm run db:migrate</strong></code><code><span style="border-bottom:0.05em solid">, для удобства работы можно засидить что-то: </span></code><code><strong>npx sequelize seed:generate --name </strong></code></li></ol><ol type="1" id="1185c037-0930-80e7-9b74-cbf4a9151869" class="numbered-list" start="12"><li>На сервере → создаем папку src → в ней создаем файл app.js и в нем прописываем:</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1185c037-0930-807c-971d-cbc28b9b4c56" class="code"><code class="language-undefined">require(&#x27;dotenv&#x27;).config();
+const apiRouter = require(&#x27;./routers/api.router&#x27;);
+const morgan = require(&#x27;morgan&#x27;);
+const cookieParser = require(&#x27;cookie-parser&#x27;);
+const express = require(&#x27;express&#x27;);
+const app = express();
+const cors = require(&#x27;cors&#x27;);
+
+const { PORT } = process.env;
+
+const corsConfig = {
+  origin: [&#x27;http://localhost:5173&#x27;, &#x27;http://127.0.0.1:5173&#x27;],
+  credentials: true,
+};
+app.use(cors(corsConfig));
+
+app.use(cookieParser());
+app.use(morgan(&#x27;dev&#x27;));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(&#x27;/api/v1&#x27;, apiRouter);
+
+app.listen(PORT, () =&gt; {  console.log(`Server started at ${PORT} port`);
+});</code></pre><ol type="1" id="1185c037-0930-80dc-b26a-ff270aa04a6d" class="numbered-list" start="13"><li>Выходим из server в корневую директорию проекта —<code> cd ../</code></li></ol><ol type="1" id="1185c037-0930-804b-9bf3-d7969214bf61" class="numbered-list" start="14"><li><code>npm create vite@latest client -- --template react</code> — создается темплейт React и появляются инструкции <code>cd client</code> - <code>npm install </code>- <code>npm run dev</code></li></ol><ol type="1" id="1185c037-0930-806e-8177-c7df2b579be4" class="numbered-list" start="15"><li><code>npm i axios react-router-dom</code> — Axios для отправки запросов на backend, router-dom для работы с роутером</li></ol><ol type="1" id="1185c037-0930-8012-ae43-f774d320b582" class="numbered-list" start="16"><li>В vite.config.js с прокси теперь не работаем, поэтому оставляем как было при установке реакта — </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1185c037-0930-8032-96f9-d4b74b3a34ae" class="code"><code class="language-undefined">import { defineConfig } from &#x27;vite&#x27;;
+import react from &#x27;@vitejs/plugin-react&#x27;;
+
+export default defineConfig({
+  plugins: [react()],
+});</code></pre><ol type="1" id="1185c037-0930-8035-a29c-feb7e73774d2" class="numbered-list" start="17"><li>Создать .env в корневой директории client, проверить есть ли .env в gitignore клиента, в сам .env положить:</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1185c037-0930-80c0-a5d4-e528d401b472" class="code"><code class="language-undefined">VITE_API=/api
+VITE_TARGET=http://localhost:3000
+
+VITE_API_URL=http://localhost:3000/api
+VITE_API_STRAIGHT=http://localhost:3000/api </code></pre><ol type="1" id="1185c037-0930-80b4-9d22-e71b07f35526" class="numbered-list" start="18"><li>В папке <strong>src </strong>в <strong>client</strong> убрать лишние файлы, создать файлик <strong>axiosInstance.js, либо можно создать папку services и в нее положить</strong>:</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1185c037-0930-80f9-b3c0-cd54cb0a85a3" class="code"><code class="language-undefined">import axios from &#x27;axios&#x27;;
+
+const axiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_API_URL, // http://localhost:3000/api
+  withCredentials: true,
+});
+
+let accessToken = &#x27;&#x27;;
+
+export function setAccessToken(newToken) {
+  accessToken = newToken;
+}
+
+axiosInstance.interceptors.request.use((config) =&gt; {
+  config.withCredentials = true;
+  if (!config.headers.Authorization) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+  return config;
+});
+
+export default axiosInstance;</code></pre><ol type="1" id="1185c037-0930-8000-a98a-cfbe6d49b95c" class="numbered-list" start="19"><li>Также в папке <strong>src</strong> создать папки <strong>pages</strong>, <strong>widgets</strong>, <strong>components, отрисовать</strong></li></ol><ol type="1" id="1185c037-0930-80c3-9d9c-ff497f576008" class="numbered-list" start="20"><li>Прописываем в <strong>server</strong> эндпойнты</li></ol><p id="1265c037-0930-8022-9cdd-c947087abbab" class="">
+</p><p id="1265c037-0930-807b-a3fa-e25158114889" class="">Также нужно прописать защиту для авторизации и аутентификации на бэке</p><ol type="1" id="1265c037-0930-8000-9e59-e1004172310a" class="numbered-list" start="21"><li>В корневой директории сервера, создаем папку configs</li></ol><ol type="1" id="1265c037-0930-801a-954f-d104eb39427f" class="numbered-list" start="22"><li>В папке configs создаем файлик<code><strong> jwtConfig.js</strong></code> и в него кладем:<br/><br/></li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1265c037-0930-80f1-83bd-fa47daa823b4" class="code"><code class="language-undefined">module.exports = {
+  access: {
+    expiresIn: 1000 * 60 * 2, // время жизни токена
+  },
+  refresh: {
+    expiresIn: 1000 * 60 * 60 * 12, // время жизни токена
+  },
+};</code></pre><ol type="1" id="1265c037-0930-8083-bd76-ee7a0e10daac" class="numbered-list" start="23"><li>Там же создаем файлик <code><strong>cookieConfig.js </strong></code>и в него кладем:<br/><br/></li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1265c037-0930-8061-be7c-cbe692dc4b93" class="code"><code class="language-undefined">const jwtConfig = require(&#x27;./jwtConfig&#x27;); //! импорт поправить, если надо
+
+module.exports = {
+  access: {
+    maxAge: jwtConfig.access.expiresIn, // время жизни куки на основе токенов
+    httpOnly: true, // доступ к куки только по http (с фронта по js доступ запрещен))
+  },
+  refresh: {
+    maxAge: jwtConfig.refresh.expiresIn,
+    httpOnly: true,
+  },
+};</code></pre><ol type="1" id="1265c037-0930-8011-b377-d8b2a3e8a54f" class="numbered-list" start="24"><li>В src создаем папку utils — тут будет функция, которая генерирует токен — создаем файлик<code><strong> generateToken.js </strong></code>и в него кладем:<br/><br/></li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1265c037-0930-806b-bfa8-d67e2e2206ca" class="code"><code class="language-undefined">require(&#x27;dotenv&#x27;).config();
+const jwt = require(&#x27;jsonwebtoken&#x27;);
+const jwtConfig = require(&#x27;../configs/jwtConfig&#x27;); //! не забыть проверить пути
+
+const { SECRET_ACCESS_TOKEN, SECRET_REFRESH_TOKEN } = process.env;
+
+const generateToken = (payload) =&gt; ({ // payload - полезная нагрузка
+  accessToken: jwt.sign(payload, SECRET_ACCESS_TOKEN, jwtConfig.access),
+  refreshToken: jwt.sign(payload, SECRET_REFRESH_TOKEN, jwtConfig.refresh),
+});
+
+module.exports = generateToken;</code></pre><p id="1265c037-0930-806f-8f44-e900d8b225cd" class=""><span style="border-bottom:0.05em solid">и плюс в .env на сервере, как уже указано в пункте 10 выше мы записываем какие-то секретные слова/набор букв!</span></p><ol type="1" id="1265c037-0930-804a-b85a-f5562880297e" class="numbered-list" start="25"><li>Создать папку <strong>middleware</strong> если еще нет или положить в имеющуюся мидлварку, которая будет проверять, есть ли у данного пользователя доступ — создаем файлик <code><strong>verifyToken.js</strong></code><strong> (либо можно разнести их по разным файликам - </strong>verifyAccessToken  и verifyRefreshToken, не забыть экспортировать<strong>) и внутрь кладем:<br/><br/></strong></li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1265c037-0930-8074-ac09-ceb0818e6e7a" class="code"><code class="language-undefined">const jwt = require(&#x27;jsonwebtoken&#x27;);
+
+const verifyRefreshToken = (req, res, next) =&gt; {
+  try {
+    const { refreshToken } = req.cookies; // достаем по ключу рефреш токен
+    const { user } = jwt.verify(refreshToken, process.env.SECRET_REFRESH_TOKEN);
+    res.locals.user = user;
+    next();
+  } catch (error) {
+    console.log(&#x27;Invalid refresh token&#x27;);
+    res.sendStatus(401);
+  }
+};
+
+const verifyAccessToken = (req, res, next) =&gt; {
+  try {
+    const accessToken = req.headers.authorization.split(&#x27; &#x27;)[1];
+    const { user } = jwt.verify(accessToken, process.env.SECRET_ACCESS_TOKEN);
+    res.locals.user = user;
+    next();
+  } catch (error) {
+    console.log(&#x27;Invalid access token&#x27;);
+    res.sendStatus(401);
+  }
+};
+
+module.exports = { verifyRefreshToken, verifyAccessToken };
+</code></pre><ol type="1" id="1265c037-0930-8076-8e89-fbfe44ba0d9b" class="numbered-list" start="26"><li>В папке routers создаем файлик <code><strong>token.router.js</strong></code> и в него кладем:<br/><br/></li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1265c037-0930-80e3-ba4d-ed5410c9fe8d" class="code"><code class="language-undefined">const router = require(&#x27;express&#x27;).Router();
+const cookieConfig = require(&#x27;../../configs/cookieConfig&#x27;); //! не забыть проверить пути
+const { verifyRefreshToken } = require(&#x27;../../middlewares/verifyToken&#x27;); //! не забыть проверить пути
+const generateToken = require(&#x27;../../utils/generateToken&#x27;); //! не забыть проверить пути
+
+router.get(&#x27;/refresh&#x27;, verifyRefreshToken, (req, res) =&gt; {
+  try {
+    const { user } = res.locals;
+    const { accessToken, refreshToken } = generateToken({ user });
+
+    res
+      .cookie(&#x27;refreshToken&#x27;, refreshToken, cookieConfig.refresh)
+      .json({ user: user, accessToken });
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(400);
+  }
+});
+
+module.exports = router;
+</code></pre><ol type="1" id="1265c037-0930-80b5-8fc1-e513d04922b1" class="numbered-list" start="27"><li>В <code><strong>app.js</strong></code><strong> </strong>проверить что<strong> зареквайрен cookieParser</strong> и включен в app.use()</li></ol><ol type="1" id="1265c037-0930-800f-a131-f747475814e1" class="numbered-list" start="28"><li>Прописываем в api.router путь для аутентификации и токену, к примеру:<br/><br/></li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1265c037-0930-80bd-9245-ccb074629f43" class="code"><code class="language-undefined">router.use(&#x27;/auth&#x27;, authRouter);
+router.use(&#x27;/token&#x27;, tokenRouter);</code></pre><ol type="1" id="1265c037-0930-8062-8194-dfdb4b107b1b" class="numbered-list" start="29"><li>Создаем отдельный роутер <code><strong>auth.router.js</strong></code><strong>  там уже руты на /signin и /signup и /signout:<br/><br/></strong></li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1265c037-0930-80a1-89e8-c183816f4346" class="code"><code class="language-undefined">const router = require(&#x27;express&#x27;).Router();
+const { User } = require(&#x27;../../db/models&#x27;);//! проверить пути
+const bcrypt = require(&#x27;bcrypt&#x27;);
+const generateToken = require(&#x27;../../utils/generateToken&#x27;);
+const cookieConfig = require(&#x27;../../configs/cookieConfig&#x27;);
+
+router.post(&#x27;/signup&#x27;, async (req, res) =&gt; {
+  const { username, email, password } = req.body;
+
+  try {
+    const [user, isCreated] = await User.findOrCreate({
+      where: {
+        email,
+      },
+      defaults: {
+        username,
+        email,
+        password: await bcrypt.hash(password, 10),
+      },
+    });
+
+    if (!isCreated) {
+      res.status(400).json({ message: &#x27;User alredy exist&#x27; });
+    } else {
+      const plainUser = user.get();
+      delete plainUser.password;
+
+      const { accessToken, refreshToken } = generateToken({ user: plainUser });
+
+      res
+        .cookie(&#x27;refreshToken&#x27;, refreshToken, cookieConfig.refresh)
+        .json({ user: plainUser, accessToken });
+    }
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(400);
+  }
+});
+
+router.post(&#x27;/signin&#x27;, async (req, res) =&gt; {
+  const { email, password } = req.body;
+
+  if (!(email &amp;&amp; password)) {
+    res.status(400).json({ message: &#x27;All fields are required&#x27; });
+  }
+
+  const user = await User.findOne({ where: { email } });
+
+  const isCorrectPassword = await bcrypt.compare(password, user.password);
+
+  if (!isCorrectPassword) {
+    res.status(401).json({ message: &#x27;Incorrect email or password&#x27; });
+  } else {
+    const plainUser = user.get();
+    delete plainUser.password;
+
+    const { accessToken, refreshToken } = generateToken({ user: plainUser });
+
+    res
+      .cookie(&#x27;refreshToken&#x27;, refreshToken, cookieConfig.refresh)
+      .json({ user: plainUser, accessToken });
+  }
+
+  try {
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(400);
+  }
+});
+
+router.get(&#x27;/logout&#x27;, (req, res) =&gt; {
+  try {
+    res.clearCookie(&#x27;refreshToken&#x27;).sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(400);
+  }
+});
+
+module.exports = router;
+</code></pre><ol type="1" id="1265c037-0930-80fe-a39b-f612c21d62cb" class="numbered-list" start="30"><li>Идем на фронт и пишем форму авторизации, там в аксиосе обязательно проверить, что верный путь, что-то может задублироваться!</li></ol></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
