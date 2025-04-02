@@ -14,6 +14,14 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      surname: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      birthDate: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       email: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -22,6 +30,11 @@ module.exports = {
       password: {
         type: Sequelize.STRING,
         allowNull: false,
+      },
+      trener: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
       },
       createdAt: {
         allowNull: false,

@@ -5,15 +5,11 @@ import { useUser } from "@/entities/user/hooks/useUser";
 import { UserApi } from "@/entities/user/api/UserApi";
 import { IUserSignUpData } from "@/entities/user/model";
 import { setAccessToken } from "@/shared/lib/axiosInstance";
-// import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-// import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-// import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
-export default function SignUpForm(): React.JSX.Element {
+export default function SingUpFormTrener(): React.JSX.Element {
   const navigate = useNavigate();
   const { setUser } = useUser();
-  const [isActive, setIsActive] = useState(false);
+  const [isActive, setIsActive] = useState(true);
 
   const submitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -27,6 +23,7 @@ export default function SignUpForm(): React.JSX.Element {
       trener: isActive,
     };
     const response = await UserApi.signup(data);
+    console.log(response);
     if (response.status === 200) setUser(response.data.user);
     setAccessToken(response.data.accessToken);
     navigate("/");
@@ -42,18 +39,10 @@ export default function SignUpForm(): React.JSX.Element {
       py={5}
       onSubmit={submitHandler}
     >
-      <Button variant="contained" onClick={() => navigate("/signuptrener")}>
-      Перейти на новую страницу тренера
-    </Button>
       <TextField variant="outlined" name="name" label="Name" />
       <br />
       <TextField variant="outlined" name="surname" label="Surname" />
       <br />
-      {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DemoContainer components={['DatePicker']}>
-        <DatePicker label="Basic date picker" />
-      </DemoContainer>
-    </LocalizationProvider> */}
       <TextField variant="outlined" name="birthDate" label="birthDate" />
       <br />
       <TextField variant="outlined" name="email" label="Email" type="email" />

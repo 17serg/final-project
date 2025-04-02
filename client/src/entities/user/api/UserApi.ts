@@ -32,6 +32,7 @@ export class UserApi {
       USER_API_ENDPOINTS.SIGN_UP,
       signUpData
     );
+    console.log(response)
     return response;
   }
 

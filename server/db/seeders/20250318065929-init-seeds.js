@@ -10,13 +10,19 @@ module.exports = {
       [
         {
           name: 'q',
+          surname: "w",
+          birthDate: "03.07.1987",
           email: 'q@q',
           password: await bcrypt.hash('111111', 10),
+          trener: true,
         },
         {
           name: 'w',
+          surname: "t",
+          birthDate: "03.07.1990",
           email: 'w@w',
           password: await bcrypt.hash('111111', 10),
+          trener: false,
         },
       ],
       {},
