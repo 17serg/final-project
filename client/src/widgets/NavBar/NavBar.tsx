@@ -58,7 +58,7 @@ const styles = {
     },
     "&.active": {
       backgroundColor: "rgb(42, 41, 223)",
-      color: "white",
+    color: "white",
     },
   },
   box: {
@@ -189,7 +189,7 @@ export default function NavBar(): React.JSX.Element {
             <Typography variant="h6" component="div" sx={styles.typography}>
               <NavLink to="/" style={styles.siteTitle}>
                 MotionLab
-              </NavLink>
+            </NavLink>
             </Typography>
             <Typography variant="body1" sx={styles.typography}>
               <Button 
@@ -407,8 +407,8 @@ export default function NavBar(): React.JSX.Element {
                 >
                   Войти
                 </Button>
-              )}
-            </Typography>
+            )}
+          </Typography>
           </Box>
         </Toolbar>
       </AppBar>
