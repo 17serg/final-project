@@ -2,8 +2,9 @@
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Day extends Model {
-    static associate({ User }) {
+    static associate({ User, Training }) {
       this.belongsTo(User, { foreignKey: 'userId' });
+      this.hasOne(Training, { foreignKey: 'dayId' });
     }
   }
   Day.init(
