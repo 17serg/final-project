@@ -1,15 +1,18 @@
 import { useState, useEffect, useContext } from 'react';
 import { Box, Grid, Typography, IconButton, Paper } from '@mui/material';
-import { ChevronLeft, ChevronRight, FitnessCenter } from '@mui/icons-material';
+import { ChevronLeft, ChevronRight, FitnessCenter, Info } from '@mui/icons-material';
 import { DayApi } from '../api/DayApi';
 import { Day } from '../model/types';
 import { UserContext, UserContextType } from '@/entities/user/provider/UserProvider';
+import TrainingDayModal from '../../training/ui/TrainingDayModal';
 
 const DAYS_OF_WEEK = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
 export const Calendar = (): React.ReactElement => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [days, setDays] = useState<Day[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { user } = useContext(UserContext) as UserContextType;
 
   useEffect(() => {
@@ -44,9 +47,15 @@ export const Calendar = (): React.ReactElement => {
 
     try {
       if (existingDay) {
-        await DayApi.updateDay(existingDay.id, {
-          isTraining: !existingDay.isTraining,
-        });
+        if (existingDay.isTraining) {
+          await DayApi.updateDay(existingDay.id, {
+            isTraining: false,
+          });
+        } else {
+          await DayApi.updateDay(existingDay.id, {
+            isTraining: true,
+          });
+        }
       } else {
         const now = new Date().toISOString();
         await DayApi.createDay({
@@ -61,6 +70,16 @@ export const Calendar = (): React.ReactElement => {
     } catch (error) {
       console.error('Ошибка при обновлении дня:', error);
     }
+  };
+
+  const handleInfoClick = (date: Date): void => {
+    setSelectedDate(date);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = (): void => {
+    setIsModalOpen(false);
+    setSelectedDate(null);
   };
 
   const getDaysInMonth = (date: Date): (Date | null)[] => {
@@ -153,14 +172,31 @@ export const Calendar = (): React.ReactElement => {
                     {date.getDate()}
                   </Typography>
                   {isTrainingDay(date) && (
-                    <FitnessCenter
-                      sx={{
-                        position: 'absolute',
-                        bottom: 8,
-                        color: 'primary.main',
-                        fontSize: '2rem',
-                      }}
-                    />
+                    <>
+                      <FitnessCenter
+                        sx={{
+                          position: 'absolute',
+                          bottom: 8,
+                          color: 'primary.main',
+                          fontSize: '2rem',
+                        }}
+                      />
+                      <IconButton
+                        size="small"
+                        sx={{
+                          position: 'absolute',
+                          top: 4,
+                          right: 4,
+                          color: 'primary.main',
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleInfoClick(date);
+                        }}
+                      >
+                        <Info fontSize="small" />
+                      </IconButton>
+                    </>
                   )}
                 </>
               )}
@@ -168,6 +204,10 @@ export const Calendar = (): React.ReactElement => {
           </Grid>
         ))}
       </Grid>
+
+      {selectedDate && (
+        <TrainingDayModal open={isModalOpen} onClose={handleCloseModal} date={selectedDate} />
+      )}
     </Paper>
   );
 };
