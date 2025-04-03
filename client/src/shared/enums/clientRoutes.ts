@@ -3,6 +3,7 @@ export enum CLIENT_ROUTES {
   BOOKS = "/books",
   ADDBOOK = "/addbook",
   LOGIN = "/login",
+  CHAT = "/chat",
   SIGN_UP = "/signup",
   PROFILE = "/profile",
   EDITING = "/editing",
