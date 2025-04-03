@@ -13,6 +13,7 @@ import { UserApi } from "@/entities/user/api/UserApi";
 import { setAccessToken } from "@/shared/lib/axiosInstance";
 import { CLIENT_ROUTES } from "@/shared/enums/clientRoutes";
 import ProfileForm from '@/features/ProfileForm/ProfileForm';
+import { IUserProfile } from '@/entities/user/model';
 
 const getColorForUser = (email: string): string => {
   const colors = [
@@ -139,10 +140,26 @@ export default function NavBar(): React.JSX.Element {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [profileAnchorEl, setProfileAnchorEl] = React.useState<null | HTMLElement>(null);
   const [isProfileFormOpen, setIsProfileFormOpen] = React.useState(false);
+  const [profile, setProfile] = React.useState<IUserProfile | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
   const profileOpen = Boolean(profileAnchorEl);
+
+  React.useEffect(() => {
+    const loadProfile = async (): Promise<void> => {
+      try {
+        const response = await UserApi.getProfile();
+        setProfile(response.data);
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    };
+
+    if (user) {
+      loadProfile();
+    }
+  }, [user]);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget);
@@ -176,6 +193,13 @@ export default function NavBar(): React.JSX.Element {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const getAvatarUrl = (): string => {
+    if (profile?.avatar) {
+      return profile.avatar;
+    }
+    return "";
   };
 
   return (
@@ -359,11 +383,12 @@ export default function NavBar(): React.JSX.Element {
                     >
                       Перейти в профиль
                       <Avatar 
+                        src={getAvatarUrl()}
                         sx={{ 
-                          width: 32, 
-                          height: 32,
+                          width: 42, 
+                          height: 42,
                           bgcolor: getColorForUser(user.email),
-                          border: "2px solid black",
+                          border: "2px solid rgb(42, 41, 223)",
                         }}
                       >
                         {user.name?.[0] || "U"}
