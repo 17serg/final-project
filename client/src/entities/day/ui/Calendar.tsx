@@ -63,12 +63,21 @@ export const Calendar = (): React.ReactElement => {
     }
   };
 
-  const getDaysInMonth = (date: Date): Date[] => {
+  const getDaysInMonth = (date: Date): (Date | null)[] => {
     const year = date.getFullYear();
     const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
-    const days: Date[] = [];
+    const days: (Date | null)[] = [];
 
+    // Добавляем пустые дни в начале месяца
+    const firstDayOfWeek = firstDay.getDay();
+    const emptyDays = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1; // Корректировка для начала недели с понедельника
+    for (let i = 0; i < emptyDays; i++) {
+      days.push(null);
+    }
+
+    // Добавляем дни текущего месяца
     for (let i = 1; i <= lastDay.getDate(); i++) {
       days.push(new Date(year, month, i));
     }
@@ -88,16 +97,16 @@ export const Calendar = (): React.ReactElement => {
   };
 
   return (
-    <Paper sx={{ p: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h6">
+    <Paper sx={{ p: 4, maxWidth: '75%', mx: 'auto' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+        <Typography variant="h4">
           {currentDate.toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}
         </Typography>
         <Box>
-          <IconButton onClick={handlePrevMonth}>
+          <IconButton onClick={handlePrevMonth} size="large">
             <ChevronLeft />
           </IconButton>
-          <IconButton onClick={handleNextMonth}>
+          <IconButton onClick={handleNextMonth} size="large">
             <ChevronRight />
           </IconButton>
         </Box>
@@ -105,45 +114,55 @@ export const Calendar = (): React.ReactElement => {
 
       <Grid container spacing={1}>
         {DAYS_OF_WEEK.map((day) => (
-          <Grid item xs key={day}>
-            <Typography align="center" variant="subtitle2">
+          <Grid item xs key={day} sx={{ textAlign: 'center' }}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
               {day}
             </Typography>
           </Grid>
         ))}
 
         {getDaysInMonth(currentDate).map((date, index) => (
-          <Grid item xs key={index}>
+          <Grid item xs key={index} sx={{ textAlign: 'center' }}>
             <Box
               sx={{
-                height: 40,
+                aspectRatio: '1',
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                cursor: 'pointer',
-                bgcolor: isCurrentDay(date) ? 'primary.light' : 'transparent',
+                cursor: date ? 'pointer' : 'default',
+                bgcolor: date && isCurrentDay(date) ? 'primary.light' : 'transparent',
                 '&:hover': {
-                  bgcolor: 'action.hover',
+                  bgcolor: date ? 'action.hover' : 'transparent',
                 },
+                borderRadius: 1,
+                position: 'relative',
+                minHeight: '120px',
               }}
-              onClick={() => handleDayClick(date)}
+              onClick={() => date && handleDayClick(date)}
             >
-              <Typography
-                variant="body2"
-                sx={{
-                  color: isCurrentDay(date) ? 'primary.contrastText' : 'text.primary',
-                }}
-              >
-                {date.getDate()}
-              </Typography>
-              {isTrainingDay(date) && (
-                <FitnessCenter
-                  sx={{
-                    ml: 0.5,
-                    color: 'primary.main',
-                    fontSize: '1rem',
-                  }}
-                />
+              {date && (
+                <>
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      color: isCurrentDay(date) ? 'primary.contrastText' : 'text.primary',
+                      fontWeight: isCurrentDay(date) ? 'bold' : 'normal',
+                    }}
+                  >
+                    {date.getDate()}
+                  </Typography>
+                  {isTrainingDay(date) && (
+                    <FitnessCenter
+                      sx={{
+                        position: 'absolute',
+                        bottom: 8,
+                        color: 'primary.main',
+                        fontSize: '2rem',
+                      }}
+                    />
+                  )}
+                </>
               )}
             </Box>
           </Grid>

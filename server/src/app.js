@@ -7,6 +7,7 @@ const authRouter = require('./routers/authRouter');
 const corsConfig = require('./configs/cors.config');
 const tokensRouter = require('./routers/tokensRouter');
 const userRouter = require('./routers/userRouter');
+const dayRouter = require('./routers/dayRoutes');
 
 const app = express();
 
@@ -20,5 +21,6 @@ app.use(cors(corsConfig));
 app.use('/api/auth/', authRouter);
 app.use('/api/tokens/', tokensRouter);
 app.use('/api/user/', userRouter);
+app.use('/api/days/', dayRouter);
 
 module.exports = app;
