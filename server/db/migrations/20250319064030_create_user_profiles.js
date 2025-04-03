@@ -1,36 +1,30 @@
 'use strict';
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Comments', {
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable('UserProfiles', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      text: {
-        type: Sequelize.TEXT,
-        allowNull: false,
+      avatar: {
+        type: Sequelize.STRING,
       },
-      authorId: {
+      gender: {
+        type: Sequelize.STRING,
+      },
+      trainingExperience: {
+        type: Sequelize.INTEGER,
+      },
+      userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: 'Users',
           key: 'id',
         },
-        onDelete: 'CASCADE',
-      },
-      bookId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'Books',
-          key: 'id',
-        },
-        onDelete: 'CASCADE',
       },
       createdAt: {
         allowNull: false,
@@ -44,7 +38,11 @@ module.exports = {
       },
     });
   },
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Comments');
+
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.dropTable('UserProfiles');
+    await queryInterface.sequelize.query(
+      'DROP TYPE IF EXISTS "enum_UserProfiles_gender";',
+    );
   },
 };

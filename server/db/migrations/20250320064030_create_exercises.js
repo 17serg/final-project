@@ -1,36 +1,42 @@
 'use strict';
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Books', {
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable('Exercises', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      title: {
+      name: {
         type: Sequelize.STRING,
         allowNull: false,
       },
       description: {
-        type: Sequelize.TEXT,
-      },
-      link: {
         type: Sequelize.STRING,
-      },
-      userId: {
-        type: Sequelize.INTEGER,
         allowNull: false,
-        references: {
-          model: 'Users',
-          key: 'id',
-        },
-        onDelete: 'CASCADE',
       },
-      fileName: {
+      category: {
         type: Sequelize.STRING,
+        allowNull: false,
+      },
+      difficulty: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      muscle_group: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      equipment: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
+      image_url: {
+        type: Sequelize.STRING,
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,
@@ -44,7 +50,8 @@ module.exports = {
       },
     });
   },
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Books');
+
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.dropTable('Exercises');
   },
 };

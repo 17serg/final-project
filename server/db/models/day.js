@@ -1,0 +1,38 @@
+'use strict';
+
+const { Model } = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class Day extends Model {
+    static associate({ User, Training, ExerciseOfTraining }) {
+      this.belongsTo(User, { foreignKey: 'userId' });
+      this.hasOne(Training, { foreignKey: 'dayId' });
+      this.hasMany(ExerciseOfTraining, { foreignKey: 'dayId' });
+    }
+  }
+  Day.init(
+    {
+      date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      isTraining: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Users',
+          key: 'id',
+        },
+      },
+    },
+    {
+      sequelize,
+      modelName: 'Day',
+    },
+  );
+  return Day;
+};

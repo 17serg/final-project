@@ -1,13 +1,21 @@
 'use strict';
-/** @type {import('sequelize-cli').Migration} */
+
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Likes', {
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable('Trainings', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+      },
+      dayId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Days',
+          key: 'id',
+        },
       },
       userId: {
         type: Sequelize.INTEGER,
@@ -16,18 +24,8 @@ module.exports = {
           model: 'Users',
           key: 'id',
         },
-        onDelete: 'CASCADE',
       },
-      bookId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'Books',
-          key: 'id',
-        },
-        onDelete: 'CASCADE',
-      },
-      isReaded: {
+      complete: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: false,
@@ -41,10 +39,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.fn('NOW'),
-      }
+      },
     });
   },
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Likes');
-  }
+
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.dropTable('Trainings');
+  },
 };

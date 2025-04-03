@@ -10,16 +10,16 @@ module.exports = {
       [
         {
           name: 'q',
-          surname: "w",
-          birthDate: "03.07.1987",
+          surname: 'w',
+          birthDate: '03.07.1987',
           email: 'q@q',
           password: await bcrypt.hash('111111', 10),
           trener: true,
         },
         {
           name: 'w',
-          surname: "t",
-          birthDate: "03.07.1990",
+          surname: 't',
+          birthDate: '03.07.1990',
           email: 'w@w',
           password: await bcrypt.hash('111111', 10),
           trener: false,
@@ -27,62 +27,45 @@ module.exports = {
       ],
       {},
     );
-    await queryInterface.bulkInsert(
-      'Books',
-      [
-        {
-          title: 'Book1',
-          description: 'Book1Book1',
-          link: 'https://avatars.mds.yandex.net/i?id=37c03c866b6673cac081fe21add461993aadd88f-5218274-images-thumbs&n=13',
-          userId: 1,
-          fileName: 'Book1.txt',
-        },
-        {
-          title: 'Book2',
-          description: 'Book2Book2',
-          link: 'https://avatars.mds.yandex.net/i?id=cc1dd7c2c6a8657bb1048ee3435e053697d6bdc9-11444350-images-thumbs&n=13',
-          userId: 2,
-          fileName: 'Book2.txt',
-        },
-      ],
-      {},
-    );
-    await queryInterface.bulkInsert(
-      'Likes',
-      [
-        {
-          userId: 1,
-          bookId: 1,
-        },
-      ],
-      {},
-    );
-    await queryInterface.bulkInsert(
-      'Comments',
-      [
-        {
-          text: 'Cool',
-          authorId: 1,
-          bookId: 1,
-        },
-        {
-          text: 'Not cool',
-          authorId: 2,
-          bookId: 2,
-        },
-      ],
-      {},
-    );
-    await queryInterface.bulkInsert(
-      'Reads',
-      [
-        {
-          userId: 1,
-          bookId: 2,
-        },
-      ],
-      {},
-    );
+
+    await queryInterface.bulkInsert('Exercises', [
+      {
+        name: 'Приседания',
+        description: 'Базовое упражнение для ног и ягодиц.',
+        category: 'Ноги',
+        difficulty: 'Начинающий',
+        muscle_group: 'Квадрицепсы, ягодицы',
+        equipment: false,
+        image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Squat_exercise.jpg/320px-Squat_exercise.jpg',
+      },
+      {
+        name: 'Отжимания',
+        description: 'Упражнение для груди и трицепсов.',
+        category: 'Грудь',
+        difficulty: 'Начинающий',
+        muscle_group: 'Грудные мышцы, трицепсы',
+        equipment: false,
+        image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Push_up.jpg/320px-Push_up.jpg',
+      },
+      {
+        name: 'Подтягивания',
+        description: 'Упражнение для спины и бицепсов.',
+        category: 'Спина',
+        difficulty: 'Продвинутый',
+        muscle_group: 'Широчайшие мышцы спины, бицепсы',
+        equipment: true, // Турник — это оборудование
+        image_url: 'https://live.staticflickr.com/65535/51134208147_1e0d1a8e7b_c.jpg',
+      },
+      {
+        name: 'Становая тяга',
+        description: 'Упражнение для спины и ног со штангой.',
+        category: 'Спина',
+        difficulty: 'Продвинутый',
+        muscle_group: 'Поясница, бицепс бедра',
+        equipment: true, // Штанга — оборудование
+        image_url: 'https://live.staticflickr.com/65535/49036800361_9c1803d5ba_b.jpg',
+      }
+    ], {});
   },
 
   async down(queryInterface, Sequelize) {

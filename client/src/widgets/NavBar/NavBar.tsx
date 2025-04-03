@@ -12,6 +12,7 @@ import { useUser } from "@/entities/user/hooks/useUser";
 import { UserApi } from "@/entities/user/api/UserApi";
 import { setAccessToken } from "@/shared/lib/axiosInstance";
 import { CLIENT_ROUTES } from "@/shared/enums/clientRoutes";
+import ProfileForm from '@/features/ProfileForm/ProfileForm';
 
 const getColorForUser = (email: string): string => {
   const colors = [
@@ -58,7 +59,7 @@ const styles = {
     },
     "&.active": {
       backgroundColor: "rgb(42, 41, 223)",
-      color: "white",
+    color: "white",
     },
   },
   box: {
@@ -137,6 +138,7 @@ export default function NavBar(): React.JSX.Element {
   const { user, setUser } = useUser();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [profileAnchorEl, setProfileAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [isProfileFormOpen, setIsProfileFormOpen] = React.useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
@@ -163,11 +165,6 @@ export default function NavBar(): React.JSX.Element {
     navigate(CLIENT_ROUTES.PROFILE);
   };
 
-  const handleProfileEdit = (): void => {
-    handleProfileClose();
-    navigate(CLIENT_ROUTES.EDITING);
-  };
-
   const handleLogout = async (): Promise<void> => {
     handleProfileClose();
     try {
@@ -189,7 +186,7 @@ export default function NavBar(): React.JSX.Element {
             <Typography variant="h6" component="div" sx={styles.typography}>
               <NavLink to="/" style={styles.siteTitle}>
                 MotionLab
-              </NavLink>
+            </NavLink>
             </Typography>
             <Typography variant="body1" sx={styles.typography}>
               <Button 
@@ -373,7 +370,7 @@ export default function NavBar(): React.JSX.Element {
                       </Avatar>
                     </MenuItem>
                     <MenuItem 
-                      onClick={handleProfileEdit} 
+                      onClick={() => setIsProfileFormOpen(true)} 
                       sx={{
                         ...styles.menuItem,
                         "&:hover": {
@@ -407,8 +404,15 @@ export default function NavBar(): React.JSX.Element {
                 >
                   Войти
                 </Button>
-              )}
-            </Typography>
+            )}
+          </Typography>
+          {user && (
+        <ProfileForm
+          open={isProfileFormOpen}
+          onClose={() => setIsProfileFormOpen(false)}
+          userId={user.id}
+        />
+      )}
           </Box>
         </Toolbar>
       </AppBar>
