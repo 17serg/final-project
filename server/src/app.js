@@ -23,6 +23,7 @@ app.use(cors(corsConfig));
 
 app.use('/api/auth/', authRouter);
 app.use('/api/tokens/', tokensRouter);
+app.use('/api/users/', usersRouter);
 app.use('/api/user/', userRouter);
 app.use('/api/days/', dayRouter);
 app.use('/api/trainers', chatRouter);

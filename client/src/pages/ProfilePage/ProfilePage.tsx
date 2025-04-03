@@ -3,6 +3,7 @@ import { Box, Typography, Avatar, Paper } from "@mui/material";
 import { useUser } from "@/entities/user/hooks/useUser";
 import { UserApi } from "@/entities/user/api/UserApi";
 import { IUserProfile } from "@/entities/user/model";
+import { getUserColor } from "@/shared/utils/userColor";
 
 const styles = {
   container: {
@@ -33,6 +34,9 @@ const styles = {
     width: 300,
     height: 300,
     border: "4px solid rgb(42, 41, 223)",
+    "& .MuiAvatar-root": {
+      fontSize: "120px",
+    },
   },
   userInfo: {
     display: "flex",
@@ -125,11 +129,19 @@ export default function ProfilePage(): React.JSX.Element {
   // Формируем URL для аватара
   const getAvatarUrl = (): string => {
     if (profile?.avatar) {
-      // Используем URL аватарки напрямую
-      return profile.avatar;
+      // Убираем /api из VITE_API, так как статические файлы обслуживаются напрямую
+      const baseUrl = import.meta.env.VITE_API.replace('/api', '');
+      return `${baseUrl}${profile.avatar}`;
     }
-    // Если аватар не загружен, используем первую букву имени
     return "";
+  };
+
+  // Получаем цвет пользователя для аватара
+  const getUserAvatarColor = (): string => {
+    if (user?.email) {
+      return getUserColor(user.email);
+    }
+    return "#BAE1FF"; // Возвращаем нежно-голубой цвет по умолчанию
   };
 
   return (
@@ -139,9 +151,17 @@ export default function ProfilePage(): React.JSX.Element {
           <Avatar 
             src={getAvatarUrl()} 
             alt={user.name} 
-            sx={styles.avatar}
+            sx={{
+              ...styles.avatar,
+              bgcolor: getUserAvatarColor(),
+              "& .MuiAvatar-root": {
+                fontSize: "120px",
+              },
+            }}
           >
-            {user.name?.[0] || "U"}
+            <Typography variant="h1" sx={{ fontSize: "120px", fontWeight: "bold" }}>
+              {user.name?.[0] || "U"}
+            </Typography>
           </Avatar>
           
           <Box sx={styles.userInfo}>

@@ -14,30 +14,7 @@ import { setAccessToken } from "@/shared/lib/axiosInstance";
 import { CLIENT_ROUTES } from "@/shared/enums/clientRoutes";
 import ProfileForm from '@/features/ProfileForm/ProfileForm';
 import { IUserProfile } from '@/entities/user/model';
-
-const getColorForUser = (email: string): string => {
-  const colors = [
-    "#FF6B6B", // красный
-    "#4ECDC4", // бирюзовый
-    "#45B7D1", // голубой
-    "#96CEB4", // мятный
-    "#FFEEAD", // кремовый
-    "#D4A5A5", // розовый
-    "#9B59B6", // фиолетовый
-    "#3498DB", // синий
-    "#E67E22", // оранжевый
-    "#2ECC71", // зеленый
-  ];
-  
-  // Создаем числовое значение на основе email
-  const hash = email.split('').reduce((acc, char) => {
-    return char.charCodeAt(0) + ((acc << 5) - acc);
-  }, 0);
-  
-  // Используем это значение для выбора цвета
-  const index = Math.abs(hash) % colors.length;
-  return colors[index];
-};
+import { getUserColor } from '@/shared/utils/userColor';
 
 const styles = {
   navLink: {
@@ -197,7 +174,8 @@ export default function NavBar(): React.JSX.Element {
 
   const getAvatarUrl = (): string => {
     if (profile?.avatar) {
-      return profile.avatar;
+      const baseUrl = import.meta.env.VITE_API.replace('/api', '');
+      return `${baseUrl}${profile.avatar}`;
     }
     return "";
   };
@@ -387,7 +365,7 @@ export default function NavBar(): React.JSX.Element {
                         sx={{ 
                           width: 42, 
                           height: 42,
-                          bgcolor: getColorForUser(user.email),
+                          bgcolor: getUserColor(user.email),
                           border: "2px solid rgb(42, 41, 223)",
                         }}
                       >

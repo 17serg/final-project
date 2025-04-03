@@ -18,6 +18,14 @@ module.exports = {
       trainingExperience: {
         type: Sequelize.INTEGER,
       },
+      personalRecords: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+      },
+      trainingCount: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+      },
       userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
