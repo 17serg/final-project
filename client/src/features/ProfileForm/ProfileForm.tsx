@@ -1,8 +1,9 @@
 import React, { useState, useRef } from 'react';
-import { Box, Button, TextField, FormControl, InputLabel, Select, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, Avatar, SelectChangeEvent } from '@mui/material';
+import { Box, Button, TextField, FormControl, InputLabel, Select, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, Avatar, SelectChangeEvent, Typography } from '@mui/material';
 import { IUserProfile } from '@/entities/user/model';
 import { UserApi } from '@/entities/user/api/UserApi';
 import { useUser } from '@/entities/user/hooks/useUser';
+import { getUserColor } from '@/shared/utils/userColor';
 
 interface ProfileFormProps {
   open: boolean;
@@ -31,14 +32,19 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
       
       if (fileInputRef.current?.files?.[0]) {
         const file = fileInputRef.current.files[0];
-        // Создаем URL для файла
-        const fileUrl = URL.createObjectURL(file);
-        formDataToSend.append('avatar', fileUrl);
+        formDataToSend.append('avatar', file);
+        console.log('File to upload:', file);
       }
       
-      const response = await UserApi.updateProfile(formDataToSend as unknown as IUserProfile);
+      console.log('Form data to send:', {
+        gender: formData.gender,
+        trainingExperience: formData.trainingExperience,
+        hasFile: !!fileInputRef.current?.files?.[0]
+      });
       
-      // Обновляем данные пользователя после успешного сохранения
+      const response = await UserApi.updateProfile(formDataToSend);
+      console.log('Server response:', response);
+      
       if (user && response.data) {
         setUser({
           ...user,
@@ -81,6 +87,14 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
     fileInputRef.current?.click();
   };
 
+  // Получаем цвет пользователя для аватара
+  const getUserAvatarColor = (): string => {
+    if (user?.email) {
+      return getUserColor(user.email);
+    }
+    return "#BAE1FF"; // Возвращаем нежно-голубой цвет по умолчанию
+  };
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Настройка профиля</DialogTitle>
@@ -97,10 +111,22 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
           <Avatar
             src={previewUrl || user?.avatar || ''}
             alt={user?.name || 'User'}
-            sx={{ width: 100, height: 100, mb: 2, cursor: 'pointer', border: '2px solid rgb(42, 41, 223)' }}
+            sx={{ 
+              width: 100, 
+              height: 100, 
+              mb: 2, 
+              cursor: 'pointer', 
+              border: '2px solid rgb(42, 41, 223)',
+              bgcolor: !previewUrl && !user?.avatar ? getUserAvatarColor() : undefined,
+              "& .MuiAvatar-root": {
+                fontSize: "40px",
+              },
+            }}
             onClick={handleAvatarClick}
           >
-            {user?.name?.[0] || 'U'}
+            <Typography variant="h5" sx={{ fontSize: "40px", fontWeight: "bold" }}>
+              {user?.name?.[0] || 'U'}
+            </Typography>
           </Avatar>
           
           <Button 

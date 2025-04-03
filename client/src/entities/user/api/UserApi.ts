@@ -1,5 +1,6 @@
 import { axiosInstance } from '@/shared/lib/axiosInstance';
-import { IAuthResponseData, IUserLoginData, IUserSignUpData, IUserProfile } from '../model';
+import { IUserProfile } from '../model';
+import { IAuthResponseData, IUserLoginData, IUserSignUpData } from '../model/index';
 import { AxiosResponse } from 'axios';
 
 enum USER_API_ENDPOINTS {
@@ -32,8 +33,12 @@ export class UserApi {
     return response;
   }
 
-  static async updateProfile(profileData: IUserProfile): Promise<AxiosResponse> {
-    return axiosInstance.post(USER_API_ENDPOINTS.PROFILE, profileData);
+  static async updateProfile(profileData: FormData): Promise<AxiosResponse> {
+    return axiosInstance.post(USER_API_ENDPOINTS.PROFILE, profileData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   }
 
   static async getProfile(): Promise<AxiosResponse<IUserProfile>> {
