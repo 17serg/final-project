@@ -10,15 +10,58 @@ const styles = {
     width: "100%",
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
+    alignItems: "flex-start",
     padding: "20px",
     gap: "40px",
   },
+  profileCard: {
+    width: "100%",
+    maxWidth: "800px",
+    padding: "30px",
+    borderRadius: "16px",
+    backgroundColor: "white",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.7)",
+  },
+  header: {
+    width: "100%",
+    display: "flex",
+    alignItems: "flex-start",
+    gap: "20px",
+    marginBottom: "20px",
+  },
   avatar: {
-    width: 200,
-    height: 200,
+    width: 300,
+    height: 300,
     border: "4px solid rgb(42, 41, 223)",
-    marginTop: "40px",
+  },
+  userInfo: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+  },
+  userName: {
+    fontSize: "2rem",
+    fontWeight: "bold",
+    color: "black",
+  },
+  userEmail: {
+    fontSize: "1.2rem",
+    color: "gray",
+    marginBottom: "16px",
+  },
+  profileInfo: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+  },
+  profileLabel: {
+    fontSize: "1.2rem",
+    color: "gray",
+  },
+  profileValue: {
+    fontSize: "1.4rem",
+    color: "black",
+    marginBottom: "8px",
   },
   statsContainer: {
     display: "flex",
@@ -42,34 +85,6 @@ const styles = {
     fontSize: "1.2rem",
     color: "black",
     marginTop: "8px",
-  },
-  userInfo: {
-    textAlign: "center",
-    marginTop: "20px",
-  },
-  userName: {
-    fontSize: "2rem",
-    fontWeight: "bold",
-    color: "black",
-    marginBottom: "8px",
-  },
-  userEmail: {
-    fontSize: "1.2rem",
-    color: "gray",
-  },
-  profileInfo: {
-    textAlign: "center",
-    marginTop: "20px",
-  },
-  profileLabel: {
-    fontSize: "1.2rem",
-    color: "gray",
-    marginBottom: "4px",
-  },
-  profileValue: {
-    fontSize: "1.4rem",
-    color: "black",
-    marginBottom: "16px",
   },
 };
 
@@ -119,30 +134,34 @@ export default function ProfilePage(): React.JSX.Element {
 
   return (
     <Box sx={styles.container}>
-      <Box sx={styles.userInfo}>
-        <Typography sx={styles.userName}>{user.name}</Typography>
-        <Typography sx={styles.userEmail}>{user.email}</Typography>
-      </Box>
-      
-      <Avatar 
-        src={getAvatarUrl()} 
-        alt={user.name} 
-        sx={styles.avatar}
-      >
-        {user.name?.[0] || "U"}
-      </Avatar>
-
-      <Box sx={styles.profileInfo}>
-        <Typography sx={styles.profileLabel}>Пол</Typography>
-        <Typography sx={styles.profileValue}>
-          {profile ? getGenderText(profile.gender) : 'Не указан'}
-        </Typography>
-        
-        <Typography sx={styles.profileLabel}>Стаж тренировок</Typography>
-        <Typography sx={styles.profileValue}>
-          {profile ? `${profile.trainingExperience} лет` : 'Не указан'}
-        </Typography>
-      </Box>
+      <Paper sx={styles.profileCard}>
+        <Box sx={styles.header}>
+          <Avatar 
+            src={getAvatarUrl()} 
+            alt={user.name} 
+            sx={styles.avatar}
+          >
+            {user.name?.[0] || "U"}
+          </Avatar>
+          
+          <Box sx={styles.userInfo}>
+            <Typography sx={styles.userName}>{user.name}</Typography>
+            <Typography sx={styles.userEmail}>{user.email}</Typography>
+            
+            <Box sx={styles.profileInfo}>
+              <Typography sx={styles.profileLabel}>Пол</Typography>
+              <Typography sx={styles.profileValue}>
+                {profile ? getGenderText(profile.gender) : 'Не указан'}
+              </Typography>
+              
+              <Typography sx={styles.profileLabel}>Стаж тренировок</Typography>
+              <Typography sx={styles.profileValue}>
+                {profile ? `${profile.trainingExperience} лет` : 'Не указан'}
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+      </Paper>
 
       <Box sx={styles.statsContainer}>
         <Paper sx={styles.statCard}>
