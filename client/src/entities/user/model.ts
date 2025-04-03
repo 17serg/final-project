@@ -3,4 +3,6 @@ export interface IUserProfile {
   gender: string;
   trainingExperience: number;
   userId: number;
+  personalRecords: number;
+  trainingCount: number;
 }

@@ -25,7 +25,7 @@ export default function LoginForm(): React.JSX.Element {
     dispatch(loadAllBooksThunk());
     dispatch(loadUserBooksThunk());
     dispatch(loadFavouriteBooksThunk());
-    navigate('/');
+    navigate('/profile');
   };
   return (
     <Box
