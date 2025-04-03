@@ -406,6 +406,13 @@ export default function NavBar(): React.JSX.Element {
                 </Button>
             )}
           </Typography>
+          {user && (
+        <ProfileForm
+          open={isProfileFormOpen}
+          onClose={() => setIsProfileFormOpen(false)}
+          userId={user.id}
+        />
+      )}
           </Box>
         </Toolbar>
       </AppBar>

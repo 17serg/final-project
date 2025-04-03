@@ -7,6 +7,7 @@ enum USER_API_ENDPOINTS {
   LOGIN = '/auth/login',
   LOGOUT = '/auth/logout',
   REFRESH_TOKENS = '/tokens/refresh',
+  PROFILE = '/user/profile',
 }
 
 export class UserApi {
@@ -32,6 +33,10 @@ export class UserApi {
   }
 
   static async updateProfile(profileData: IUserProfile): Promise<AxiosResponse> {
-    return axiosInstance.post('/user/profile', profileData);
+    return axiosInstance.post(USER_API_ENDPOINTS.PROFILE, profileData);
+  }
+
+  static async getProfile(): Promise<AxiosResponse<IUserProfile>> {
+    return axiosInstance.get(USER_API_ENDPOINTS.PROFILE);
   }
 }

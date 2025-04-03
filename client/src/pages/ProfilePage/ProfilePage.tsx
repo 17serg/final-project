@@ -1,6 +1,8 @@
 import * as React from "react";
 import { Box, Typography, Avatar, Paper } from "@mui/material";
 import { useUser } from "@/entities/user/hooks/useUser";
+import { UserApi } from "@/entities/user/api/UserApi";
+import { IUserProfile } from "@/entities/user/model";
 
 const styles = {
   container: {
@@ -55,14 +57,65 @@ const styles = {
     fontSize: "1.2rem",
     color: "gray",
   },
+  profileInfo: {
+    textAlign: "center",
+    marginTop: "20px",
+  },
+  profileLabel: {
+    fontSize: "1.2rem",
+    color: "gray",
+    marginBottom: "4px",
+  },
+  profileValue: {
+    fontSize: "1.4rem",
+    color: "black",
+    marginBottom: "16px",
+  },
 };
 
 export default function ProfilePage(): React.JSX.Element {
   const { user } = useUser();
+  const [profile, setProfile] = React.useState<IUserProfile | null>(null);
+
+  React.useEffect(() => {
+    const loadProfile = async (): Promise<void> => {
+      try {
+        const response = await UserApi.getProfile();
+        setProfile(response.data);
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    };
+
+    if (user) {
+      loadProfile();
+    }
+  }, [user]);
 
   if (!user) {
     return <Typography>Пользователь не найден</Typography>;
   }
+
+  const getGenderText = (gender: string): string => {
+    switch (gender) {
+      case 'male':
+        return 'Мужской';
+      case 'female':
+        return 'Женский';
+      default:
+        return 'Другой';
+    }
+  };
+
+  // Формируем URL для аватара
+  const getAvatarUrl = (): string => {
+    if (profile?.avatar) {
+      // Используем URL аватарки напрямую
+      return profile.avatar;
+    }
+    // Если аватар не загружен, используем первую букву имени
+    return "";
+  };
 
   return (
     <Box sx={styles.container}>
@@ -72,20 +125,36 @@ export default function ProfilePage(): React.JSX.Element {
       </Box>
       
       <Avatar 
-        src={user.avatar || ""} 
+        src={getAvatarUrl()} 
         alt={user.name} 
         sx={styles.avatar}
       >
         {user.name?.[0] || "U"}
       </Avatar>
 
+      <Box sx={styles.profileInfo}>
+        <Typography sx={styles.profileLabel}>Пол</Typography>
+        <Typography sx={styles.profileValue}>
+          {profile ? getGenderText(profile.gender) : 'Не указан'}
+        </Typography>
+        
+        <Typography sx={styles.profileLabel}>Стаж тренировок</Typography>
+        <Typography sx={styles.profileValue}>
+          {profile ? `${profile.trainingExperience} лет` : 'Не указан'}
+        </Typography>
+      </Box>
+
       <Box sx={styles.statsContainer}>
         <Paper sx={styles.statCard}>
-          <Typography sx={styles.statValue}>12</Typography>
+          <Typography sx={styles.statValue}>
+            {profile?.personalRecords || 0}
+          </Typography>
           <Typography sx={styles.statLabel}>Личные рекорды</Typography>
         </Paper>
         <Paper sx={styles.statCard}>
-          <Typography sx={styles.statValue}>48</Typography>
+          <Typography sx={styles.statValue}>
+            {profile?.trainingCount || 0}
+          </Typography>
           <Typography sx={styles.statLabel}>Количество тренировок</Typography>
         </Paper>
       </Box>
