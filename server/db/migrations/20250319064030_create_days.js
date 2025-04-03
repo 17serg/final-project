@@ -2,21 +2,21 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('UserProfiles', {
+    await queryInterface.createTable('Days', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      avatar: {
+      date: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
-      gender: {
-        type: Sequelize.STRING,
-      },
-      trainingExperience: {
-        type: Sequelize.INTEGER,
+      isTraining: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
       },
       userId: {
         type: Sequelize.INTEGER,
@@ -40,9 +40,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('UserProfiles');
-    await queryInterface.sequelize.query(
-      'DROP TYPE IF EXISTS "enum_UserProfiles_gender";',
-    );
+    await queryInterface.dropTable('Days');
   },
 };
