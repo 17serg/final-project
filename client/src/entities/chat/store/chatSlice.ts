@@ -13,13 +13,14 @@ interface Message {
 interface User {
   id: number;
   name: string;
-  trener: boolean; // Тренер (true) или посетитель (false)
+  trener: boolean;
 }
 
 interface ChatState {
   messages: Message[];
-  trainers: User[]; // Все тренеры
-  users: User[]; // Все пользователи
+  trainers: User[];
+  users: User[];
+  usersWithChats: User[]; // Новый массив с пользователями, с кем были переписки
   loading: boolean;
 }
 
@@ -27,6 +28,7 @@ const initialState: ChatState = {
   messages: [],
   trainers: [],
   users: [],
+  usersWithChats: [], // Новый массив
   loading: false,
 };
 
@@ -38,9 +40,18 @@ export const fetchTrainers = createAsyncThunk('chat/fetchTrainers', async () => 
 });
 
 export const fetchUsers = createAsyncThunk('chat/fetchUsers', async () => {
-  const response = await axios.get('http://localhost:3000/api/users'); // Добавили запрос всех пользователей
+  const response = await axios.get('http://localhost:3000/api/users');
   return response.data;
 });
+
+// Новый thunk: загружает всех пользователей, с кем у тренера были чаты
+export const fetchUsersWithChats = createAsyncThunk(
+  'chat/fetchUsersWithChats',
+  async (trainerId: number) => {
+    const response = await axios.get(`http://localhost:3000/api/trainers/${trainerId}/chats`);
+    return response.data; // Ожидаем массив пользователей
+  }
+);
 
 export const fetchMessages = createAsyncThunk(
   'chat/fetchMessages',
@@ -69,6 +80,9 @@ const chatSlice = createSlice({
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.users = action.payload;
+      })
+      .addCase(fetchUsersWithChats.fulfilled, (state, action) => {
+        state.usersWithChats = action.payload; // Запоминаем пользователей с чатом
       })
       .addCase(fetchMessages.fulfilled, (state, action) => {
         state.messages = action.payload;
