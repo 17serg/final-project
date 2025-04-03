@@ -22,7 +22,7 @@ const styles = {
     textDecoration: "none",
     flex: 1,
     textAlign: "center" as const,
-    fontSize: "1rem",
+    fontSize: "1.3rem",
     fontWeight: 500,
     display: "block",
     width: "100%",
