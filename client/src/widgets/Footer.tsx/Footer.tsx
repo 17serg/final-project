@@ -1,6 +1,8 @@
 import React, { CSSProperties } from "react";
 const styles: CSSProperties = {
-  height: "200px",
+  height: "130px",
+  marginLeft: "1.5%",
+  width: "100%",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",

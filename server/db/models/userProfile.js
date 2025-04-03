@@ -12,6 +12,14 @@ module.exports = (sequelize, DataTypes) => {
       avatar: DataTypes.STRING,
       gender: DataTypes.STRING,
       trainingExperience: DataTypes.INTEGER,
+      personalRecords: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
+      trainingCount: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
       userId: {
         type: DataTypes.INTEGER,
         allowNull: false,

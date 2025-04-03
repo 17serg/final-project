@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Button, TextField } from '@mui/material';
-import type { IUserLoginData } from '@/entities/user/model';
+import type { IUserLoginData } from '@/entities/user/model/index';
 import { useNavigate } from 'react-router';
 import { useUser } from '@/entities/user/hooks/useUser';
 import { UserApi } from '@/entities/user/api/UserApi';
