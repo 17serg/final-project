@@ -9,6 +9,7 @@ const tokensRouter = require('./routers/tokensRouter');
 const chatRouter = require('./routers/chatRouter');
 const usersRouter = require('./routers/usersRouter')
 const userRouter = require('./routers/userRouter');
+const dayRouter = require('./routers/dayRoutes');
 
 
 const app = express();
@@ -22,9 +23,11 @@ app.use(cors(corsConfig));
 
 app.use('/api/auth/', authRouter);
 app.use('/api/tokens/', tokensRouter);
+app.use('/api/user/', userRouter);
+app.use('/api/days/', dayRouter);
 app.use('/api/trainers', chatRouter);
 app.use('/api/messages', chatRouter);
-app.use('/api/users', usersRouter);
+
 
 module.exports = app;
 
