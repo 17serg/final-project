@@ -2,6 +2,15 @@ import { axiosInstance } from '@/shared/lib/axiosInstance';
 import { Training, CreateTrainingDto } from '../model';
 import { Training as TrainingType } from '../model/types';
 
+export interface CreateExerciseOfTrainingDto {
+  trainingId: number;
+  exerciseId: number;
+  duration: number;
+  weight: number;
+  sets: number;
+  reps: number;
+}
+
 export const TrainingApi = {
   async createTraining(data: CreateTrainingDto) {
     const response = await axiosInstance.post('/trainings', data);
@@ -32,6 +41,11 @@ export const TrainingApi = {
 
   getTrainingByDayId: async (dayId: number) => {
     const response = await axiosInstance.get(`/trainings/day/${dayId}`);
+    return response;
+  },
+
+  async createExerciseOfTraining(data: CreateExerciseOfTrainingDto) {
+    const response = await axiosInstance.post('/exercise-of-trainings', data);
     return response;
   },
 };
