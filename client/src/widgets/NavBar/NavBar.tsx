@@ -44,14 +44,10 @@ const styles = {
     },
   },
   box: {
-    width: "100vw",
+    width: "100%",
     margin: 0,
     padding: 0,
     position: "relative",
-    left: "50%",
-    right: "50%",
-    marginLeft: "-50vw",
-    marginRight: "-50vw",
   },
   appBar: {
     width: "100%",

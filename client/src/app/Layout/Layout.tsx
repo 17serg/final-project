@@ -3,9 +3,8 @@ import { useUser } from "@/entities/user/hooks/useUser";
 import { setAccessToken } from "@/shared/lib/axiosInstance";
 import Footer from "@/widgets/Footer.tsx/Footer";
 import NavBar from "@/widgets/NavBar/NavBar";
-import { Container } from "@mui/material";
+import { Container, Box } from "@mui/material";
 import React, { useEffect } from "react";
-
 import { Outlet } from "react-router";
 
 export default function Layout(): React.JSX.Element {
@@ -19,13 +18,23 @@ export default function Layout(): React.JSX.Element {
       }
     });
   }, [setUser]);
+  
   return (
-    <>
-      <Container>
-        <NavBar />
+    <Box sx={{ 
+      display: 'flex', 
+      flexDirection: 'column',
+      minHeight: '0vh',
+      position: 'relative'
+    }}>
+      <NavBar />
+      <Container sx={{ 
+        flex: 1, 
+        py: 3,
+        mb: '91px' // Отступ для футера
+      }}>
         <Outlet />
-        <Footer />
       </Container>
-    </>
+      <Footer />
+    </Box>
   );
 }

@@ -1,10 +1,11 @@
 export interface IAnthropometry {
   id?: number;
-  date: string;
-  weight: number;
-  height: number;
-  chest: number;
-  waist: number;
-  hips: number;
+  date: string | number;
+  weight: string | number;
+  height: string | number;
+  chest: string | number;
+  breast?: string | number;
+  waist: string | number;
+  hips: string | number;
   userId: number;
 } 

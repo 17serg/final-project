@@ -10,7 +10,18 @@ class AnthropometryController {
         where: { userId },
         order: [['date', 'DESC']],
       });
-      res.json(measurements);
+
+      // Преобразуем timestamp обратно в строку даты
+      const formattedMeasurements = measurements.map((measurement) => {
+        const measurementData = measurement.toJSON();
+        // Преобразуем timestamp в формат YYYY-MM-DD
+        const date = new Date(parseInt(measurementData.date));
+        measurementData.date = date.toISOString().split('T')[0];
+        return measurementData;
+      });
+
+      console.log('Отправляем измерения:', formattedMeasurements);
+      res.json(formattedMeasurements);
     } catch (error) {
       console.error('Ошибка при получении замеров:', error);
       res.status(500).json({ message: 'Ошибка при получении замеров' });
