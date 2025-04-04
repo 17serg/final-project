@@ -27,14 +27,6 @@ module.exports = (sequelize, DataTypes) => {
           key: 'id',
         },
       },
-      exerciseId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'Exercises',
-          key: 'id',
-        },
-      },
       complete: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
