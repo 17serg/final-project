@@ -8,6 +8,9 @@ interface Message {
   receiverId: number;
   text: string;
   createdAt?: string;
+  isSent: boolean;
+  isRead: boolean;
+  reactions?: Record<number, string>;
 }
 
 interface User {
@@ -20,16 +23,18 @@ interface ChatState {
   messages: Message[];
   trainers: User[];
   users: User[];
-  usersWithChats: User[]; // Новый массив с пользователями, с кем были переписки
+  usersWithChats: User[];
   loading: boolean;
+  unreadCount: number;
 }
 
 const initialState: ChatState = {
   messages: [],
   trainers: [],
   users: [],
-  usersWithChats: [], // Новый массив
+  usersWithChats: [],
   loading: false,
+  unreadCount: 0,
 };
 
 const socket = io('http://localhost:3000');
@@ -44,12 +49,39 @@ export const fetchUsers = createAsyncThunk('chat/fetchUsers', async () => {
   return response.data;
 });
 
-// Новый thunk: загружает всех пользователей, с кем у тренера были чаты
+export const joinChat = createAsyncThunk(
+  'chat/joinChat',
+  async ({ userId, chatPartnerId }: { userId: number; chatPartnerId: number }) => {
+    socket.emit('joinChat', { userId, chatPartnerId });
+  }
+);
+
+export const leaveChat = createAsyncThunk(
+  'chat/leaveChat',
+  async ({ userId }: { userId: number }) => {
+    socket.emit('leaveChat', { userId });
+  }
+);
+
+export const markMessagesAsRead = createAsyncThunk(
+  'chat/markMessagesAsRead',
+  async ({ userId, chatPartnerId }: { userId: number; chatPartnerId: number }) => {
+    socket.emit('userTyping', { userId, chatPartnerId });
+  }
+);
+
+export const addReaction = createAsyncThunk(
+  'chat/addReaction',
+  async ({ messageId, userId, reaction }: { messageId: number; userId: number; reaction: string }) => {
+    socket.emit('addReaction', { messageId, userId, reaction });
+  }
+);
+
 export const fetchUsersWithChats = createAsyncThunk(
   'chat/fetchUsersWithChats',
   async (trainerId: number) => {
     const response = await axios.get(`http://localhost:3000/api/trainers/${trainerId}/chats`);
-    return response.data; // Ожидаем массив пользователей
+    return response.data;
   }
 );
 
@@ -65,12 +97,35 @@ export const sendMessage = createAsyncThunk('chat/sendMessage', async (message: 
   socket.emit('sendMessage', message);
 });
 
+export const getUnreadCount = createAsyncThunk(
+  'chat/getUnreadCount',
+  async (userId: number) => {
+    socket.emit('getUnreadCount', { userId });
+  }
+);
+
 const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
     addMessage: (state, action: PayloadAction<Message>) => {
       state.messages.push(action.payload);
+    },
+    updateMessageStatus: (state, action: PayloadAction<{ id: number; isSent?: boolean; isRead?: boolean }>) => {
+      const message = state.messages.find((msg) => msg.id === action.payload.id);
+      if (message) {
+        if (action.payload.isSent !== undefined) message.isSent = action.payload.isSent;
+        if (action.payload.isRead !== undefined) message.isRead = action.payload.isRead;
+      }
+    },
+    updateReactions: (state, action: PayloadAction<{ messageId: number; reactions: Record<number, string> }>) => {
+      const message = state.messages.find((msg) => msg.id === action.payload.messageId);
+      if (message) {
+        message.reactions = action.payload.reactions;
+      }
+    },
+    updateUnreadCount: (state, action: PayloadAction<number>) => {
+      state.unreadCount = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -82,7 +137,7 @@ const chatSlice = createSlice({
         state.users = action.payload;
       })
       .addCase(fetchUsersWithChats.fulfilled, (state, action) => {
-        state.usersWithChats = action.payload; // Запоминаем пользователей с чатом
+        state.usersWithChats = action.payload;
       })
       .addCase(fetchMessages.fulfilled, (state, action) => {
         state.messages = action.payload;
@@ -90,6 +145,12 @@ const chatSlice = createSlice({
   },
 });
 
-export const { addMessage } = chatSlice.actions;
+export const { 
+  addMessage, 
+  updateMessageStatus, 
+  updateReactions,
+  updateUnreadCount 
+} = chatSlice.actions;
+
 export { socket };
-export default chatSlice.reducer;
+export default chatSlice.reducer; 
