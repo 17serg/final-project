@@ -156,7 +156,6 @@ const styles = {
     marginBottom: "3%",
     backgroundColor: "rgba(42, 41, 223, 0.7)",
     borderRadius: "0 0 16px 16px",
-    // boxShadow: "0 4px 6px black",
     marginTop: "0",
     border: "2px solid rgb(42, 41, 223)",
     borderTop: "none",
@@ -164,6 +163,40 @@ const styles = {
     zIndex: 1,
     minHeight: "300px",
     right: "0",
+    "& h6": {
+      color: "white",
+      textAlign: "center",
+      fontSize: "0.5rem",
+      marginBottom: "20px",
+    },
+    "& p": {
+      color: "white",
+      textAlign: "center",
+      fontSize: "1.3rem",
+      marginBottom: "20px",
+    },
+    "& h1": {
+      color: "white",
+      textAlign: "center",
+      fontSize: "2.0rem",
+      marginBottom: "10px",
+    },
+    "& .MuiPaper-root": {
+      boxShadow: "0 6px 20px rgba(5.7, 0.7, 0.7, 0.7)",
+      borderRadius: "16px",
+      overflow: "hidden",
+    },
+    // "& .MuiCalendar-root": {
+    //   borderRadius: "16px",
+    //   overflow: "hidden",
+    //   minHeight: "auto",
+    // },
+    // "& .MuiPickersCalendarHeader-root": {
+    //   borderRadius: "16px 16px 0 0",
+    // },
+    // "& .MuiPickersDay-root": {
+    //   borderRadius: "50%",
+    // },
   },
 };
 
@@ -339,7 +372,9 @@ export default function ProfilePage(): React.JSX.Element {
         {activeTab !== null && (
           <Box sx={styles.tabPanel}>
             {activeTab === 0 && (
-              <CalendarPage/>
+              <Box>
+                <CalendarPage/>
+              </Box>
             )}
             {activeTab === 1 && (
               <Typography variant="h6">Содержимое вкладки "Журнал прогресса"</Typography>
