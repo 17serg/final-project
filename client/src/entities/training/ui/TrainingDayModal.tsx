@@ -1,10 +1,12 @@
-import { Modal, Box, Typography, Button } from '@mui/material';
+import { Modal, Box, Typography, Button, CircularProgress, Divider } from '@mui/material';
 import { useNavigate } from 'react-router';
 import { useContext, useEffect, useState } from 'react';
 import { UserContext, UserContextType } from '@/entities/user/provider/UserProvider';
 import { DayApi } from '@/entities/day/api/DayApi';
 import { TrainingApi } from '../api/TrainingApi';
 import { Day } from '@/entities/day/model/types';
+import { FitnessCenter, CheckCircle, Error } from '@mui/icons-material';
+import { CLIENT_ROUTES } from '@/shared/enums/clientRoutes';
 
 interface TrainingDayModalProps {
   open: boolean;
@@ -19,9 +21,10 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
   const [day, setDay] = useState<Day | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [existingTraining, setExistingTraining] = useState<any>(null);
 
   useEffect(() => {
-    const fetchDay = async () => {
+    const fetchDayAndTraining = async () => {
       if (!user) return;
       try {
         setError(null);
@@ -30,6 +33,15 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
         if (dayId) {
           const response = await DayApi.getDayById(dayId);
           foundDay = response.data;
+
+          // Проверяем наличие тренировки для этого дня
+          try {
+            const trainingResponse = await TrainingApi.getTrainingByDayId(dayId);
+            setExistingTraining(trainingResponse.data);
+          } catch (error) {
+            // Если тренировка не найдена, это нормально
+            setExistingTraining(null);
+          }
         } else {
           const response = await DayApi.getDaysByMonth(date, user.id);
           foundDay =
@@ -47,7 +59,7 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
     };
 
     if (open) {
-      fetchDay();
+      fetchDayAndTraining();
     }
   }, [date, user, open, dayId]);
 
@@ -71,13 +83,18 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
       console.log('Ответ сервера:', response);
 
       onClose();
-      // TODO: Добавить навигацию к странице тренировки с ID
-      // navigate(`/training/${response.data.id}`);
+      navigate(CLIENT_ROUTES.TRAINING.replace(':trainingId', response.data.id.toString()));
     } catch (error) {
       console.error('Ошибка при создании тренировки:', error);
       setError('Не удалось создать тренировку');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoToExistingTraining = () => {
+    if (existingTraining) {
+      navigate(CLIENT_ROUTES.TRAINING.replace(':trainingId', existingTraining.id.toString()));
     }
   };
 
@@ -96,30 +113,79 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
           p: 4,
         }}
       >
-        <Typography variant="h6" component="h2" gutterBottom>
-          Тренировочный день
-        </Typography>
-        <Typography variant="body1" sx={{ mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <FitnessCenter sx={{ mr: 1, color: 'primary.main' }} />
+          <Typography variant="h6" component="h2">
+            Тренировочный день
+          </Typography>
+        </Box>
+
+        <Typography variant="body1" sx={{ mb: 3, color: 'text.secondary' }}>
           {date.toLocaleDateString('ru-RU', {
             day: 'numeric',
             month: 'long',
             year: 'numeric',
           })}
         </Typography>
+
+        <Divider sx={{ my: 2 }} />
+
         {error && (
           <Typography color="error" sx={{ mb: 2 }}>
             {error}
           </Typography>
         )}
-        <Button
-          variant="contained"
-          fullWidth
-          onClick={handleGoToTraining}
-          sx={{ mt: 2 }}
-          disabled={loading || !day || !day.id}
-        >
-          {loading ? 'Создание тренировки...' : 'К плану тренировки'}
-        </Button>
+
+        {existingTraining && (
+          <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+            {existingTraining.complete ? (
+              <CheckCircle color="success" />
+            ) : (
+              <Error color="warning" />
+            )}
+            <Typography>
+              {existingTraining.complete
+                ? 'Тренировка уже создана и выполнена'
+                : 'Тренировка уже создана, но не выполнена'}
+            </Typography>
+          </Box>
+        )}
+
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <>
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={handleGoToTraining}
+              disabled={!day || !day.id || existingTraining}
+              sx={{
+                mt: 2,
+                py: 1.5,
+                fontSize: '1.1rem',
+              }}
+            >
+              {existingTraining ? 'Тренировка уже создана' : 'Создать тренировочный план'}
+            </Button>
+            {existingTraining && (
+              <Button
+                variant="outlined"
+                fullWidth
+                onClick={handleGoToExistingTraining}
+                sx={{
+                  mt: 2,
+                  py: 1.5,
+                  fontSize: '1.1rem',
+                }}
+              >
+                К тренировочному плану
+              </Button>
+            )}
+          </>
+        )}
       </Box>
     </Modal>
   );

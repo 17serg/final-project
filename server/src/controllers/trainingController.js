@@ -66,6 +66,24 @@ const TrainingController = {
       res.status(500).json({ message: 'Ошибка при удалении тренировки' });
     }
   },
+
+  async getTrainingByDayId(req, res) {
+    try {
+      const { dayId } = req.params;
+      const training = await Training.findOne({
+        where: { dayId },
+      });
+
+      if (!training) {
+        return res.status(404).json({ message: 'Тренировка не найдена' });
+      }
+
+      res.json(training);
+    } catch (error) {
+      console.error('Ошибка при получении тренировки:', error);
+      res.status(500).json({ message: 'Ошибка при получении тренировки' });
+    }
+  },
 };
 
 module.exports = TrainingController;

@@ -1,5 +1,6 @@
 import { axiosInstance } from '@/shared/lib/axiosInstance';
 import { Training, CreateTrainingDto } from '../model';
+import { Training as TrainingType } from '../model/types';
 
 export const TrainingApi = {
   async createTraining(data: CreateTrainingDto) {
@@ -26,6 +27,11 @@ export const TrainingApi = {
 
   async deleteTraining(id: number) {
     const response = await axiosInstance.delete(`/trainings/${id}`);
+    return response;
+  },
+
+  getTrainingByDayId: async (dayId: number) => {
+    const response = await axiosInstance.get(`/trainings/day/${dayId}`);
     return response;
   },
 };

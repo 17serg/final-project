@@ -1,9 +1,8 @@
-
 import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router';
 import Layout from '../Layout/Layout';
 import { CLIENT_ROUTES } from '@/shared/enums/clientRoutes';
-import { SignUpPage, LoginPage, SingUpPageTrener, ChatPage} from "@/pages";        
+import { SignUpPage, LoginPage, SingUpPageTrener, ChatPage } from '@/pages';
 import { MainPage } from '@/pages/MainPage/MainPage';
 import { AddBookPage } from '@/pages/AddBookPage/AddBookPage';
 import { BooksPage } from '@/pages/BooksPage/BooksPage';
@@ -15,7 +14,7 @@ import {
 } from '@/features/bookSlice/thunk';
 import ProfilePage from '@/pages/ProfilePage/ProfilePage';
 import { CalendarPage } from '@/pages/CalendarPage';
-
+import { TrainingPage } from '@/pages/TrainingPage/TrainingPage';
 
 export default function RouterProvider(): React.JSX.Element {
   const dispatch = useAppDispatch();
@@ -38,6 +37,7 @@ export default function RouterProvider(): React.JSX.Element {
         <Route path={CLIENT_ROUTES.EDITING} element={<h1>Edit Profile Page</h1>} />
         <Route path={CLIENT_ROUTES.ABOUT} element={<h1>About Page</h1>} />
         <Route path={CLIENT_ROUTES.CALENDAR} element={<CalendarPage />} />
+        <Route path={CLIENT_ROUTES.TRAINING} element={<TrainingPage />} />
         <Route path={CLIENT_ROUTES.NOT_FOUND} element={<h1>No content</h1>} />
       </Route>
     </Routes>
