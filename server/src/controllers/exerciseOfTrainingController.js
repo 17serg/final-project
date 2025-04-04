@@ -2,6 +2,7 @@ const { ExerciseOfTraining } = require('../../db/models');
 
 const ExerciseOfTrainingController = {
   async createExerciseOfTraining(req, res) {
+    console.log(req.body);
     try {
       const { trainingId, exerciseId, duration, weight, sets, reps } = req.body;
       const exerciseOfTraining = await ExerciseOfTraining.create({

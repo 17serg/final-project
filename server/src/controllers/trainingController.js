@@ -67,18 +67,34 @@ const TrainingController = {
     }
   },
 
-  async getTrainingByDayId(req, res) {
-    try {
-      const { dayId } = req.params;
-      const training = await Training.findOne({
-        where: { dayId },
-      });
+    async getTrainingByDayId(req, res) {
+      try {
+        const { dayId } = req.params;
+        const training = await Training.findOne({
+          where: { dayId },
+        });
 
-      if (!training) {
-        return res.status(404).json({ message: 'Тренировка не найдена' });
+        if (!training) {
+          return res.status(404).json({ message: 'Тренировка не найдена' });
+        }
+
+        res.json(training);
+      } catch (error) {
+        console.error('Ошибка при получении тренировки:', error);
+        res.status(500).json({ message: 'Ошибка при получении тренировки' });
       }
+    },
 
-      res.json(training);
+    async getTrainingById(req, res) {
+      try {
+        const { id } = req.params;
+        const training = await Training.findByPk(id);
+    
+        if (!training) {
+          return res.status(404).json({ message: 'Тренировка не найдена' });
+        }
+
+        res.json(training);
     } catch (error) {
       console.error('Ошибка при получении тренировки:', error);
       res.status(500).json({ message: 'Ошибка при получении тренировки' });

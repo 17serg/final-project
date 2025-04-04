@@ -35,13 +35,13 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
           foundDay = response.data;
 
           // Проверяем наличие тренировки для этого дня
-          try {
-            const trainingResponse = await TrainingApi.getTrainingByDayId(dayId);
-            setExistingTraining(trainingResponse.data);
-          } catch (error) {
-            // Если тренировка не найдена, это нормально
-            setExistingTraining(null);
-          }
+          // try {
+          //   const trainingResponse = await TrainingApi.getTrainingByDayId(dayId);
+          //   setExistingTraining(trainingResponse.data);
+          // } catch (error) {
+          //   // Если тренировка не найдена, это нормально
+          //   setExistingTraining(null);
+          // }
         } else {
           const response = await DayApi.getDaysByMonth(date, user.id);
           foundDay =
