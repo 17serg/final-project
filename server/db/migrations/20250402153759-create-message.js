@@ -13,11 +13,11 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      senderId:  {
+      senderId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Users', // Связываем с таблицей Users
+          model: 'Users', 
           key: 'id'
         },
         onDelete: 'CASCADE'
@@ -26,10 +26,26 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Users', 
+          model: 'Users',
           key: 'id'
         },
         onDelete: 'CASCADE'
+      },
+      isSent: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false, 
+      },
+      isRead: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false, 
+      },
+      reactions: {
+        type: Sequelize.JSON,
+        allowNull: false,
+        defaultValue: {},
+        comment: 'Хранит реакции пользователей на сообщение в формате {userId: reaction}'
       },
       createdAt: {
         allowNull: false,
@@ -43,6 +59,7 @@ module.exports = {
       }
     });
   },
+
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Messages');
   }

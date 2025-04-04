@@ -1,23 +1,38 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchMessages, fetchTrainers, fetchUsers, fetchUsersWithChats, sendMessage, addMessage, socket } from '../../entities/chat/store/chatSlice';
+import { 
+  fetchMessages, 
+  fetchTrainers, 
+  fetchUsers, 
+  fetchUsersWithChats, 
+  sendMessage, 
+  addMessage, 
+  updateMessageStatus, 
+  socket, 
+  markMessagesAsRead,
+  joinChat,
+  leaveChat,
+  addReaction,
+  updateReactions,
+  getUnreadCount,
+  updateUnreadCount
+} from '../../entities/chat/store/chatSlice';
 import { RootState, AppDispatch } from '../../app/store';
 import { useUser } from '@/entities/user/hooks/useUser';
+
+const REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '😡'];
 
 export function ChatPage(): React.JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useUser();
   const userId = user?.id;
-  const isTrainer = user?.trener; 
+  const isTrainer = user?.trener;
 
-  const { messages, trainers, usersWithChats } = useSelector((state: RootState) => state.chat);
+  const { messages, trainers, usersWithChats, unreadCount } = useSelector((state: RootState) => state.chat);
 
   const [text, setText] = useState('');
   const [chatPartnerId, setChatPartnerId] = useState<number | null>(null);
-  const [unreadMessages, setUnreadMessages] = useState<Record<number, number>>({});
-  const [lastReadMessageId, setLastReadMessageId] = useState<number | undefined>(undefined);
-
-  const messagesEndRef = useRef<HTMLDivElement | null>(null); 
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     dispatch(fetchTrainers());
@@ -29,37 +44,63 @@ export function ChatPage(): React.JSX.Element {
 
     socket.on('newMessage', (message) => {
       dispatch(addMessage(message));
+    });
 
-      setUnreadMessages((prev) => {
-        if (message.senderId !== userId) {
-          return {
-            ...prev,
-            [message.senderId]: (prev[message.senderId] || 0) + 1,
-          };
-        }
-        return prev;
-      });
+    socket.on('messageSent', ({ id }) => {
+      dispatch(updateMessageStatus({ id, isSent: true }));
+    });
+
+    socket.on('messageRead', ({ id }) => {
+      dispatch(updateMessageStatus({ id, isRead: true }));
+    });
+
+    socket.on('reactionUpdated', ({ messageId, reactions }) => {
+      dispatch(updateReactions({ messageId, reactions }));
+    });
+
+    socket.on('unreadCount', ({ count }) => {
+      dispatch(updateUnreadCount(count));
     });
 
     return () => {
       socket.off('newMessage');
+      socket.off('messageSent');
+      socket.off('messageRead');
+      socket.off('reactionUpdated');
+      socket.off('unreadCount');
     };
   }, [dispatch, isTrainer, userId]);
 
-  const chatPartners = isTrainer ? usersWithChats : trainers;
+  useEffect(() => {
+    if (chatPartnerId && userId) {
+      dispatch(joinChat({ userId, chatPartnerId }));
+      
+      return () => {
+        dispatch(leaveChat({ userId }));
+      };
+    }
+  }, [chatPartnerId, userId, dispatch]);
 
   useEffect(() => {
-    if (chatPartnerId) {
+    if (userId) {
+      dispatch(getUnreadCount(userId));
+    }
+  }, [dispatch, userId]);
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setText(e.target.value);
+    if (chatPartnerId && userId) {
+      dispatch(markMessagesAsRead({ userId, chatPartnerId }));
+    }
+  };
+
+  useEffect(() => {
+    if (chatPartnerId && userId) {
       dispatch(fetchMessages({ userId, chatPartnerId }));
-      setUnreadMessages((prev) => ({ ...prev, [chatPartnerId]: 0 }));
+      socket.emit('checkMessages', { userId, chatPartnerId });
+      dispatch(getUnreadCount(userId));
     }
   }, [chatPartnerId, dispatch, userId]);
-
-  useEffect(() => {
-    if (messages.length > 0) {
-      setLastReadMessageId(messages[messages.length - 1].id);
-    }
-  }, [messages]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -68,9 +109,19 @@ export function ChatPage(): React.JSX.Element {
   }, [messages]);
 
   const handleSendMessage = () => {
-    if (text.trim()) {
-      dispatch(sendMessage({ senderId: userId, receiverId: chatPartnerId!, text }));
-      setText(''); 
+    if (text.trim() && chatPartnerId !== null && userId !== undefined) {
+      const newMessage = {
+        senderId: userId,
+        receiverId: chatPartnerId,
+        text,
+        isSent: false,
+        isRead: false,
+        createdAt: new Date().toISOString(),
+        reactions: {},
+      };
+
+      dispatch(sendMessage(newMessage));
+      setText('');
     }
   };
 
@@ -80,22 +131,101 @@ export function ChatPage(): React.JSX.Element {
     }
   };
 
-  const markAsRead = (messageId: number) => {
-    setLastReadMessageId(messageId);
+  const handleAddReaction = (messageId: number, reaction: string) => {
+    if (userId) {
+      dispatch(addReaction({ messageId, userId, reaction }));
+    }
   };
+
+  const formatTime = (dateString: string | undefined) => {
+    if (!dateString) return 'Неизвестное время';
+    const date = new Date(dateString);
+    return `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+  };
+
+  const MessageReactions = ({ message }: { message: Message }) => {
+    const reactions = message.reactions || {};
+    const reactionCounts = Object.values(reactions).reduce((acc, reaction) => {
+      acc[reaction] = (acc[reaction] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    return (
+      <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
+        {Object.entries(reactionCounts).map(([reaction, count]) => (
+          <span
+            key={reaction}
+            style={{ cursor: 'pointer' }}
+            onClick={() => handleAddReaction(message.id!, reaction)}
+          >
+            {reaction} {count > 1 && count}
+          </span>
+        ))}
+      </div>
+    );
+  };
+
+  const ReactionPicker = ({ messageId }: { messageId: number }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+      <div style={{ position: 'relative' }}>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          style={{ padding: '2px 5px', cursor: 'pointer' }}
+        >
+          😊
+        </button>
+        {isOpen && (
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '100%',
+              left: '0',
+              backgroundColor: 'white',
+              border: '1px solid gray',
+              borderRadius: '5px',
+              padding: '5px',
+              display: 'flex',
+              gap: '5px',
+              zIndex: 1000,
+            }}
+          >
+            {REACTIONS.map((reaction) => (
+              <span
+                key={reaction}
+                onClick={() => {
+                  handleAddReaction(messageId, reaction);
+                  setIsOpen(false);
+                }}
+                style={{ cursor: 'pointer' }}
+              >
+                {reaction}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const chatList = isTrainer ? usersWithChats : trainers;
+
+  const filteredMessages = messages.filter(msg => 
+    (msg.senderId === userId && msg.receiverId === chatPartnerId) ||
+    (msg.senderId === chatPartnerId && msg.receiverId === userId)
+  );
 
   return (
     <div style={{ display: 'flex', gap: '20px' }}>
-      {/* Список чатов */}
       <div style={{ width: '250px', borderRight: '1px solid gray', paddingRight: '10px' }}>
         <h3>Диалоги</h3>
-        {chatPartners.map((partner) => (
+        {chatList.map((partner) => (
           <button
             key={partner.id}
             onClick={() => setChatPartnerId(partner.id)}
             style={{
               display: 'flex',
-              justifyContent: 'space-between',
               width: '100%',
               padding: '10px',
               margin: '5px 0',
@@ -105,71 +235,74 @@ export function ChatPage(): React.JSX.Element {
               position: 'relative',
             }}
           >
-            {partner.name}
-            {unreadMessages[partner.id] > 0 && (
-              <span
-                style={{
-                  background: 'red',
-                  color: 'white',
-                  borderRadius: '50%',
-                  padding: '5px',
-                  fontSize: '12px',
-                  minWidth: '20px',
-                  textAlign: 'center',
-                }}
-              >
-                {unreadMessages[partner.id]}
+            <span style={{ flex: 1 }}>{partner.name} {partner.surname}</span>
+            {messages.filter(msg => 
+              msg.senderId === partner.id && 
+              msg.receiverId === userId && 
+              !msg.isRead
+            ).length > 0 && (
+              <span style={{
+                position: 'absolute',
+                right: '10px',
+                backgroundColor: 'red',
+                color: 'white',
+                borderRadius: '50%',
+                padding: '2px 6px',
+                fontSize: '12px',
+              }}>
+                {messages.filter(msg => 
+                  msg.senderId === partner.id && 
+                  msg.receiverId === userId && 
+                  !msg.isRead
+                ).length}
               </span>
             )}
           </button>
         ))}
       </div>
 
-      {/* Окно чата */}
       <div style={{ flex: 1 }}>
         <h2>Чат</h2>
         {chatPartnerId ? (
           <>
-            <div
-              style={{
-                height: '300px',
-                overflowY: 'scroll',
-                border: '1px solid gray',
-                padding: '10px',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              {messages.map((msg) => (
-                <p
-                  key={msg.id}
-                  onClick={() => markAsRead(msg.id)} 
-                  style={{
-                    backgroundColor: msg.id > (lastReadMessageId || 0) ? 'lightgray' : 'transparent', 
-                    padding: '5px',
-                    borderRadius: '5px',
-                    marginBottom: '-20px', 
-                  }}
-                >
-                  <strong>{msg.senderId === userId ? 'Вы' : 'Собеседник'}:</strong> {msg.text}
-                </p>
+            <div style={{
+              height: '300px',
+              overflowY: 'scroll',
+              border: '1px solid gray',
+              padding: '10px',
+              display: 'flex',
+              flexDirection: 'column',
+            }}>
+              {filteredMessages.map((msg) => (
+                <div key={msg.id} style={{ padding: '5px', borderRadius: '5px' }}>
+                  <p>
+                    <strong>{msg.senderId === userId ? 'Вы' : 'Собеседник'}:</strong> {msg.text}
+                    <br />
+                    <span style={{ fontSize: '12px', color: 'gray' }}>
+                      {formatTime(msg.createdAt)}{' '}
+                      {msg.senderId === userId && (
+                        <>
+                          {msg.isSent ? '✅' : '⌛'} {msg.isRead ? '✅' : ''}
+                        </>
+                      )}
+                    </span>
+                  </p>
+                  <MessageReactions message={msg} />
+                  <ReactionPicker messageId={msg.id!} />
+                </div>
               ))}
               <div ref={messagesEndRef} />
             </div>
 
             <input
               value={text}
-              onChange={(e) => setText(e.target.value)}
+              onChange={handleTextChange}
               onKeyDown={handleKeyPress}
               style={{ width: '100%', padding: '10px', marginTop: '10px' }}
             />
             <button
               onClick={handleSendMessage}
-              style={{
-                padding: '10px',
-                marginTop: '10px',
-                cursor: 'pointer',
-              }}
+              style={{ padding: '10px', marginTop: '10px', cursor: 'pointer' }}
             >
               Отправить
             </button>
