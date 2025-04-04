@@ -44,7 +44,7 @@ export const fetchUsers = createAsyncThunk('chat/fetchUsers', async () => {
   return response.data;
 });
 
-// Новый thunk: загружает всех пользователей, с кем у тренера были чаты
+
 export const fetchUsersWithChats = createAsyncThunk(
   'chat/fetchUsersWithChats',
   async (trainerId: number) => {

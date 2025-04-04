@@ -8,7 +8,7 @@ export function ChatPage(): React.JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useUser();
   const userId = user?.id;
-  const isTrainer = user?.trener; // true - тренер, false - посетитель
+  const isTrainer = user?.trener; 
 
   const { messages, trainers, usersWithChats } = useSelector((state: RootState) => state.chat);
 
@@ -17,7 +17,7 @@ export function ChatPage(): React.JSX.Element {
   const [unreadMessages, setUnreadMessages] = useState<Record<number, number>>({});
   const [lastReadMessageId, setLastReadMessageId] = useState<number | undefined>(undefined);
 
-  const messagesEndRef = useRef<HTMLDivElement | null>(null); // Реф для скролла к последнему сообщению
+  const messagesEndRef = useRef<HTMLDivElement | null>(null); 
 
   useEffect(() => {
     dispatch(fetchTrainers());
@@ -55,14 +55,12 @@ export function ChatPage(): React.JSX.Element {
     }
   }, [chatPartnerId, dispatch, userId]);
 
-  // Обновление состояния lastReadMessageId при получении нового сообщения
   useEffect(() => {
     if (messages.length > 0) {
       setLastReadMessageId(messages[messages.length - 1].id);
     }
   }, [messages]);
 
-  // Скролл к последнему сообщению
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -72,7 +70,7 @@ export function ChatPage(): React.JSX.Element {
   const handleSendMessage = () => {
     if (text.trim()) {
       dispatch(sendMessage({ senderId: userId, receiverId: chatPartnerId!, text }));
-      setText(''); // Очистить инпут после отправки
+      setText(''); 
     }
   };
 
@@ -145,12 +143,12 @@ export function ChatPage(): React.JSX.Element {
               {messages.map((msg) => (
                 <p
                   key={msg.id}
-                  onClick={() => markAsRead(msg.id)} // По клику на сообщение будем считать его прочитанным
+                  onClick={() => markAsRead(msg.id)} 
                   style={{
-                    backgroundColor: msg.id > (lastReadMessageId || 0) ? 'lightgray' : 'transparent', // Подсвечиваем новые сообщения
+                    backgroundColor: msg.id > (lastReadMessageId || 0) ? 'lightgray' : 'transparent', 
                     padding: '5px',
                     borderRadius: '5px',
-                    marginBottom: '-20px', // Ближе друг к другу
+                    marginBottom: '-20px', 
                   }}
                 >
                   <strong>{msg.senderId === userId ? 'Вы' : 'Собеседник'}:</strong> {msg.text}
