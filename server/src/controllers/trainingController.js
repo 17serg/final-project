@@ -17,12 +17,13 @@ const TrainingController = {
 
   async createTraining(req, res) {
     try {
-      const { name, description, userId } = req.body;
+      const { dayId, userId, complete } = req.body;
+      console.log('Полученные данные:', { dayId, userId, complete }); // Отладочный лог
+
       const training = await Training.create({
-        name,
-        description,
+        dayId,
         userId,
-        complete: false,
+        complete,
       });
       res.status(201).json(training);
     } catch (error) {

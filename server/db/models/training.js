@@ -1,11 +1,11 @@
 'use strict';
+
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Training extends Model {
-    static associate({ Day, User, Exercise, ExerciseOfTraining }) {
+    static associate({ Day, User, ExerciseOfTraining }) {
       this.belongsTo(Day, { foreignKey: 'dayId' });
       this.belongsTo(User, { foreignKey: 'userId' });
-      this.belongsTo(Exercise, { foreignKey: 'exerciseId' });
       this.hasMany(ExerciseOfTraining, { foreignKey: 'trainingId' });
     }
   }

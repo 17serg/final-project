@@ -13,6 +13,11 @@ export const DayApi = {
     return response;
   },
 
+  getDayById: async (id: number) => {
+    const response = await axiosInstance.get<Day>(`/days/${id}`);
+    return response;
+  },
+
   createDay: async (data: Omit<Day, 'id'>) => {
     const response = await axiosInstance.post<Day>('/days', data);
     return response;
