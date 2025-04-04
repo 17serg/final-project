@@ -1,11 +1,11 @@
+
 // const express = require('express');
 // const cors = require('cors');
 // const { sequelize } = require('./db/models');
-// const userRoutes = require('./src/routers/userRoutes');
-// const dayRoutes = require('./src/routers/dayRoutes');
-// const trainingRoutes = require('./src/routers/trainingRoutes');
-// const exerciseRoutes = require('./src/routers/exerciseRoutes');
-// const exerciseOfTrainingRoutes = require('./src/routers/exerciseOfTrainingRoutes');
+// // const userRoutes = require('./routes/userRoutes');
+// const dayRoutes = require('./routes/dayRoutes');
+// const trainingRoutes = require('./routes/trainingRoutes');
+// const exerciseRoutes = require('./routes/exerciseRoutes');
 
 // const app = express();
 // const PORT = process.env.PORT || 3001;
@@ -15,11 +15,10 @@
 // app.use(express.json());
 
 // // Роуты
-// app.use('/api/users', userRoutes);
+// // app.use('/api/users', userRoutes);
 // app.use('/api/days', dayRoutes);
 // app.use('/api/trainings', trainingRoutes);
 // app.use('/api/exercises', exerciseRoutes);
-// app.use('/api/exercise-of-trainings', exerciseOfTrainingRoutes);
 
 // // Обработка ошибок
 // app.use((err, req, res, next) => {

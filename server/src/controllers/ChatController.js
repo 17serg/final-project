@@ -1,7 +1,7 @@
 const { User, Message } = require('../../db/models');
 
 class ChatController {
-  // Получение всех тренеров
+
   static async getAllTrainers(req, res) {
     try {
       const trainers = await User.findAll({ where: { trener: true } });
@@ -13,9 +13,8 @@ class ChatController {
   }
 
   
-  // Получение всех пользователей
+
   static async getAllUsers(req, res) {
-    console.log('=======================================')
     try {
       const users = await User.findAll(); // Получаем всех пользователей
       res.json(users);
@@ -25,11 +24,10 @@ class ChatController {
     }
   }
 
-  // Получение всех сообщений между пользователем и тренером
+
   static async getAllMessage(req, res) {
     try {
       const { userId, trainerId } = req.params;
-      console.log(userId, trainerId, '--------------------------------');
       const messages = await Message.findAll({
         where: {
           senderId: [userId, trainerId],
@@ -66,6 +64,22 @@ class ChatController {
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Ошибка при получении списка чатов' });
+    }
+  }
+
+  static async getAllMessageRead(req, res) {
+    try {
+      const { userId } = req.params;
+      const unreadCount = await Message.count({
+        where: {
+          receiverId: userId,
+          isRead: false
+        }
+      });
+      res.json({ unreadCount });
+    } catch (error) {
+      console.error('Ошибка при получении количества непрочитанных сообщений:', error);
+      res.status(500).json({ error: 'Внутренняя ошибка сервера' });
     }
   }
 }
