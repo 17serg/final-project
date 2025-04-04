@@ -10,9 +10,9 @@ const usersRouter = require('./routers/usersRouter');
 const userRouter = require('./routers/userRouter');
 const dayRouter = require('./routers/dayRoutes');
 const trainingRouter = require('./routers/trainingRoutes');
-const trainersRouter = require('./routers/trainersRouter')
-const messagesRouter = require('./routers/messagesRouter')
-
+const trainersRouter = require('./routers/trainersRouter');
+const messagesRouter = require('./routers/messagesRouter');
+const anthropometryRouter = require('./routers/anthropometryRouter');
 
 const app = express();
 
@@ -32,6 +32,6 @@ app.use('/api/days/', dayRouter);
 app.use('/api/trainings/', trainingRouter);
 app.use('/api/trainers', trainersRouter);
 app.use('/api/messages', messagesRouter);
-
+app.use('/api/anthropometry', anthropometryRouter);
 
 module.exports = app;
