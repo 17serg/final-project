@@ -5,6 +5,7 @@ import { UserApi } from "@/entities/user/api/UserApi";
 import { IUserProfile } from "@/entities/user/model";
 import { getUserColor } from "@/shared/utils/userColor";
 import { ChatPage } from "../ChatPage/ChatPage";
+import { CalendarPage } from "../CalendarPage";
 
 const styles = {
   container: {
@@ -338,7 +339,7 @@ export default function ProfilePage(): React.JSX.Element {
         {activeTab !== null && (
           <Box sx={styles.tabPanel}>
             {activeTab === 0 && (
-              <Typography variant="h6">Содержимое вкладки "Календарь тренировок"</Typography>
+              <CalendarPage/>
             )}
             {activeTab === 1 && (
               <Typography variant="h6">Содержимое вкладки "Журнал прогресса"</Typography>
