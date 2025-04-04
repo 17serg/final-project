@@ -13,6 +13,7 @@ const trainingRouter = require('./routers/trainingRoutes');
 const trainersRouter = require('./routers/trainersRouter');
 const messagesRouter = require('./routers/messagesRouter');
 const anthropometryRouter = require('./routers/anthropometryRouter');
+const exerciseOfTrainingRouter = require('./routers/exerciseOfTrainingRoutes');
 
 const app = express();
 
@@ -28,10 +29,11 @@ app.use('/api/tokens/', tokensRouter);
 app.use('/api/users/', usersRouter);
 app.use('/api/user/', userRouter);
 app.use('/api/days/', dayRouter);
-
+app.use('/api/exercise-of-trainings/', exerciseOfTrainingRouter);
 app.use('/api/trainings/', trainingRouter);
 app.use('/api/trainers', trainersRouter);
 app.use('/api/messages', messagesRouter);
 app.use('/api/anthropometry', anthropometryRouter);
+
 
 module.exports = app;
