@@ -73,6 +73,15 @@ export const Calendar = (): React.ReactElement => {
   };
 
   const handleInfoClick = (date: Date): void => {
+    const existingDay = days.find(
+      (day) => new Date(day.date).toDateString() === date.toDateString(),
+    );
+
+    if (!existingDay) {
+      console.error('День не найден');
+      return;
+    }
+
     setSelectedDate(date);
     setIsModalOpen(true);
   };
@@ -206,7 +215,15 @@ export const Calendar = (): React.ReactElement => {
       </Grid>
 
       {selectedDate && (
-        <TrainingDayModal open={isModalOpen} onClose={handleCloseModal} date={selectedDate} />
+        <TrainingDayModal
+          open={isModalOpen}
+          onClose={handleCloseModal}
+          date={selectedDate}
+          dayId={
+            days.find((day) => new Date(day.date).toDateString() === selectedDate.toDateString())
+              ?.id
+          }
+        />
       )}
     </Paper>
   );
