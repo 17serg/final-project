@@ -31,13 +31,16 @@ const styles = {
     padding: "8px 16px",
     transition: "all 0.3s ease",
     textTransform: "none",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
     "&:hover": {
       backgroundColor: "rgb(42, 41, 223)",
       color: "white",
+      boxShadow: "0 6px 12px rgba(42, 41, 223, 0.3)",
     },
     "&.active": {
       backgroundColor: "rgb(42, 41, 223)",
     color: "white",
+      boxShadow: "0 6px 12px rgba(42, 41, 223, 0.3)",
     },
   },
   box: {
@@ -84,9 +87,11 @@ const styles = {
     padding: "8px 16px",
     transition: "all 0.3s ease",
     color: "black",
+    boxShadow: "0 4px 8px rgba(42, 41, 223, 0.2)",
     "&:hover": {
       backgroundColor: "rgb(42, 41, 223)",
       color: "white",
+      boxShadow: "0 6px 12px rgba(42, 41, 223, 0.3)",
     },
   },
   typography: {
@@ -107,8 +112,21 @@ const styles = {
       width: "100%",
       marginTop: "4px",
       borderRadius: "16px",
-      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+      boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15)",
     },
+  },
+  avatar: {
+    cursor: "pointer",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+    transition: "all 0.3s ease",
+    "&:hover": {
+      boxShadow: "0 6px 12px rgba(0, 0, 0, 0.3)",
+      transform: "scale(1.05)",
+    },
+  },
+  profileForm: {
+    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
+    borderRadius: "16px",
   },
 };
 
@@ -232,9 +250,9 @@ export default function NavBar(): React.JSX.Element {
                     maxHeight: 300,
                     marginTop: "4px",
                     borderRadius: "16px",
-                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
                     border: "2px solid rgb(42, 41, 223)",
-                    backgroundColor: "white",
+                    backgroundColor: "white"
                   },
                 }}
                 anchorOrigin={{
@@ -332,7 +350,7 @@ export default function NavBar(): React.JSX.Element {
                         maxHeight: 300,
                         marginTop: "4px",
                         borderRadius: "16px",
-                        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
                         border: "2px solid rgb(42, 41, 223)",
                         backgroundColor: "white",
                       },
@@ -409,16 +427,16 @@ export default function NavBar(): React.JSX.Element {
                 </Button>
             )}
           </Typography>
-          {user && (
-        <ProfileForm
-          open={isProfileFormOpen}
-          onClose={() => setIsProfileFormOpen(false)}
-          userId={user.id}
-        />
-      )}
           </Box>
         </Toolbar>
       </AppBar>
+      {isProfileFormOpen && (
+        <ProfileForm 
+          open={isProfileFormOpen} 
+          onClose={() => setIsProfileFormOpen(false)} 
+          userId={user?.id || 0}
+        />
+      )}
     </Box>
   );
 }

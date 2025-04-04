@@ -6,6 +6,7 @@ import { IUserProfile } from "@/entities/user/model";
 import { getUserColor } from "@/shared/utils/userColor";
 import { ChatPage } from "../ChatPage/ChatPage";
 import { CalendarPage } from "../CalendarPage";
+import AnthropometryPage from "../AnthropometryPage/AnthropometryPage";
 
 const styles = {
   container: {
@@ -116,6 +117,7 @@ const styles = {
     fontWeight: 500,
     textTransform: "none",
     backgroundColor: "white",
+    boxShadow: "0 0px 8px rgba(0, 0, 0, 0.4)",
     borderTopLeftRadius: "16px",
     borderTopRightRadius: "16px",
     border: "2px solid rgb(42, 41, 223)",
@@ -155,6 +157,7 @@ const styles = {
     padding: "20px",
     marginBottom: "3%",
     backgroundColor: "rgba(42, 41, 223, 0.7)",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
     borderRadius: "0 0 16px 16px",
     marginTop: "0",
     border: "2px solid rgb(42, 41, 223)",
@@ -377,7 +380,7 @@ export default function ProfilePage(): React.JSX.Element {
               </Box>
             )}
             {activeTab === 1 && (
-              <Typography variant="h6">Содержимое вкладки "Журнал прогресса"</Typography>
+              <AnthropometryPage/>
             )}
             {activeTab === 2 && (
               <Typography variant="h6">Содержимое вкладки "Рекомендации"</Typography>
