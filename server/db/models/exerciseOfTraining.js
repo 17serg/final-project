@@ -1,14 +1,33 @@
 'use strict';
 const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class ExerciseOfTraining extends Model {
-    static associate({ Training, Exercise }) {
-      this.belongsTo(Training, { foreignKey: 'trainingId' });
-      this.belongsTo(Exercise, { foreignKey: 'exerciseId' });
+    static associate(models) {
+      // Определяем связи с другими моделями
+      this.belongsTo(models.Training, {
+        foreignKey: 'trainingId',
+        as: 'training',
+      });
+      this.belongsTo(models.Exercise, {
+        foreignKey: 'exerciseId',
+        as: 'Exercise',
+      });
+      // Добавляем связь с ExerciseSet
+      this.hasMany(models.ExerciseSet, {
+        foreignKey: 'exerciseOfTrainingId',
+        as: 'exerciseSets',
+      });
     }
   }
+
   ExerciseOfTraining.init(
     {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
       trainingId: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -28,12 +47,12 @@ module.exports = (sequelize, DataTypes) => {
       duration: {
         type: DataTypes.INTEGER,
         allowNull: true,
-        comment: 'Продолжительность в минутах',
+        comment: 'Длительность упражнения в секундах',
       },
       weight: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.INTEGER,
         allowNull: true,
-        comment: 'Вес в килограммах',
+        comment: 'Вес в кг',
       },
       sets: {
         type: DataTypes.INTEGER,
@@ -55,7 +74,10 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: 'ExerciseOfTraining',
+      tableName: 'ExerciseOfTrainings',
+      timestamps: true,
     },
   );
+
   return ExerciseOfTraining;
 };

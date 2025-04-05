@@ -1,4 +1,15 @@
-import { Box, Container, Typography, Button } from '@mui/material';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  Snackbar,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@mui/material';
 import { useParams } from 'react-router';
 import { useState, useEffect } from 'react';
 import { TrainingApi, ExerciseOfTraining } from '@/entities/training/api/TrainingApi';
@@ -7,10 +18,22 @@ import ExerciseList from '@/entities/training/ui/ExerciseList';
 
 export const TrainingPage = (): React.ReactElement => {
   const { trainingId } = useParams();
-  const [training, setTraining] = useState<{ dayId: number } | null>(null);
+  const [training, setTraining] = useState<{ dayId: number; complete: boolean } | null>(null);
   const [showAddExerciseForm, setShowAddExerciseForm] = useState(false);
   const [exercises, setExercises] = useState<ExerciseOfTraining[]>([]);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState<{ open: boolean }>({
+    open: false,
+  });
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error';
+  }>({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
 
   useEffect(() => {
     const fetchTraining = async (): Promise<void> => {
@@ -103,6 +126,75 @@ export const TrainingPage = (): React.ReactElement => {
     }
   };
 
+  const handleCompleteTraining = async (): Promise<void> => {
+    if (!trainingId) return;
+
+    try {
+      setIsUpdating(true);
+      await TrainingApi.updateTrainingStatus(Number(trainingId), true);
+
+      // Обновляем состояние тренировки
+      const response = await TrainingApi.getTrainingById(Number(trainingId));
+      setTraining(response.data);
+
+      setSnackbar({
+        open: true,
+        message: 'Тренировка отмечена как выполненная',
+        severity: 'success',
+      });
+    } catch (error) {
+      console.error('Ошибка при обновлении статуса тренировки:', error);
+      setSnackbar({
+        open: true,
+        message: 'Не удалось обновить статус тренировки',
+        severity: 'error',
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleCancelTraining = (): void => {
+    setConfirmDialog({ open: true });
+  };
+
+  const handleConfirmCancel = async (): Promise<void> => {
+    if (!trainingId) return;
+
+    try {
+      setIsUpdating(true);
+      await TrainingApi.updateTrainingStatus(Number(trainingId), false);
+
+      // Обновляем состояние тренировки
+      const response = await TrainingApi.getTrainingById(Number(trainingId));
+      setTraining(response.data);
+
+      setSnackbar({
+        open: true,
+        message: 'Статус тренировки отменен',
+        severity: 'success',
+      });
+    } catch (error) {
+      console.error('Ошибка при обновлении статуса тренировки:', error);
+      setSnackbar({
+        open: true,
+        message: 'Не удалось обновить статус тренировки',
+        severity: 'error',
+      });
+    } finally {
+      setIsUpdating(false);
+      setConfirmDialog({ open: false });
+    }
+  };
+
+  const handleCloseConfirmDialog = (): void => {
+    setConfirmDialog({ open: false });
+  };
+
+  const handleCloseSnackbar = (): void => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+
   return (
     <Container maxWidth="md">
       <Box sx={{ py: 4 }}>
@@ -113,17 +205,78 @@ export const TrainingPage = (): React.ReactElement => {
           ID тренировки: {trainingId}
         </Typography>
         {training && (
-          <Typography variant="body1" color="text.secondary" paragraph>
-            Дата тренировки: {new Date(training.dayId).toLocaleDateString('ru-RU')}
-          </Typography>
+          <>
+            <Typography variant="body1" color="text.secondary" paragraph>
+              Дата тренировки: {new Date(training.dayId).toLocaleDateString('ru-RU')}
+            </Typography>
+            <Typography variant="body1" color="text.secondary" paragraph>
+              Статус: {training.complete ? 'Выполнена' : 'Не выполнена'}
+            </Typography>
+          </>
         )}
 
         <ExerciseList exercises={exercises} onMoveExercise={handleMoveExercise} />
 
-        <Button variant="contained" color="primary" onClick={handleAddExercise} sx={{ mt: 2 }}>
-          Добавить упражнение +
-        </Button>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+          <Button variant="contained" color="primary" onClick={handleAddExercise}>
+            Добавить упражнение +
+          </Button>
+
+          {training && (
+            <Button
+              variant="contained"
+              color={training.complete ? 'error' : 'success'}
+              onClick={training.complete ? handleCancelTraining : handleCompleteTraining}
+              disabled={isUpdating}
+              sx={
+                training.complete
+                  ? {
+                      bgcolor: 'rgba(211, 47, 47, 0.8)',
+                      '&:hover': { bgcolor: 'rgba(211, 47, 47, 0.9)' },
+                    }
+                  : {}
+              }
+            >
+              {training.complete ? 'Отменить выполнение' : 'Тренировка выполнена'}
+            </Button>
+          )}
+        </Box>
+
         {showAddExerciseForm && <AddExerciseForm onSubmit={handleExerciseSubmit} />}
+
+        {/* Диалог подтверждения отмены выполнения */}
+        <Dialog open={confirmDialog.open} onClose={handleCloseConfirmDialog}>
+          <DialogTitle>Подтверждение отмены выполнения</DialogTitle>
+          <DialogContent>
+            <Typography>Вы уверены, что хотите отменить выполнение тренировки?</Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseConfirmDialog}>Отмена</Button>
+            <Button
+              onClick={handleConfirmCancel}
+              variant="contained"
+              color="error"
+              sx={{
+                bgcolor: 'rgba(211, 47, 47, 0.8)',
+                '&:hover': { bgcolor: 'rgba(211, 47, 47, 0.9)' },
+              }}
+              autoFocus
+            >
+              Отменить выполнение
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </Box>
     </Container>
   );
