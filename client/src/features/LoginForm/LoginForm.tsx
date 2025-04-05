@@ -5,7 +5,6 @@ import { useUser } from '@/entities/user/hooks/useUser';
 import { UserApi } from '@/entities/user/api/UserApi';
 import { setAccessToken } from '@/shared/lib/axiosInstance';
 import { useAppDispatch } from '@/shared/lib/reduxHooks';
-import { loadAllBooksThunk, loadFavouriteBooksThunk, loadUserBooksThunk } from '../bookSlice/thunk';
 
 export default function LoginForm(): React.JSX.Element {
   const navigate = useNavigate();
@@ -57,9 +56,6 @@ export default function LoginForm(): React.JSX.Element {
       if (response.status === 200) {
         setUser(response.data.user);
         setAccessToken(response.data.accessToken);
-        dispatch(loadAllBooksThunk());
-        dispatch(loadUserBooksThunk());
-        dispatch(loadFavouriteBooksThunk());
         navigate('/profile');
       }
     } catch (error) {
