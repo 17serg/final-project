@@ -11,6 +11,27 @@ export interface CreateExerciseOfTrainingDto {
   reps: number;
 }
 
+export interface ExerciseOfTraining {
+  id: number;
+  trainingId: number;
+  exerciseId: number;
+  duration: number;
+  weight: number;
+  sets: number;
+  reps: number;
+  order: number;
+  Exercise: {
+    id: number;
+    name: string;
+    description: string;
+    category: string;
+    difficulty: string;
+    muscle_group: string;
+    equipment: boolean;
+    image_url: string | null;
+  };
+}
+
 export const TrainingApi = {
   async createTraining(data: CreateTrainingDto) {
     const response = await axiosInstance.post('/trainings', data);
@@ -46,6 +67,21 @@ export const TrainingApi = {
 
   async createExerciseOfTraining(data: CreateExerciseOfTrainingDto) {
     const response = await axiosInstance.post('/exercise-of-trainings', data);
+    return response;
+  },
+
+  async getExercisesOfTraining(trainingId: number) {
+    const response = await axiosInstance.get<ExerciseOfTraining[]>(
+      `/exercise-of-trainings/training/${trainingId}`,
+    );
+    return response;
+  },
+
+  async updateExercisesOrder(trainingId: number, exerciseIds: number[]) {
+    const response = await axiosInstance.patch(
+      `/exercise-of-trainings/training/${trainingId}/order`,
+      { exerciseIds },
+    );
     return response;
   },
 };

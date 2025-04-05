@@ -31,4 +31,11 @@ router.get(
   ExerciseOfTrainingController.getExercisesByTrainingId,
 );
 
+// Обновление порядка упражнений
+router.patch(
+  '/training/:trainingId/order',
+  verifyAccessToken,
+  ExerciseOfTrainingController.updateExercisesOrder,
+);
+
 module.exports = router;
