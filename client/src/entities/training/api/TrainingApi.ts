@@ -1,6 +1,5 @@
 import { axiosInstance } from '@/shared/lib/axiosInstance';
 import { Training, CreateTrainingDto } from '../model';
-import { Training as TrainingType } from '../model/types';
 
 export interface CreateExerciseOfTrainingDto {
   trainingId: number;
@@ -60,7 +59,7 @@ export const TrainingApi = {
     return response;
   },
 
-  getTrainingByDayId: async (dayId: number) => {
+  getTrainingsByDayId: async (dayId: number) => {
     const response = await axiosInstance.get(`/trainings/day/${dayId}`);
     return response;
   },
@@ -83,5 +82,9 @@ export const TrainingApi = {
       { exerciseIds },
     );
     return response;
+  },
+
+  deleteTraining(trainingId: number) {
+    return axiosInstance.delete<void>(`/trainings/${trainingId}`);
   },
 };
