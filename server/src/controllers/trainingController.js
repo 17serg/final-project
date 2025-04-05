@@ -17,12 +17,13 @@ const TrainingController = {
 
   async createTraining(req, res) {
     try {
-      const { name, description, userId } = req.body;
+      const { dayId, userId, complete } = req.body;
+      console.log('Полученные данные:', { dayId, userId, complete }); // Отладочный лог
+
       const training = await Training.create({
-        name,
-        description,
+        dayId,
         userId,
-        complete: false,
+        complete,
       });
       res.status(201).json(training);
     } catch (error) {
@@ -63,6 +64,41 @@ const TrainingController = {
     } catch (error) {
       console.error('Ошибка при удалении тренировки:', error);
       res.status(500).json({ message: 'Ошибка при удалении тренировки' });
+    }
+  },
+
+  async getTrainingByDayId(req, res) {
+    try {
+      const { dayId } = req.params;
+      const trainings = await Training.findAll({
+        where: { dayId },
+        order: [['createdAt', 'DESC']],
+      });
+
+      if (!trainings || trainings.length === 0) {
+        return res.status(404).json({ message: 'Тренировки не найдены' });
+      }
+
+      res.json(trainings);
+    } catch (error) {
+      console.error('Ошибка при получении тренировок:', error);
+      res.status(500).json({ message: 'Ошибка при получении тренировок' });
+    }
+  },
+
+  async getTrainingById(req, res) {
+    try {
+      const { id } = req.params;
+      const training = await Training.findByPk(id);
+
+      if (!training) {
+        return res.status(404).json({ message: 'Тренировка не найдена' });
+      }
+
+      res.json(training);
+    } catch (error) {
+      console.error('Ошибка при получении тренировки:', error);
+      res.status(500).json({ message: 'Ошибка при получении тренировки' });
     }
   },
 };

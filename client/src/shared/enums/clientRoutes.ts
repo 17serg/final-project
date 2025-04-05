@@ -10,5 +10,6 @@ export enum CLIENT_ROUTES {
   NOT_FOUND = '*',
   SIGN_UP_TRENER = '/signuptrener',
   CALENDAR = '/calendar',
-  CHAT = "/chat",
+  CHAT = '/chat',
+  TRAINING = '/training/:trainingId',
 }

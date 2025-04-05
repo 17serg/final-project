@@ -24,6 +24,22 @@ const DayController = {
     }
   },
 
+  async getDayById(req, res) {
+    try {
+      const { id } = req.params;
+      const day = await Day.findByPk(id);
+
+      if (!day) {
+        return res.status(404).json({ message: 'День не найден' });
+      }
+
+      res.json(day);
+    } catch (error) {
+      console.error('Ошибка при получении дня:', error);
+      res.status(500).json({ message: 'Ошибка при получении дня' });
+    }
+  },
+
   async createDay(req, res) {
     try {
       const { date, isTraining, userId } = req.body;

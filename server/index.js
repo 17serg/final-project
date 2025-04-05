@@ -1,46 +1,47 @@
-const express = require('express');
-const cors = require('cors');
-const { sequelize } = require('./db/models');
-const userRoutes = require('./routes/userRoutes');
-const dayRoutes = require('./routes/dayRoutes');
-const trainingRoutes = require('./routes/trainingRoutes');
-const exerciseRoutes = require('./routes/exerciseRoutes');
 
-const app = express();
-const PORT = process.env.PORT || 3001;
+// const express = require('express');
+// const cors = require('cors');
+// const { sequelize } = require('./db/models');
+// // const userRoutes = require('./routes/userRoutes');
+// const dayRoutes = require('./routes/dayRoutes');
+// const trainingRoutes = require('./routes/trainingRoutes');
+// const exerciseRoutes = require('./routes/exerciseRoutes');
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// const app = express();
+// const PORT = process.env.PORT || 3001;
 
-// Роуты
-app.use('/api/users', userRoutes);
-app.use('/api/days', dayRoutes);
-app.use('/api/trainings', trainingRoutes);
-app.use('/api/exercises', exerciseRoutes);
+// // Middleware
+// app.use(cors());
+// app.use(express.json());
 
-// Обработка ошибок
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Что-то пошло не так!' });
-});
+// // Роуты
+// // app.use('/api/users', userRoutes);
+// app.use('/api/days', dayRoutes);
+// app.use('/api/trainings', trainingRoutes);
+// app.use('/api/exercises', exerciseRoutes);
 
-// Запуск сервера
-const startServer = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log('Соединение с базой данных установлено успешно.');
+// // Обработка ошибок
+// app.use((err, req, res, next) => {
+//   console.error(err.stack);
+//   res.status(500).json({ error: 'Что-то пошло не так!' });
+// });
 
-    await sequelize.sync();
-    console.log('База данных синхронизирована.');
+// // Запуск сервера
+// const startServer = async () => {
+//   try {
+//     await sequelize.authenticate();
+//     console.log('Соединение с базой данных установлено успешно.');
 
-    app.listen(PORT, () => {
-      console.log(`Сервер запущен на порту ${PORT}`);
-    });
-  } catch (error) {
-    console.error('Ошибка при запуске сервера:', error);
-    process.exit(1);
-  }
-};
+//     await sequelize.sync();
+//     console.log('База данных синхронизирована.');
 
-startServer();
+//     app.listen(PORT, () => {
+//       console.log(`Сервер запущен на порту ${PORT}`);
+//     });
+//   } catch (error) {
+//     console.error('Ошибка при запуске сервера:', error);
+//     process.exit(1);
+//   }
+// };
+
+// startServer();

@@ -48,7 +48,7 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
       if (user && response.data) {
         setUser({
           ...user,
-          ...response.data
+          profile: response.data
         });
       }
       
@@ -62,7 +62,7 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
     const { name, value } = event.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'trainingExperience' ? parseInt(value) || 0 : value
+      [name]: value
     }));
   };
 
@@ -77,9 +77,11 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0];
     if (file) {
-      // Создаем URL для предпросмотра
-      const fileUrl = URL.createObjectURL(file);
-      setPreviewUrl(fileUrl);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -87,63 +89,109 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
     fileInputRef.current?.click();
   };
 
-  // Получаем цвет пользователя для аватара
   const getUserAvatarColor = (): string => {
-    if (user?.email) {
-      return getUserColor(user.email);
-    }
-    return "#BAE1FF"; // Возвращаем нежно-голубой цвет по умолчанию
+    return user ? getUserColor(user.name) : '#1976d2';
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Настройка профиля</DialogTitle>
-      <DialogContent>
-        <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <input
-            type="file"
-            accept="image/*"
-            style={{ display: 'none' }}
-            ref={fileInputRef}
-            onChange={handleFileChange}
-          />
-          
-          <Avatar
-            src={previewUrl || user?.avatar || ''}
-            alt={user?.name || 'User'}
+    <Dialog 
+      open={open} 
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: '16px',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+          overflow: 'hidden',
+        }
+      }}
+    >
+      <DialogTitle 
+        sx={{ 
+          backgroundColor: 'rgb(42, 41, 223)', 
+          color: 'white',
+          fontWeight: 'bold',
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+        }}
+      >
+        Редактирование профиля
+      </DialogTitle>
+      <DialogContent sx={{ p: 3, mt: 2 }}>
+        <Box display="flex" flexDirection="column" alignItems="center" gap={3}>
+          <Box 
             sx={{ 
-              width: 100, 
-              height: 100, 
-              mb: 2, 
-              cursor: 'pointer', 
-              border: '2px solid rgb(42, 41, 223)',
-              bgcolor: !previewUrl && !user?.avatar ? getUserAvatarColor() : undefined,
-              "& .MuiAvatar-root": {
-                fontSize: "40px",
-              },
+              position: 'relative', 
+              cursor: 'pointer',
+              '&:hover': {
+                '& .avatar-overlay': {
+                  opacity: 1,
+                }
+              }
             }}
             onClick={handleAvatarClick}
           >
-            <Typography variant="h5" sx={{ fontSize: "40px", fontWeight: "bold" }}>
-              {user?.name?.[0] || 'U'}
-            </Typography>
-          </Avatar>
+            <Avatar
+              src={previewUrl || ''}
+              alt={user?.name || 'User'}
+              sx={{ 
+                width: 120, 
+                height: 120, 
+                bgcolor: getUserAvatarColor(),
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)',
+                  transform: 'scale(1.05)',
+                }
+              }}
+            />
+            <Box
+              className="avatar-overlay"
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '50%',
+                opacity: 0,
+                transition: 'opacity 0.3s ease',
+              }}
+            >
+              <Typography variant="body2" color="white">
+                Изменить фото
+              </Typography>
+            </Box>
+          </Box>
           
-          <Button 
-            variant="outlined" 
-            onClick={handleAvatarClick}
-            sx={{ mb: 2 }}
-          >
-            Выбрать аватарку
-          </Button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*"
+            style={{ display: 'none' }}
+          />
           
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Пол</InputLabel>
+          <FormControl fullWidth sx={{ mt: 2 }}>
+            <InputLabel id="gender-label">Пол</InputLabel>
             <Select
+              labelId="gender-label"
               name="gender"
               value={formData.gender}
-              onChange={handleSelectChange}
               label="Пол"
+              onChange={handleSelectChange}
+              sx={{ 
+                borderRadius: '8px',
+                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+                '&:hover': {
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                }
+              }}
             >
               <MenuItem value="male">Мужской</MenuItem>
               <MenuItem value="female">Женский</MenuItem>
@@ -153,18 +201,49 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
           
           <TextField
             fullWidth
-            label="Стаж тренировок (лет)"
+            label="Опыт тренировок (лет)"
             name="trainingExperience"
             type="number"
             value={formData.trainingExperience}
             onChange={handleChange}
-            margin="normal"
+            sx={{ 
+              mt: 2,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '8px',
+                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+                '&:hover': {
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                }
+              }
+            }}
           />
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Отмена</Button>
-        <Button onClick={handleSubmit} variant="contained" color="primary">
+      <DialogActions sx={{ p: 3, pt: 0 }}>
+        <Button 
+          onClick={onClose} 
+          sx={{ 
+            color: 'text.secondary',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+            '&:hover': {
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+            }
+          }}
+        >
+          Отмена
+        </Button>
+        <Button 
+          onClick={handleSubmit} 
+          variant="contained"
+          sx={{ 
+            backgroundColor: 'rgb(42, 41, 223)',
+            boxShadow: '0 4px 8px rgba(42, 41, 223, 0.3)',
+            '&:hover': {
+              backgroundColor: 'rgba(42, 41, 223, 0.8)',
+              boxShadow: '0 6px 12px rgba(42, 41, 223, 0.4)',
+            }
+          }}
+        >
           Сохранить
         </Button>
       </DialogActions>

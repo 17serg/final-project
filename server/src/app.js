@@ -10,9 +10,12 @@ const usersRouter = require('./routers/usersRouter');
 const userRouter = require('./routers/userRouter');
 const dayRouter = require('./routers/dayRoutes');
 const trainingRouter = require('./routers/trainingRoutes');
-const trainersRouter = require('./routers/trainersRouter')
-const messagesRouter = require('./routers/messagesRouter')
-
+const trainersRouter = require('./routers/trainersRouter');
+const messagesRouter = require('./routers/messagesRouter');
+const anthropometryRouter = require('./routers/anthropometryRouter');
+const exerciseOfTrainingRouter = require('./routers/exerciseOfTrainingRoutes');
+const exerciseRouter = require('./routers/exerciseRoutes');
+const exerciseSetRouter = require('./routers/exerciseSetRoutes');
 
 const app = express();
 
@@ -28,10 +31,12 @@ app.use('/api/tokens/', tokensRouter);
 app.use('/api/users/', usersRouter);
 app.use('/api/user/', userRouter);
 app.use('/api/days/', dayRouter);
-
+app.use('/api/exercise-of-trainings/', exerciseOfTrainingRouter);
 app.use('/api/trainings/', trainingRouter);
 app.use('/api/trainers', trainersRouter);
 app.use('/api/messages', messagesRouter);
-
+app.use('/api/anthropometry', anthropometryRouter);
+app.use('/api/exercises/', exerciseRouter);
+app.use('/api/exercise-sets/', exerciseSetRouter);
 
 module.exports = app;
