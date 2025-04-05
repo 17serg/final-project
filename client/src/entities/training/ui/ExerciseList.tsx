@@ -1,115 +1,91 @@
-import { Box, Typography, Paper, Grid, Chip, Divider, IconButton, Tooltip } from '@mui/material';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import React from 'react';
+import { Box, Typography, Paper, IconButton, Tooltip, Collapse } from '@mui/material';
+import {
+  ArrowUpward as ArrowUpwardIcon,
+  ArrowDownward as ArrowDownwardIcon,
+  ExpandMore as ExpandMoreIcon,
+  ExpandLess as ExpandLessIcon,
+} from '@mui/icons-material';
 import { ExerciseOfTraining } from '../api/TrainingApi';
-import { motion, AnimatePresence } from 'framer-motion';
+import ExerciseSetList from './ExerciseSetList';
 
 interface ExerciseListProps {
   exercises: ExerciseOfTraining[];
   onMoveExercise: (fromIndex: number, toIndex: number) => void;
 }
 
-const ExerciseList = ({ exercises, onMoveExercise }: ExerciseListProps) => {
-  if (exercises.length === 0) {
-    return (
-      <Box sx={{ mt: 2, mb: 2 }}>
-        <Typography variant="body1" color="text.secondary" align="center">
-          Нет добавленных упражнений
-        </Typography>
-      </Box>
-    );
-  }
+const ExerciseList: React.FC<ExerciseListProps> = ({ exercises, onMoveExercise }) => {
+  const [expandedExercise, setExpandedExercise] = React.useState<number | null>(null);
+
+  const handleToggleExpand = (exerciseId: number) => {
+    setExpandedExercise(expandedExercise === exerciseId ? null : exerciseId);
+  };
 
   return (
-    <Box sx={{ mt: 2, mb: 2 }}>
-      <Typography variant="h6" gutterBottom>
-        Упражнения
-      </Typography>
-      <Grid container spacing={2}>
-        <AnimatePresence>
-          {exercises.map((exerciseOfTraining, index) => (
-            <Grid item xs={12} key={exerciseOfTraining.id}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-                layout
+    <Box sx={{ mt: 2 }}>
+      {exercises.map((exercise, index) => (
+        <Paper
+          key={exercise.id}
+          sx={{
+            p: 2,
+            mb: 2,
+            position: 'relative',
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  mr: 1,
+                  color: 'primary.main',
+                  fontWeight: 'bold',
+                  minWidth: '30px',
+                }}
               >
-                <Paper elevation={1} sx={{ p: 2 }}>
-                  <Box
-                    sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Typography
-                        variant="subtitle1"
-                        sx={{
-                          mr: 1,
-                          color: 'primary.main',
-                          fontWeight: 'bold',
-                          minWidth: '30px',
-                        }}
-                      >
-                        {index + 1}.
-                      </Typography>
-                      <Typography variant="subtitle1" fontWeight="bold">
-                        {exerciseOfTraining.Exercise.name}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Chip
-                        label={exerciseOfTraining.Exercise.muscle_group}
-                        size="small"
-                        color="primary"
-                        variant="outlined"
-                        sx={{ mr: 1 }}
-                      />
-                      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        <Tooltip title="Переместить вверх">
-                          <span>
-                            <IconButton
-                              size="small"
-                              onClick={() => onMoveExercise(index, index - 1)}
-                              disabled={index === 0}
-                              sx={{ p: 0.5 }}
-                            >
-                              <ArrowUpwardIcon fontSize="small" />
-                            </IconButton>
-                          </span>
-                        </Tooltip>
-                        <Tooltip title="Переместить вниз">
-                          <span>
-                            <IconButton
-                              size="small"
-                              onClick={() => onMoveExercise(index, index + 1)}
-                              disabled={index === exercises.length - 1}
-                              sx={{ p: 0.5 }}
-                            >
-                              <ArrowDownwardIcon fontSize="small" />
-                            </IconButton>
-                          </span>
-                        </Tooltip>
-                      </Box>
-                    </Box>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                    {exerciseOfTraining.Exercise.description}
-                  </Typography>
-                  <Divider sx={{ my: 1 }} />
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-                    <Typography variant="body2">Подходы: {exerciseOfTraining.sets}</Typography>
-                    <Typography variant="body2">Повторения: {exerciseOfTraining.reps}</Typography>
-                    <Typography variant="body2">Вес: {exerciseOfTraining.weight} кг</Typography>
-                    <Typography variant="body2">
-                      Длительность: {exerciseOfTraining.duration} мин
-                    </Typography>
-                  </Box>
-                </Paper>
-              </motion.div>
-            </Grid>
-          ))}
-        </AnimatePresence>
-      </Grid>
+                {index + 1}.
+              </Typography>
+              <Typography variant="h6" sx={{ mr: 2 }}>
+                {exercise.Exercise.name}
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <IconButton
+                  size="small"
+                  onClick={() => onMoveExercise(index, index - 1)}
+                  disabled={index === 0}
+                >
+                  <ArrowUpwardIcon />
+                </IconButton>
+                <IconButton
+                  size="small"
+                  onClick={() => onMoveExercise(index, index + 1)}
+                  disabled={index === exercises.length - 1}
+                >
+                  <ArrowDownwardIcon />
+                </IconButton>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mr: 2 }}>
+                {exercise.sets} подходов × {exercise.reps} повторений
+                {exercise.weight && ` × ${exercise.weight} кг`}
+              </Typography>
+              <IconButton size="small" onClick={() => handleToggleExpand(exercise.id)}>
+                {expandedExercise === exercise.id ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </IconButton>
+            </Box>
+          </Box>
+
+          <Collapse in={expandedExercise === exercise.id}>
+            <ExerciseSetList
+              exerciseOfTrainingId={exercise.id}
+              plannedSets={exercise.sets}
+              plannedReps={exercise.reps}
+              plannedWeight={exercise.weight || 0}
+            />
+          </Collapse>
+        </Paper>
+      ))}
     </Box>
   );
 };
