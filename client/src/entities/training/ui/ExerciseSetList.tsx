@@ -21,12 +21,7 @@ import {
   Grid,
   Tooltip,
 } from '@mui/material';
-import {
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Save as SaveIcon,
-} from '@mui/icons-material';
+import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import {
   ExerciseSetApi,
   ExerciseSet,
@@ -43,7 +38,6 @@ interface ExerciseSetListProps {
 
 const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
   exerciseOfTrainingId,
-  plannedSets,
   plannedReps,
   plannedWeight,
 }) => {
@@ -66,7 +60,7 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
   }, [exerciseOfTrainingId]);
 
   // Загрузка подходов
-  const fetchExerciseSets = async () => {
+  const fetchExerciseSets = async (): Promise<void> => {
     try {
       setLoading(true);
       const response = await ExerciseSetApi.getExerciseSets(exerciseOfTrainingId);
@@ -80,22 +74,8 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
     }
   };
 
-  // Открытие диалога для создания нового подхода
-  const handleAddSet = () => {
-    const nextSetNumber = exerciseSets.length + 1;
-    setEditingSet(null);
-    setFormData({
-      setNumber: nextSetNumber,
-      actualWeight: plannedWeight,
-      actualReps: plannedReps,
-      isCompleted: false,
-      notes: '',
-    });
-    setIsDialogOpen(true);
-  };
-
   // Открытие диалога для редактирования подхода
-  const handleEditSet = (set: ExerciseSet) => {
+  const handleEditSet = (set: ExerciseSet): void => {
     setEditingSet(set);
     setFormData({
       actualWeight: set.actualWeight,
@@ -107,7 +87,7 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
   };
 
   // Закрытие диалога
-  const handleCloseDialog = () => {
+  const handleCloseDialog = (): void => {
     setIsDialogOpen(false);
     setEditingSet(null);
     setFormData({
@@ -119,7 +99,7 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
   };
 
   // Обработка изменений в форме
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
@@ -128,7 +108,7 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
   };
 
   // Сохранение подхода
-  const handleSaveSet = async () => {
+  const handleSaveSet = async (): Promise<void> => {
     try {
       setIsSaving(true);
       if (editingSet) {
@@ -162,7 +142,7 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
   };
 
   // Удаление подхода
-  const handleDeleteSet = async (id: number) => {
+  const handleDeleteSet = async (id: number): Promise<void> => {
     if (window.confirm('Вы уверены, что хотите удалить этот подход?')) {
       try {
         await ExerciseSetApi.deleteExerciseSet(id);
@@ -175,7 +155,7 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
   };
 
   // Быстрое обновление статуса выполнения
-  const handleToggleCompleted = async (set: ExerciseSet) => {
+  const handleToggleCompleted = async (set: ExerciseSet): Promise<void> => {
     try {
       await ExerciseSetApi.updateExerciseSet(set.id, {
         isCompleted: !set.isCompleted,
@@ -187,32 +167,9 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
     }
   };
 
-  // Создание всех подходов сразу
-  const handleCreateAllSets = async () => {
-    try {
-      setIsSaving(true);
-      const sets: CreateExerciseSetDto[] = [];
-      for (let i = 1; i <= plannedSets; i++) {
-        sets.push({
-          setNumber: i,
-          actualWeight: plannedWeight,
-          actualReps: plannedReps,
-          isCompleted: false,
-        });
-      }
-      await ExerciseSetApi.createMultipleExerciseSets(exerciseOfTrainingId, { sets });
-      await fetchExerciseSets();
-    } catch (error) {
-      console.error('Ошибка при создании подходов:', error);
-      setError('Не удалось создать подходы');
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
         <CircularProgress />
       </Box>
     );
@@ -220,102 +177,106 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
 
   if (error) {
     return (
-      <Typography color="error" sx={{ my: 2 }}>
-        {error}
-      </Typography>
+      <Box sx={{ p: 2 }}>
+        <Typography color="error">{error}</Typography>
+      </Box>
     );
   }
 
   return (
-    <Box sx={{ mt: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h6">Подходы</Typography>
-        <Box>
-          {exerciseSets.length === 0 && (
-            <Button
-              variant="outlined"
-              onClick={handleCreateAllSets}
-              disabled={isSaving}
-              sx={{ mr: 1 }}
-            >
-              {isSaving ? <CircularProgress size={24} /> : 'Создать все подходы'}
-            </Button>
-          )}
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleAddSet}
-            disabled={isSaving}
-          >
-            Добавить подход
-          </Button>
-        </Box>
-      </Box>
-
-      {exerciseSets.length === 0 ? (
-        <Typography variant="body2" color="text.secondary">
-          Нет подходов. Добавьте подходы или создайте все подходы сразу.
-        </Typography>
-      ) : (
-        <TableContainer component={Paper}>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>№</TableCell>
-                <TableCell align="center">Выполнен</TableCell>
-                <TableCell align="right">Вес (кг)</TableCell>
-                <TableCell align="right">Повторения</TableCell>
-                <TableCell>Заметки</TableCell>
-                <TableCell align="center">Действия</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {exerciseSets.map((set) => (
-                <TableRow key={set.id}>
-                  <TableCell>{set.setNumber}</TableCell>
-                  <TableCell align="center">
-                    <Tooltip title={set.isCompleted ? 'Выполнен' : 'Не выполнен'}>
-                      <Checkbox
-                        checked={set.isCompleted}
-                        onChange={() => handleToggleCompleted(set)}
-                        color="primary"
-                      />
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell align="right">{set.actualWeight || '-'}</TableCell>
-                  <TableCell align="right">{set.actualReps || '-'}</TableCell>
-                  <TableCell>{set.notes || '-'}</TableCell>
-                  <TableCell align="center">
-                    <IconButton size="small" onClick={() => handleEditSet(set)} disabled={isSaving}>
+    <Box sx={{ mt: 2 }}>
+      <TableContainer component={Paper}>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>№</TableCell>
+              <TableCell>Вес (кг)</TableCell>
+              <TableCell>Повторения</TableCell>
+              <TableCell>Выполнено</TableCell>
+              <TableCell>Примечания</TableCell>
+              <TableCell align="right">Действия</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {exerciseSets.map((set) => (
+              <TableRow key={set.id}>
+                <TableCell>{set.setNumber}</TableCell>
+                <TableCell>
+                  <TextField
+                    size="small"
+                    type="number"
+                    value={set.actualWeight || ''}
+                    onChange={(e) => {
+                      const value = e.target.value ? Number(e.target.value) : undefined;
+                      ExerciseSetApi.updateExerciseSet(set.id, { actualWeight: value })
+                        .then(() => fetchExerciseSets())
+                        .catch((error) => console.error('Ошибка при обновлении веса:', error));
+                    }}
+                    inputProps={{ min: 0, step: 0.5 }}
+                    sx={{ width: '80px' }}
+                  />
+                </TableCell>
+                <TableCell>
+                  <TextField
+                    size="small"
+                    type="number"
+                    value={set.actualReps || ''}
+                    onChange={(e) => {
+                      const value = e.target.value ? Number(e.target.value) : undefined;
+                      ExerciseSetApi.updateExerciseSet(set.id, { actualReps: value })
+                        .then(() => fetchExerciseSets())
+                        .catch((error) =>
+                          console.error('Ошибка при обновлении повторений:', error),
+                        );
+                    }}
+                    inputProps={{ min: 0 }}
+                    sx={{ width: '80px' }}
+                  />
+                </TableCell>
+                <TableCell>
+                  <Checkbox
+                    checked={set.isCompleted}
+                    onChange={() => handleToggleCompleted(set)}
+                    color="primary"
+                  />
+                </TableCell>
+                <TableCell>
+                  <TextField
+                    size="small"
+                    value={set.notes || ''}
+                    onChange={(e) => {
+                      ExerciseSetApi.updateExerciseSet(set.id, { notes: e.target.value })
+                        .then(() => fetchExerciseSets())
+                        .catch((error) =>
+                          console.error('Ошибка при обновлении примечаний:', error),
+                        );
+                    }}
+                    sx={{ width: '200px' }}
+                  />
+                </TableCell>
+                <TableCell align="right">
+                  <Tooltip title="Редактировать">
+                    <IconButton size="small" onClick={() => handleEditSet(set)}>
                       <EditIcon fontSize="small" />
                     </IconButton>
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={() => handleDeleteSet(set.id)}
-                      disabled={isSaving}
-                    >
+                  </Tooltip>
+                  <Tooltip title="Удалить">
+                    <IconButton size="small" onClick={() => handleDeleteSet(set.id)}>
                       <DeleteIcon fontSize="small" />
                     </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+                  </Tooltip>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-      {/* Диалог для создания/редактирования подхода */}
-      <Dialog open={isDialogOpen} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+      <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
         <DialogTitle>{editingSet ? 'Редактировать подход' : 'Добавить подход'}</DialogTitle>
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 1 }}>
-            {!editingSet && (
-              <Grid item xs={12}>
-                <Typography variant="subtitle2">Номер подхода: {formData.setNumber}</Typography>
-              </Grid>
-            )}
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Вес (кг)"
@@ -323,10 +284,10 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
                 type="number"
                 value={formData.actualWeight || ''}
                 onChange={handleInputChange}
-                disabled={isSaving}
+                inputProps={{ min: 0, step: 0.5 }}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Повторения"
@@ -334,45 +295,36 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
                 type="number"
                 value={formData.actualReps || ''}
                 onChange={handleInputChange}
-                disabled={isSaving}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Заметки"
-                name="notes"
-                multiline
-                rows={2}
-                value={formData.notes || ''}
-                onChange={handleInputChange}
-                disabled={isSaving}
+                inputProps={{ min: 0 }}
               />
             </Grid>
             <Grid item xs={12}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Checkbox
-                  checked={formData.isCompleted || false}
+                  checked={formData.isCompleted}
                   onChange={handleInputChange}
                   name="isCompleted"
-                  disabled={isSaving}
                 />
-                <Typography>Выполнен</Typography>
+                <Typography>Выполнено</Typography>
               </Box>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Примечания"
+                name="notes"
+                multiline
+                rows={2}
+                value={formData.notes || ''}
+                onChange={handleInputChange}
+              />
             </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} disabled={isSaving}>
-            Отмена
-          </Button>
-          <Button
-            onClick={handleSaveSet}
-            variant="contained"
-            startIcon={isSaving ? <CircularProgress size={20} /> : <SaveIcon />}
-            disabled={isSaving}
-          >
-            {isSaving ? 'Сохранение...' : 'Сохранить'}
+          <Button onClick={handleCloseDialog}>Отмена</Button>
+          <Button onClick={handleSaveSet} variant="contained" color="primary" disabled={isSaving}>
+            {isSaving ? <CircularProgress size={24} /> : 'Сохранить'}
           </Button>
         </DialogActions>
       </Dialog>

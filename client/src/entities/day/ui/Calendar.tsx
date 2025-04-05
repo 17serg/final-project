@@ -5,12 +5,17 @@ import { DayApi } from '../api/DayApi';
 import { Day } from '../model/types';
 import { UserContext, UserContextType } from '@/entities/user/provider/UserProvider';
 import TrainingDayModal from '../../training/ui/TrainingDayModal';
+import { TrainingApi } from '../../training/api/TrainingApi';
 
 const DAYS_OF_WEEK = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
+interface DayWithTraining extends Day {
+  trainingComplete?: boolean;
+}
+
 export const Calendar = (): React.ReactElement => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [days, setDays] = useState<Day[]>([]);
+  const [days, setDays] = useState<DayWithTraining[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { user } = useContext(UserContext) as UserContextType;
@@ -24,7 +29,20 @@ export const Calendar = (): React.ReactElement => {
   const loadDays = async (): Promise<void> => {
     try {
       const response = await DayApi.getDaysByMonth(currentDate, user!.id);
-      setDays(response.data);
+      const daysWithTrainings = await Promise.all(
+        response.data.map(async (day: Day) => {
+          try {
+            const trainingResponse = await TrainingApi.getTrainingsByDayId(day.id);
+            const hasCompletedTraining = trainingResponse.data.some(
+              (training: any) => training.complete,
+            );
+            return { ...day, trainingComplete: hasCompletedTraining };
+          } catch (error) {
+            return { ...day, trainingComplete: false };
+          }
+        }),
+      );
+      setDays(daysWithTrainings);
     } catch (error) {
       console.error('Ошибка при загрузке дней:', error);
     }
@@ -100,7 +118,8 @@ export const Calendar = (): React.ReactElement => {
 
     // Добавляем пустые дни в начале месяца
     const firstDayOfWeek = firstDay.getDay();
-    const emptyDays = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1; // Корректировка для начала недели с понедельника
+    // Корректировка для начала недели с понедельника (0 = воскресенье, 1 = понедельник, ..., 6 = суббота)
+    const emptyDays = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
     for (let i = 0; i < emptyDays; i++) {
       days.push(null);
     }
@@ -108,6 +127,15 @@ export const Calendar = (): React.ReactElement => {
     // Добавляем дни текущего месяца
     for (let i = 1; i <= lastDay.getDate(); i++) {
       days.push(new Date(year, month, i));
+    }
+
+    // Добавляем пустые дни в конце месяца, чтобы заполнить последнюю неделю
+    const totalDays = days.length;
+    const remainingDays = 7 - (totalDays % 7);
+    if (remainingDays < 7) {
+      for (let i = 0; i < remainingDays; i++) {
+        days.push(null);
+      }
     }
 
     return days;
@@ -122,6 +150,25 @@ export const Calendar = (): React.ReactElement => {
     return days.some(
       (day) => new Date(day.date).toDateString() === date.toDateString() && day.isTraining,
     );
+  };
+
+  const isCompletedTrainingDay = (date: Date | null): boolean => {
+    if (!date) return false;
+    return days.some(
+      (day) => new Date(day.date).toDateString() === date.toDateString() && day.trainingComplete,
+    );
+  };
+
+  // Разбиваем дни месяца на недели
+  const getWeeks = (): (Date | null)[][] => {
+    const allDays = getDaysInMonth(currentDate);
+    const weeks: (Date | null)[][] = [];
+
+    for (let i = 0; i < allDays.length; i += 7) {
+      weeks.push(allDays.slice(i, i + 7));
+    }
+
+    return weeks;
   };
 
   return (
@@ -140,79 +187,127 @@ export const Calendar = (): React.ReactElement => {
         </Box>
       </Box>
 
-      <Grid container spacing={1}>
-        {DAYS_OF_WEEK.map((day) => (
-          <Grid item xs key={day} sx={{ textAlign: 'center' }}>
-            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              {day}
-            </Typography>
-          </Grid>
-        ))}
-
-        {getDaysInMonth(currentDate).map((date, index) => (
-          <Grid item xs key={index} sx={{ textAlign: 'center' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+        {/* Заголовки дней недели */}
+        <Box sx={{ display: 'flex', mb: 1, position: 'relative', zIndex: 1 }}>
+          {DAYS_OF_WEEK.map((day) => (
             <Box
+              key={day}
               sx={{
-                aspectRatio: '1',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: date ? 'pointer' : 'default',
-                bgcolor: date && isCurrentDay(date) ? 'primary.light' : 'transparent',
-                '&:hover': {
-                  bgcolor: date ? 'action.hover' : 'transparent',
-                },
-                borderRadius: 1,
+                flex: 1,
+                textAlign: 'center',
+                py: 1,
+                fontWeight: 'bold',
+                borderBottom: '1px solid',
+                borderColor: 'divider',
+                bgcolor: 'white',
                 position: 'relative',
-                minHeight: '120px',
+                zIndex: 2,
               }}
-              onClick={() => date && handleDayClick(date)}
             >
-              {date && (
-                <>
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      color: isCurrentDay(date) ? 'primary.contrastText' : 'text.primary',
-                      fontWeight: isCurrentDay(date) ? 'bold' : 'normal',
-                    }}
-                  >
-                    {date.getDate()}
-                  </Typography>
-                  {isTrainingDay(date) && (
+              <Typography
+                variant="h5"
+                sx={{
+                  fontSize: '1.5rem !important',
+                  fontWeight: 'bold',
+                  color: 'black !important',
+                  textShadow: '0px 0px 1px rgba(255,255,255,0.8)',
+                  position: 'relative',
+                  zIndex: 3,
+                  lineHeight: 1.2,
+                  transform: 'scale(1.1)',
+                  transformOrigin: 'center center',
+                }}
+              >
+                {day}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+
+        {/* Сетка с днями месяца */}
+        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+          {getWeeks().map((week, weekIndex) => (
+            <Box key={weekIndex} sx={{ display: 'flex' }}>
+              {week.map((date, dayIndex) => (
+                <Box
+                  key={dayIndex}
+                  sx={{
+                    flex: 1,
+                    aspectRatio: '1',
+                    position: 'relative',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: date ? 'pointer' : 'default',
+                    bgcolor: isCompletedTrainingDay(date)
+                      ? 'rgba(76, 175, 80, 0.1)'
+                      : 'transparent',
+                    '&:hover': {
+                      bgcolor: date
+                        ? isCompletedTrainingDay(date)
+                          ? 'rgba(76, 175, 80, 0.2)'
+                          : 'action.hover'
+                        : 'transparent',
+                    },
+                    borderRadius: 1,
+                    p: 1,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    m: 0.5,
+                  }}
+                  onClick={() => date && handleDayClick(date)}
+                >
+                  {date && (
                     <>
-                      <FitnessCenter
+                      <Typography
+                        variant="h5"
                         sx={{
-                          position: 'absolute',
-                          bottom: 8,
-                          color: 'primary.main',
-                          fontSize: '2rem',
-                        }}
-                      />
-                      <IconButton
-                        size="small"
-                        sx={{
-                          position: 'absolute',
-                          top: 4,
-                          right: 4,
-                          color: 'primary.main',
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleInfoClick(date);
+                          color: isCurrentDay(date) ? 'primary.main' : 'text.primary',
+                          fontWeight: isCurrentDay(date) ? 'bold' : 'normal',
+                          fontSize: '1.5rem',
+                          textShadow: '0px 0px 1px rgba(0,0,0,0.1)',
+                          mb: 1,
                         }}
                       >
-                        <Info fontSize="small" />
-                      </IconButton>
+                        {date.getDate()}
+                      </Typography>
+                      {isTrainingDay(date) && (
+                        <>
+                          <FitnessCenter
+                            sx={{
+                              position: 'absolute',
+                              bottom: 8,
+                              color: isCompletedTrainingDay(date) ? 'success.main' : 'primary.main',
+                              fontSize: '1.5rem',
+                            }}
+                          />
+                          <IconButton
+                            size="small"
+                            sx={{
+                              position: 'absolute',
+                              top: 4,
+                              right: 4,
+                              color: isCompletedTrainingDay(date) ? 'success.main' : 'primary.main',
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleInfoClick(date);
+                            }}
+                          >
+                            <Info fontSize="small" />
+                          </IconButton>
+                        </>
+                      )}
                     </>
                   )}
-                </>
-              )}
+                </Box>
+              ))}
             </Box>
-          </Grid>
-        ))}
-      </Grid>
+          ))}
+        </Box>
+      </Box>
 
       {selectedDate && (
         <TrainingDayModal

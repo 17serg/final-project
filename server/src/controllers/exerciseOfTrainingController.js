@@ -1,4 +1,4 @@
-const { ExerciseOfTraining } = require('../../db/models');
+const { ExerciseOfTraining, ExerciseSet } = require('../../db/models');
 
 const ExerciseOfTrainingController = {
   async createExerciseOfTraining(req, res) {
@@ -20,6 +20,20 @@ const ExerciseOfTrainingController = {
         reps,
         order: maxOrder !== null ? maxOrder + 1 : 0, // Если нет упражнений, начинаем с 0
       });
+
+      // Автоматически создаем подходы для упражнения
+      const exerciseSets = [];
+      for (let i = 1; i <= sets; i++) {
+        exerciseSets.push({
+          exerciseOfTrainingId: exerciseOfTraining.id,
+          setNumber: i,
+          plannedWeight: weight || 0,
+          plannedReps: reps,
+          isCompleted: false,
+        });
+      }
+      await ExerciseSet.bulkCreate(exerciseSets);
+
       res.status(201).json(exerciseOfTraining);
     } catch (error) {
       console.error('Ошибка при создании упражнения тренировки:', error);
