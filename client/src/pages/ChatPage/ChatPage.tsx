@@ -15,7 +15,8 @@ import {
   addReaction,
   updateReactions,
   getUnreadCount,
-  updateUnreadCount
+  updateUnreadCount,
+  Message
 } from '../../entities/chat/store/chatSlice';
 import { RootState, AppDispatch } from '../../app/store';
 import { useUser } from '@/entities/user/hooks/useUser';

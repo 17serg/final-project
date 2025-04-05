@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import io from 'socket.io-client';
 
-interface Message {
+ interface Message {
   id?: number;
   senderId: number;
   receiverId: number;
@@ -17,6 +17,7 @@ interface User {
   id: number;
   name: string;
   trener: boolean;
+  surname: string;
 }
 
 interface ChatState {
