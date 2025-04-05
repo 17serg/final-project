@@ -1,6 +1,5 @@
 import { axiosInstance } from '@/shared/lib/axiosInstance';
 import { Training, CreateTrainingDto } from '../model';
-import { Training as TrainingType } from '../model/types';
 
 export interface CreateExerciseOfTrainingDto {
   trainingId: number;
@@ -9,6 +8,27 @@ export interface CreateExerciseOfTrainingDto {
   weight: number;
   sets: number;
   reps: number;
+}
+
+export interface ExerciseOfTraining {
+  id: number;
+  trainingId: number;
+  exerciseId: number;
+  duration: number;
+  weight: number;
+  sets: number;
+  reps: number;
+  order: number;
+  Exercise: {
+    id: number;
+    name: string;
+    description: string;
+    category: string;
+    difficulty: string;
+    muscle_group: string;
+    equipment: boolean;
+    image_url: string | null;
+  };
 }
 
 export const TrainingApi = {
@@ -39,7 +59,7 @@ export const TrainingApi = {
     return response;
   },
 
-  getTrainingByDayId: async (dayId: number) => {
+  getTrainingsByDayId: async (dayId: number) => {
     const response = await axiosInstance.get(`/trainings/day/${dayId}`);
     return response;
   },
@@ -47,5 +67,24 @@ export const TrainingApi = {
   async createExerciseOfTraining(data: CreateExerciseOfTrainingDto) {
     const response = await axiosInstance.post('/exercise-of-trainings', data);
     return response;
+  },
+
+  async getExercisesOfTraining(trainingId: number) {
+    const response = await axiosInstance.get<ExerciseOfTraining[]>(
+      `/exercise-of-trainings/training/${trainingId}`,
+    );
+    return response;
+  },
+
+  async updateExercisesOrder(trainingId: number, exerciseIds: number[]) {
+    const response = await axiosInstance.patch(
+      `/exercise-of-trainings/training/${trainingId}/order`,
+      { exerciseIds },
+    );
+    return response;
+  },
+
+  deleteTraining(trainingId: number) {
+    return axiosInstance.delete<void>(`/trainings/${trainingId}`);
   },
 };

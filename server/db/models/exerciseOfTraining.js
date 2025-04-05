@@ -45,6 +45,12 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         comment: 'Количество повторений',
       },
+      order: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+        comment: 'Порядок упражнения в тренировке',
+      },
     },
     {
       sequelize,

@@ -70,9 +70,26 @@ const TrainingController = {
   async getTrainingByDayId(req, res) {
     try {
       const { dayId } = req.params;
-      const training = await Training.findOne({
+      const trainings = await Training.findAll({
         where: { dayId },
+        order: [['createdAt', 'DESC']],
       });
+
+      if (!trainings || trainings.length === 0) {
+        return res.status(404).json({ message: 'Тренировки не найдены' });
+      }
+
+      res.json(trainings);
+    } catch (error) {
+      console.error('Ошибка при получении тренировок:', error);
+      res.status(500).json({ message: 'Ошибка при получении тренировок' });
+    }
+  },
+
+  async getTrainingById(req, res) {
+    try {
+      const { id } = req.params;
+      const training = await Training.findByPk(id);
 
       if (!training) {
         return res.status(404).json({ message: 'Тренировка не найдена' });

@@ -2,8 +2,15 @@ const { ExerciseOfTraining } = require('../../db/models');
 
 const ExerciseOfTrainingController = {
   async createExerciseOfTraining(req, res) {
+    console.log(req.body);
     try {
       const { trainingId, exerciseId, duration, weight, sets, reps } = req.body;
+
+      // Получаем максимальное значение order для данной тренировки
+      const maxOrder = await ExerciseOfTraining.max('order', {
+        where: { trainingId },
+      });
+
       const exerciseOfTraining = await ExerciseOfTraining.create({
         trainingId,
         exerciseId,
@@ -11,6 +18,7 @@ const ExerciseOfTrainingController = {
         weight,
         sets,
         reps,
+        order: maxOrder !== null ? maxOrder + 1 : 0, // Если нет упражнений, начинаем с 0
       });
       res.status(201).json(exerciseOfTraining);
     } catch (error) {
@@ -65,11 +73,32 @@ const ExerciseOfTrainingController = {
       const exercises = await ExerciseOfTraining.findAll({
         where: { trainingId },
         include: ['Exercise'],
+        order: [['order', 'ASC']], // Сортировка по полю order
       });
       res.json(exercises);
     } catch (error) {
       console.error('Ошибка при получении упражнений тренировки:', error);
       res.status(500).json({ message: 'Ошибка при получении упражнений тренировки' });
+    }
+  },
+
+  async updateExercisesOrder(req, res) {
+    try {
+      const { trainingId } = req.params;
+      const { exerciseIds } = req.body;
+
+      // Обновляем порядок для каждого упражнения
+      for (let i = 0; i < exerciseIds.length; i++) {
+        await ExerciseOfTraining.update(
+          { order: i },
+          { where: { id: exerciseIds[i], trainingId } },
+        );
+      }
+
+      res.json({ message: 'Порядок упражнений успешно обновлен' });
+    } catch (error) {
+      console.error('Ошибка при обновлении порядка упражнений:', error);
+      res.status(500).json({ message: 'Ошибка при обновлении порядка упражнений' });
     }
   },
 };
