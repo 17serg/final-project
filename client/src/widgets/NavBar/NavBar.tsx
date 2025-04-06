@@ -217,11 +217,11 @@ export default function NavBar(): React.JSX.Element {
             <Typography variant="body1" sx={styles.typography}>
               <Button 
                 component={NavLink} 
-                to={CLIENT_ROUTES.BOOKS} 
+                to={CLIENT_ROUTES.ALLTRENER} 
                 sx={styles.navLink}
-                className={location.pathname === CLIENT_ROUTES.BOOKS ? "active" : ""}
+                className={location.pathname === CLIENT_ROUTES.ALLTRENER ? "active" : ""}
               >
-                Возможности
+                Список тренеров 
               </Button>
             </Typography>
             <Typography variant="body1" sx={styles.typography}>

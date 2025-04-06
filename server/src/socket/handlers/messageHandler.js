@@ -1,7 +1,7 @@
 const { Message } = require('../../../db/models');
 
 function handleMessage(socket, io, activeUsers) {
-  // ... существующий код ...
+
 
   // Добавим новый обработчик для получения количества непрочитанных сообщений
   socket.on('getUnreadCount', async ({ userId }) => {

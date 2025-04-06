@@ -6,3 +6,10 @@ export interface IUserProfile {
   personalRecords: number;
   trainingCount: number;
 }
+
+export interface IUser {
+  id: number;
+  name: string;
+  email: string;
+  UserProfile: IUserProfile | null;
+}
