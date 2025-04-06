@@ -43,7 +43,7 @@ class UserProfileController {
       const { id: userId } = res.locals.user;
 
       // Получаем данные из тела запроса
-      const { gender, trainingExperience } = req.body;
+      const { gender, trainingExperience, about } = req.body;
 
       // Получаем загруженный файл аватара
       const avatarFile = req.file;
@@ -70,6 +70,7 @@ class UserProfileController {
           avatar: avatarPath,
           gender,
           trainingExperience,
+          about,
           personalRecords: 0,
           trainingCount: 0,
         },
@@ -93,6 +94,7 @@ class UserProfileController {
         // Обновляем остальные поля профиля
         profile.gender = gender;
         profile.trainingExperience = trainingExperience;
+        profile.about = about;
         await profile.save();
       }
 
@@ -107,18 +109,58 @@ class UserProfileController {
     try {
       const trainers = await User.findAll({
         where: {
-          trener: true
+          trener: true,
         },
-        include: [{
-          model: UserProfile,
-          attributes: ['avatar', 'gender', 'trainingExperience', 'personalRecords', 'trainingCount', 'userId']
-        }],
-        attributes: ['id', 'name', 'email']
+        include: [
+          {
+            model: UserProfile,
+            attributes: [
+              'avatar',
+              'gender',
+              'trainingExperience',
+              'personalRecords',
+              'trainingCount',
+              'userId',
+              'about',
+            ],
+          },
+        ],
+        attributes: ['id', 'name', 'email'],
       });
-  
+
       return res.json(trainers);
     } catch (error) {
       console.error('Error fetching trainers:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  static async getClients(req, res) {
+    try {
+      const clients = await User.findAll({
+        where: {
+          trener: false,
+        },
+        include: [
+          {
+            model: UserProfile,
+            attributes: [
+              'avatar',
+              'gender',
+              'trainingExperience',
+              'personalRecords',
+              'trainingCount',
+              'userId',
+              'about',
+            ],
+          },
+        ],
+        attributes: ['id', 'name', 'email'],
+      });
+
+      return res.json(clients);
+    } catch (error) {
+      console.error('Error fetching clients:', error);
       return res.status(500).json({ error: 'Internal server error' });
     }
   }

@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Routes } from 'react-router';
 import Layout from '../Layout/Layout';
 import { CLIENT_ROUTES } from '@/shared/enums/clientRoutes';
-import { SignUpPage, LoginPage, SingUpPageTrener, ChatPage, AllTrenerPage } from '@/pages';
+import { SignUpPage, LoginPage, SingUpPageTrener, ChatPage, AllTrenerPage, AllClientsPage } from '@/pages';
 import { MainPage } from '@/pages/MainPage/MainPage';
 
 
@@ -22,6 +22,7 @@ export default function RouterProvider(): React.JSX.Element {
         <Route path={CLIENT_ROUTES.LOGIN} element={<LoginPage />} />
         <Route path={CLIENT_ROUTES.CHAT} element={<ChatPage />} />
         <Route path={CLIENT_ROUTES.ALLTRENER} element={<AllTrenerPage />} />
+        <Route path={CLIENT_ROUTES.ALLCLIENTS} element={<AllClientsPage />} />
         <Route path={CLIENT_ROUTES.PROFILE} element={<ProfilePage />} />
         <Route path={CLIENT_ROUTES.EDITING} element={<h1>Edit Profile Page</h1>} />
         <Route path={CLIENT_ROUTES.ABOUT} element={<h1>About Page</h1>} />

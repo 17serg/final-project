@@ -149,6 +149,8 @@ export default function NavBar(): React.JSX.Element {
 
     if (user) {
       loadProfile();
+    } else {
+      setProfile(null);
     }
   }, [user]);
 
@@ -194,6 +196,28 @@ export default function NavBar(): React.JSX.Element {
     return "";
   };
 
+  // Добавляем обработчик события для обновления профиля
+  React.useEffect(() => {
+    const handleProfileUpdate = async (): Promise<void> => {
+      if (user) {
+        try {
+          const response = await UserApi.getProfile();
+          setProfile(response.data);
+        } catch (error) {
+          console.error('Error updating profile:', error);
+        }
+      }
+    };
+
+    // Добавляем слушатель события
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+
+    // Удаляем слушатель при размонтировании компонента
+    return () => {
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+    };
+  }, [user]);
+
   return (
     <Box sx={{ flexGrow: 1, ...styles.box }}>
       <AppBar position="static" sx={styles.appBar}>
@@ -217,11 +241,11 @@ export default function NavBar(): React.JSX.Element {
             <Typography variant="body1" sx={styles.typography}>
               <Button 
                 component={NavLink} 
-                to={CLIENT_ROUTES.ALLTRENER} 
+                to={user?.trener ? CLIENT_ROUTES.ALLCLIENTS : CLIENT_ROUTES.ALLTRENER} 
                 sx={styles.navLink}
-                className={location.pathname === CLIENT_ROUTES.ALLTRENER ? "active" : ""}
+                className={location.pathname === (user?.trener ? CLIENT_ROUTES.ALLCLIENTS : CLIENT_ROUTES.ALLTRENER) ? "active" : ""}
               >
-                Список тренеров 
+                {user?.trener ? "Список клиентов" : "Список тренеров"} 
               </Button>
             </Typography>
             <Typography variant="body1" sx={styles.typography}>

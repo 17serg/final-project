@@ -24,25 +24,25 @@ const styles = {
   },
 };
 
-export function AllTrenerPage(): React.JSX.Element {
-  const [alltrener, setTraner] = useState<IUserProfile[]>([])
+export function AllClientsPage(): React.JSX.Element {
+  const [allClients, setClients] = useState<IUserProfile[]>([])
   const [refreshKey, setRefreshKey] = useState<number>(0)
 
   useEffect(() => {
-    const fetchTraners = async (): Promise<void> => {
+    const fetchClients = async (): Promise<void> => {
       try {
-        const response = await UserApi.getAllTrenerProfile();
-        setTraner(response.data);
+        const response = await UserApi.getAllClientsProfile();
+        setClients(response.data);
       } catch (error) {
-        console.error('Error fetching trainers:', error);
+        console.error('Error fetching clients:', error);
       }
     };
 
-    fetchTraners();
+    fetchClients();
   }, [refreshKey]);
 
-  // Функция для обновления списка тренеров
-  const refreshTrainers = (): void => {
+  // Функция для обновления списка клиентов
+  const refreshClients = (): void => {
     setRefreshKey(prev => prev + 1);
   };
 
@@ -50,14 +50,14 @@ export function AllTrenerPage(): React.JSX.Element {
   useEffect(() => {
     // Слушаем событие обновления профиля
     const handleProfileUpdate = (): void => {
-      refreshTrainers();
+      refreshClients();
     };
 
     // Добавляем слушатель события
     window.addEventListener('profileUpdated', handleProfileUpdate);
 
     // Удаляем слушатель при размонтировании компонента
-    return () => {
+    return (): void => {
       window.removeEventListener('profileUpdated', handleProfileUpdate);
     };
   }, []);
@@ -65,15 +65,13 @@ export function AllTrenerPage(): React.JSX.Element {
   return (
     <Box sx={styles.container}>
       <Typography sx={styles.title}>
-        Наши тренеры
+        Наши клиенты
       </Typography>
       <Box sx={styles.cardsContainer}>
-        {alltrener.map((el) => (
+        {allClients.map((el) => (
           <TranerCard key={el.userId} char={el} />
         ))}
       </Box>
     </Box>
   )
-}
-
-
+} 
