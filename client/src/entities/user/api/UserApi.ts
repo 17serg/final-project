@@ -9,6 +9,7 @@ enum USER_API_ENDPOINTS {
   LOGOUT = '/auth/logout',
   REFRESH_TOKENS = '/tokens/refresh',
   PROFILE = '/user/profile',
+  ALLTRENER = '/user/gettrainers/'
 }
 
 export class UserApi {
@@ -43,5 +44,10 @@ export class UserApi {
 
   static async getProfile(): Promise<AxiosResponse<IUserProfile>> {
     return axiosInstance.get(USER_API_ENDPOINTS.PROFILE);
+  }
+
+  static async getAllTrenerProfile(): Promise<AxiosResponse<IUserProfile[]>> {
+    const response = await axiosInstance.get(USER_API_ENDPOINTS.ALLTRENER);
+    return response;
   }
 }

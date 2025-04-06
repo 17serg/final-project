@@ -1,42 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import io from 'socket.io-client';
-
- interface Message {
-  id?: number;
-  senderId: number;
-  receiverId: number;
-  text: string;
-  createdAt?: string;
-  isSent: boolean;
-  isRead: boolean;
-  reactions?: Record<number, string>;
-}
-
-interface User {
-  id: number;
-  name: string;
-  trener: boolean;
-  surname: string;
-}
-
-interface ChatState {
-  messages: Message[];
-  trainers: User[];
-  users: User[];
-  usersWithChats: User[];
-  loading: boolean;
-  unreadCount: number;
-}
-
-const initialState: ChatState = {
-  messages: [],
-  trainers: [],
-  users: [],
-  usersWithChats: [],
-  loading: false,
-  unreadCount: 0,
-};
+import { ChatState, Message} from './../model/index'
 
 const socket = io('http://localhost:3000');
 
@@ -104,6 +69,15 @@ export const getUnreadCount = createAsyncThunk(
     socket.emit('getUnreadCount', { userId });
   }
 );
+
+const initialState: ChatState = {
+  messages: [],
+  trainers: [],
+  users: [],
+  usersWithChats: [],
+  loading: false,
+  unreadCount: 0,
+};
 
 const chatSlice = createSlice({
   name: 'chat',

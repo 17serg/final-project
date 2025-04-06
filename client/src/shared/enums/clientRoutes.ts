@@ -1,5 +1,6 @@
 export enum CLIENT_ROUTES {
   MAIN = '/',
+  ALLTRENER = '/alltraner',
   BOOKS = '/books',
   ADDBOOK = '/addbook',
   LOGIN = '/login',

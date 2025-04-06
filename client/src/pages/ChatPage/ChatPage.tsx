@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
   fetchMessages, 
@@ -6,30 +6,27 @@ import {
   fetchUsers, 
   fetchUsersWithChats, 
   sendMessage, 
-  addMessage, 
-  updateMessageStatus, 
-  socket, 
   markMessagesAsRead,
   joinChat,
   leaveChat,
   addReaction,
-  updateReactions,
   getUnreadCount,
-  updateUnreadCount,
   Message
 } from '../../entities/chat/store/chatSlice';
 import { RootState, AppDispatch } from '../../app/store';
 import { useUser } from '@/entities/user/hooks/useUser';
+import { useSocketChat } from './../../entities/chat/api/socketApi';
 
 const REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '😡'];
 
 export function ChatPage(): React.JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useUser();
+  const { emitCheckMessages } = useSocketChat();
   const userId = user?.id;
   const isTrainer = user?.trener;
 
-  const { messages, trainers, usersWithChats, unreadCount } = useSelector((state: RootState) => state.chat);
+  const { messages, trainers, usersWithChats } = useSelector((state: RootState) => state.chat);
 
   const [text, setText] = useState('');
   const [chatPartnerId, setChatPartnerId] = useState<number | null>(null);
@@ -42,74 +39,51 @@ export function ChatPage(): React.JSX.Element {
     if (isTrainer && userId) {
       dispatch(fetchUsersWithChats(userId));
     }
+  }, []);
 
-    socket.on('newMessage', (message) => {
-      dispatch(addMessage(message));
-    });
-
-    socket.on('messageSent', ({ id }) => {
-      dispatch(updateMessageStatus({ id, isSent: true }));
-    });
-
-    socket.on('messageRead', ({ id }) => {
-      dispatch(updateMessageStatus({ id, isRead: true }));
-    });
-
-    socket.on('reactionUpdated', ({ messageId, reactions }) => {
-      dispatch(updateReactions({ messageId, reactions }));
-    });
-
-    socket.on('unreadCount', ({ count }) => {
-      dispatch(updateUnreadCount(count));
-    });
-
-    return () => {
-      socket.off('newMessage');
-      socket.off('messageSent');
-      socket.off('messageRead');
-      socket.off('reactionUpdated');
-      socket.off('unreadCount');
-    };
-  }, [dispatch, isTrainer, userId]);
-
+  // Обработка входа/выхода из чата
   useEffect(() => {
     if (chatPartnerId && userId) {
       dispatch(joinChat({ userId, chatPartnerId }));
+      dispatch(fetchMessages({ userId, chatPartnerId }));
+      emitCheckMessages(userId, chatPartnerId);
       
       return () => {
         dispatch(leaveChat({ userId }));
       };
     }
-  }, [chatPartnerId, userId, dispatch]);
+  }, [chatPartnerId, userId]);
 
+  // Получение количества непрочитанных сообщений
   useEffect(() => {
     if (userId) {
+      console.log(userId ,'+++++')
       dispatch(getUnreadCount(userId));
     }
-  }, [dispatch, userId]);
+  }, [userId]);
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTextChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value);
     if (chatPartnerId && userId) {
       dispatch(markMessagesAsRead({ userId, chatPartnerId }));
     }
-  };
+  }, [chatPartnerId, userId]);
 
-  useEffect(() => {
-    if (chatPartnerId && userId) {
-      dispatch(fetchMessages({ userId, chatPartnerId }));
-      socket.emit('checkMessages', { userId, chatPartnerId });
-      dispatch(getUnreadCount(userId));
-    }
-  }, [chatPartnerId, dispatch, userId]);
+  const filteredMessages = useMemo(() => 
+    messages.filter(msg => 
+      (msg.senderId === userId && msg.receiverId === chatPartnerId) ||
+      (msg.senderId === chatPartnerId && msg.receiverId === userId)
+    ),
+    [messages, userId, chatPartnerId]
+  );
 
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages]);
+  }, [filteredMessages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = useCallback(() => {
     if (text.trim() && chatPartnerId !== null && userId !== undefined) {
       const newMessage = {
         senderId: userId,
@@ -124,27 +98,27 @@ export function ChatPage(): React.JSX.Element {
       dispatch(sendMessage(newMessage));
       setText('');
     }
-  };
+  }, [text, chatPartnerId, userId]);
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleSendMessage();
     }
-  };
+  }, [handleSendMessage]);
 
-  const handleAddReaction = (messageId: number, reaction: string) => {
+  const handleAddReaction = useCallback((messageId: number, reaction: string) => {
     if (userId) {
       dispatch(addReaction({ messageId, userId, reaction }));
     }
-  };
+  }, [userId]);
 
-  const formatTime = (dateString: string | undefined) => {
+  const formatTime = useCallback((dateString: string | undefined) => {
     if (!dateString) return 'Неизвестное время';
     const date = new Date(dateString);
     return `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
-  };
+  }, []);
 
-  const MessageReactions = ({ message }: { message: Message }) => {
+  const MessageReactions = useCallback(({ message }: { message: Message }) => {
     const reactions = message.reactions || {};
     const reactionCounts = Object.values(reactions).reduce((acc, reaction) => {
       acc[reaction] = (acc[reaction] || 0) + 1;
@@ -164,9 +138,9 @@ export function ChatPage(): React.JSX.Element {
         ))}
       </div>
     );
-  };
+  }, [handleAddReaction]);
 
-  const ReactionPicker = ({ messageId }: { messageId: number }) => {
+  const ReactionPicker = useCallback(({ messageId }: { messageId: number }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -208,13 +182,17 @@ export function ChatPage(): React.JSX.Element {
         )}
       </div>
     );
-  };
+  }, [handleAddReaction]);
 
-  const chatList = isTrainer ? usersWithChats : trainers;
+  const chatList = useMemo(() => isTrainer ? usersWithChats : trainers, [isTrainer, usersWithChats, trainers]);
 
-  const filteredMessages = messages.filter(msg => 
-    (msg.senderId === userId && msg.receiverId === chatPartnerId) ||
-    (msg.senderId === chatPartnerId && msg.receiverId === userId)
+  const unreadMessagesCount = useCallback((partnerId: number) => 
+    messages.filter(msg => 
+      msg.senderId === partnerId && 
+      msg.receiverId === userId && 
+      !msg.isRead
+    ).length,
+    [messages, userId]
   );
 
   return (
@@ -237,11 +215,7 @@ export function ChatPage(): React.JSX.Element {
             }}
           >
             <span style={{ flex: 1 }}>{partner.name} {partner.surname}</span>
-            {messages.filter(msg => 
-              msg.senderId === partner.id && 
-              msg.receiverId === userId && 
-              !msg.isRead
-            ).length > 0 && (
+            {unreadMessagesCount(partner.id) > 0 && (
               <span style={{
                 position: 'absolute',
                 right: '10px',
@@ -251,11 +225,7 @@ export function ChatPage(): React.JSX.Element {
                 padding: '2px 6px',
                 fontSize: '12px',
               }}>
-                {messages.filter(msg => 
-                  msg.senderId === partner.id && 
-                  msg.receiverId === userId && 
-                  !msg.isRead
-                ).length}
+                {unreadMessagesCount(partner.id)}
               </span>
             )}
           </button>

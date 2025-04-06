@@ -102,6 +102,26 @@ class UserProfileController {
       return res.status(500).json({ message: 'Ошибка сервера' });
     }
   }
+
+  static async getTrainers(req, res) {
+    try {
+      const trainers = await User.findAll({
+        where: {
+          trener: true
+        },
+        include: [{
+          model: UserProfile,
+          attributes: ['avatar', 'gender', 'trainingExperience', 'personalRecords', 'trainingCount', 'userId']
+        }],
+        attributes: ['id', 'name', 'email']
+      });
+  
+      return res.json(trainers);
+    } catch (error) {
+      console.error('Error fetching trainers:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  }
 }
 
 module.exports = UserProfileController;
