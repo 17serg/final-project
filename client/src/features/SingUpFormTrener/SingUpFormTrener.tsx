@@ -117,11 +117,11 @@ export default function SingUpFormTrener(): React.JSX.Element {
     };
     
     try {
-      const response = await UserApi.signup(data);
+    const response = await UserApi.signup(data);
       if (response.status === 200) {
         setUser(response.data.user);
-        setAccessToken(response.data.accessToken);
-        navigate('/');
+    setAccessToken(response.data.accessToken);
+    navigate('/');
       }
     } catch (error) {
       console.error('Ошибка при регистрации:', error);
@@ -156,12 +156,12 @@ export default function SingUpFormTrener(): React.JSX.Element {
           Регистрация тренера
         </Typography>
         
-        <Box
-          component="form"
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          onSubmit={submitHandler}
+    <Box
+      component="form"
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      onSubmit={submitHandler}
           sx={{ gap: 2.5 }}
         >
           <TextField 
@@ -338,8 +338,8 @@ export default function SingUpFormTrener(): React.JSX.Element {
             }}
           >
             Если вы обычный пользователь
-          </Button>
-        </Box>
+      </Button>
+    </Box>
       </Paper>
     </Container>
   );
