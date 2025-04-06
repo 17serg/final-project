@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Box, Button, TextField, FormControl, InputLabel, Select, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, Avatar, SelectChangeEvent, Typography } from '@mui/material';
 import { IUserProfile } from '@/entities/user/model';
 import { UserApi } from '@/entities/user/api/UserApi';
@@ -20,39 +20,69 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
     trainingExperience: 0,
     userId,
     personalRecords: 0,
-    trainingCount: 0
+    trainingCount: 0,
+    about: '',
+    name: '',
+    email: '',
+    id: 0,
+    UserProfile: {
+      avatar: '',
+      gender: 'other',
+      trainingExperience: 0,
+      personalRecords: 0,
+      trainingCount: 0,
+      userId: 0,
+      about: ''
+    }
   });
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const handleSubmit = async (): Promise<void> => {
+  // Загрузка актуальных данных профиля при открытии модального окна
+  useEffect(() => {
+    const loadProfileData = async (): Promise<void> => {
+      if (open && user) {
+        try {
+          const response = await UserApi.getProfile();
+          if (response.data) {
+            setFormData({
+              ...formData,
+              gender: response.data.gender || 'other',
+              trainingExperience: response.data.trainingExperience || 0,
+              about: response.data.about || '',
+              UserProfile: {
+                ...formData.UserProfile,
+                gender: response.data.gender || 'other',
+                trainingExperience: response.data.trainingExperience || 0,
+                about: response.data.about || '',
+                avatar: response.data.avatar || ''
+              }
+            });
+
+            // Устанавливаем URL для аватара, если он есть
+            if (response.data.avatar) {
+              const baseUrl = import.meta.env.VITE_API.replace('/api', '');
+              setPreviewUrl(`${baseUrl}${response.data.avatar}`);
+            } else {
+              // Сбрасываем URL для аватара, если его нет
+              setPreviewUrl(null);
+            }
+          }
+        } catch (error) {
+          console.error('Error loading profile data:', error);
+        }
+      }
+    };
+
+    loadProfileData();
+  }, [open, user]);
+
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+    e.preventDefault();
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append('gender', formData.gender);
-      formDataToSend.append('trainingExperience', formData.trainingExperience.toString());
-      
-      if (fileInputRef.current?.files?.[0]) {
-        const file = fileInputRef.current.files[0];
-        formDataToSend.append('avatar', file);
-        console.log('File to upload:', file);
-      }
-      
-      console.log('Form data to send:', {
-        gender: formData.gender,
-        trainingExperience: formData.trainingExperience,
-        hasFile: !!fileInputRef.current?.files?.[0]
-      });
-      
-      const response = await UserApi.updateProfile(formDataToSend);
-      console.log('Server response:', response);
-      
-      if (user && response.data) {
-        setUser({
-          ...user,
-          profile: response.data
-        });
-      }
-      
+      await UserApi.updateProfile(formData);
       onClose();
+      // Генерируем событие обновления профиля
+      window.dispatchEvent(new Event('profileUpdated'));
     } catch (error) {
       console.error('Error updating profile:', error);
     }
@@ -78,7 +108,7 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onloadend = (): void => {
         setPreviewUrl(reader.result as string);
       };
       reader.readAsDataURL(file);
@@ -117,8 +147,8 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
       >
         Редактирование профиля
       </DialogTitle>
-      <DialogContent sx={{ p: 3, mt: 2 }}>
-        <Box display="flex" flexDirection="column" alignItems="center" gap={3}>
+      <DialogContent>
+        <Box display="flex" flexDirection="column" alignItems="center" gap={3} sx={{ mt: 2 }}>
           <Box 
             sx={{ 
               position: 'relative', 
@@ -177,7 +207,7 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
             style={{ display: 'none' }}
           />
           
-          <FormControl fullWidth sx={{ mt: 2 }}>
+          <FormControl fullWidth>
             <InputLabel id="gender-label">Пол</InputLabel>
             <Select
               labelId="gender-label"
@@ -201,7 +231,7 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
           
           <TextField
             fullWidth
-            label="Опыт тренировок (лет)"
+            label={user?.trener ? "Стаж работы (лет)" : "Опыт тренировок (лет)"}
             name="trainingExperience"
             type="number"
             value={formData.trainingExperience}
@@ -217,9 +247,29 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
               }
             }}
           />
+
+          <TextField
+            fullWidth
+            label={user?.trener ? "О себе" : "Цель тренировки"}
+            name="about"
+            multiline
+            rows={4}
+            value={formData.about}
+            onChange={handleChange}
+            sx={{ 
+              mt: 2,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '8px',
+                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+                '&:hover': {
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                }
+              }
+            }}
+          />
         </Box>
       </DialogContent>
-      <DialogActions sx={{ p: 3, pt: 0 }}>
+      <DialogActions sx={{ p: 3 }}>
         <Button 
           onClick={onClose} 
           sx={{ 

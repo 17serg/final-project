@@ -10,7 +10,7 @@ import AnthropometryPage from "../AnthropometryPage/AnthropometryPage";
 
 const styles = {
   container: {
-    minHeight: "20vh",
+    minHeight: "auto",
     width: "100%",
     display: "flex",
     flexDirection: "column",
@@ -19,7 +19,8 @@ const styles = {
     paddingTop: "10px",
     paddingLeft: "20px",
     paddingRight: "20px",
-    gap: "10px",
+    gap: "0px",
+    marginBottom: "0px",
   },
   profileCard: {
     width: "100%",
@@ -77,6 +78,7 @@ const styles = {
     display: "flex",
     gap: "40px",
     marginTop: "20px",
+    marginBottom: "10px",
   },
   statCard: {
     padding: "20px",
@@ -99,8 +101,9 @@ const styles = {
   tabsContainer: {
     width: "100%",
     position: "relative",
-    marginTop: "6.5%",
+    marginTop: "10px",
     paddingTop: "0",
+    marginBottom: "0",
   },
   tabs: {
     position: "relative",
@@ -112,7 +115,7 @@ const styles = {
     width: "100%",
   },
   tab: {
-    marginTop: "6%",
+    marginTop: "0",
     fontSize: "1.1rem",
     fontWeight: 500,
     textTransform: "none",
@@ -140,18 +143,17 @@ const styles = {
     color: "white",
     fontWeight: "bold",
     backgroundColor: "rgba(42, 41, 223, 0.7)",
-    marginBottom: "-1px",
+    marginBottom: "0px",
     position: "relative",
     zIndex: 3,
   },
   tabPanel: {
     width: "95.9%",
     padding: "20px",
-    marginBottom: "0",
     backgroundColor: "rgba(42, 41, 223, 0.7)",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
     borderRadius: "0 0 16px 16px",
-    marginTop: "0",
+    marginTop: "0px",
     border: "2px solid rgb(42, 41, 223)",
     borderTop: "none",
     position: "relative",
@@ -248,7 +250,7 @@ export default function ProfilePage(): React.JSX.Element {
   };
 
   return (
-    <Box sx={styles.container}>
+    <Box sx={{...styles.container, paddingBottom: "0px", marginBottom: "0px"}}>
       <Paper sx={styles.profileCard}>
         <Box sx={styles.header}>
           <Avatar 
@@ -301,7 +303,16 @@ export default function ProfilePage(): React.JSX.Element {
         </Paper>
       </Box>
 
-      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", width: "100%" }}>
+      <Box sx={{ 
+        display: "flex", 
+        flexDirection: "column", 
+        width: "100%", 
+        marginTop: "12.5%",
+        marginBottom: "0px", 
+        paddingBottom: "0px",
+        position: "relative",
+        zIndex: 10
+      }}>
         <Box sx={styles.tabsContainer}>
           <Box sx={styles.tabs}>
             <Box sx={styles.tabsWrapper}>
@@ -354,7 +365,7 @@ export default function ProfilePage(): React.JSX.Element {
         </Box>
 
         {activeTab !== null && (
-          <Box sx={styles.tabPanel}>
+          <Box sx={{...styles.tabPanel, marginBottom: "30px", paddingBottom: "0px"}}>
             {activeTab === 0 && (
               <Box>
                 <CalendarPage/>
