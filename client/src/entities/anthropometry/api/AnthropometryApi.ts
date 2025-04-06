@@ -15,6 +15,6 @@ export const AnthropometryApi = {
   },
 
   deleteMeasurement: (id: number): Promise<void> => {
-    return axiosInstance.delete(`/api/anthropometry/${id}`);
+    return axiosInstance.delete(`/anthropometry/${id}`);
   }
 }; 

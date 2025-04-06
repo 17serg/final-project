@@ -123,10 +123,10 @@ export default function SignUpForm(): React.JSX.Element {
     };
     
     try {
-      const response = await UserApi.signup(data);
+    const response = await UserApi.signup(data);
       if (response.status === 200) {
         setUser(response.data.user);
-        setAccessToken(response.data.accessToken);
+    setAccessToken(response.data.accessToken);
         navigate(CLIENT_ROUTES.PROFILE);
       }
     } catch (error) {
@@ -166,12 +166,12 @@ export default function SignUpForm(): React.JSX.Element {
           Регистрация
         </Typography>
         
-        <Box
-          component="form"
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          onSubmit={submitHandler}
+    <Box
+      component="form"
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      onSubmit={submitHandler}
           sx={{ gap: 2.5 }}
         >
           <TextField 
@@ -329,9 +329,9 @@ export default function SignUpForm(): React.JSX.Element {
             }}
           >
             Зарегистрироваться
-          </Button>
+      </Button>
           
-          <Button 
+      <Button
             variant="contained" 
             onClick={() => navigate('/signuptrener')}
             sx={{ 
@@ -348,8 +348,8 @@ export default function SignUpForm(): React.JSX.Element {
             }}
           >
             Если вы тренер
-          </Button>
-        </Box>
+      </Button>
+    </Box>
       </Paper>
     </Container>
   );

@@ -18,4 +18,4 @@ router.put('/:id', AnthropometryController.updateMeasurement);
 // Удаление замера
 router.delete('/:id', AnthropometryController.deleteMeasurement);
 
-module.exports = router; 
+module.exports = router;

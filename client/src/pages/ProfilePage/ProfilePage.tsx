@@ -10,16 +10,16 @@ import AnthropometryPage from "../AnthropometryPage/AnthropometryPage";
 
 const styles = {
   container: {
-    minHeight: "50vh",
+    minHeight: "20vh",
     width: "100%",
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
     paddingBottom: "0px",
-    paddingTop: "20px",
+    paddingTop: "10px",
     paddingLeft: "20px",
     paddingRight: "20px",
-    gap: "40px",
+    gap: "10px",
   },
   profileCard: {
     width: "100%",
@@ -99,7 +99,7 @@ const styles = {
   tabsContainer: {
     width: "100%",
     position: "relative",
-    marginTop: "0",
+    marginTop: "6.5%",
     paddingTop: "0",
   },
   tabs: {
@@ -135,19 +135,11 @@ const styles = {
       transition: "color 0.3s ease",
       fontSize: "1.3rem",
     },
-    // "&:hover": {
-    //   backgroundColor: "white",
-    //   borderColor: "rgb(42, 41, 223)",
-    //   "& .MuiTypography-root": {
-    //     color: "rgb(42, 41, 223)",
-    //   },
-    // },
   },
   activeTab: {
     color: "white",
     fontWeight: "bold",
     backgroundColor: "rgba(42, 41, 223, 0.7)",
-    // borderBottom: "0px solid rgba(42, 41, 223, 0.7)",
     marginBottom: "-1px",
     position: "relative",
     zIndex: 3,
@@ -155,7 +147,7 @@ const styles = {
   tabPanel: {
     width: "95.9%",
     padding: "20px",
-    marginBottom: "3%",
+    marginBottom: "0",
     backgroundColor: "rgba(42, 41, 223, 0.7)",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
     borderRadius: "0 0 16px 16px",
@@ -164,7 +156,7 @@ const styles = {
     borderTop: "none",
     position: "relative",
     zIndex: 1,
-    minHeight: "300px",
+    minHeight: "auto",
     right: "0",
     "& h6": {
       color: "white",
@@ -189,17 +181,6 @@ const styles = {
       borderRadius: "16px",
       overflow: "hidden",
     },
-    // "& .MuiCalendar-root": {
-    //   borderRadius: "16px",
-    //   overflow: "hidden",
-    //   minHeight: "auto",
-    // },
-    // "& .MuiPickersCalendarHeader-root": {
-    //   borderRadius: "16px 16px 0 0",
-    // },
-    // "& .MuiPickersDay-root": {
-    //   borderRadius: "50%",
-    // },
   },
 };
 
