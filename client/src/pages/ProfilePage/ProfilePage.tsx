@@ -301,7 +301,7 @@ export default function ProfilePage(): React.JSX.Element {
   const getAvatarUrl = (): string => {
     if (profile?.avatar) {
       const baseUrl = import.meta.env.VITE_API.replace("/api", "");
-      const baseUrl = import.meta.env.VITE_API.replace('/api', '');
+      // const baseUrl = import.meta.env.VITE_API.replace('/api', '');
       return `${baseUrl}${profile.avatar}`;
     }
     return "";
@@ -374,17 +374,6 @@ export default function ProfilePage(): React.JSX.Element {
           <Typography sx={styles.statLabel}>Количество тренировок</Typography>
         </Paper>
       </Box>
-
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          width: "100%",
-          marginTop: "12.5%",
-          paddingBottom: "0px",
-          position: "relative",
-          zIndex: 10,
-
       <Box 
         ref={calendarRef}
         sx={{ 

@@ -175,6 +175,11 @@ export default function NavBar(): React.JSX.Element {
     navigate(CLIENT_ROUTES.PROFILE);
   };
 
+  const handleCatalogExNavigate = (): void => {
+    handleProfileClose();
+    navigate(CLIENT_ROUTES.CATALOGEXERCISE);
+  };
+
   const handleLogout = async (): Promise<void> => {
     handleProfileClose();
     try {
@@ -252,7 +257,7 @@ export default function NavBar(): React.JSX.Element {
             </Typography>
             <Typography variant="body1" sx={styles.typography}>
               <Button
-                onClick={handleClick}
+                onClick={handleCatalogExNavigate}
                 sx={{
                   ...styles.navLink,
                   backgroundColor: location.pathname.startsWith("/exercises") ? "rgb(42, 41, 223)" : "transparent",
@@ -261,95 +266,6 @@ export default function NavBar(): React.JSX.Element {
               >
                 Каталог упражнений
               </Button>
-              <Menu
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                transitionDuration={0}
-                PaperProps={{
-                  sx: {
-                    width: anchorEl ? anchorEl.getBoundingClientRect().width : "auto",
-                    maxHeight: 300,
-                    marginTop: "4px",
-                    borderRadius: "16px",
-                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
-                    border: "2px solid rgb(42, 41, 223)",
-                    backgroundColor: "white"
-                  },
-                }}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "left",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "left",
-                }}
-              >
-                <MenuItem onClick={handleClose} sx={{
-                  ...styles.menuItem,
-                  "&:hover": {
-                    backgroundColor: "rgb(42, 41, 223)",
-                    color: "white",
-                  },
-                }}>
-                  Упражнения для шеи
-                </MenuItem>
-                <MenuItem onClick={handleClose} sx={{
-                  ...styles.menuItem,
-                  "&:hover": {
-                    backgroundColor: "rgb(42, 41, 223)",
-                    color: "white",
-                  },
-                }}>
-                  Упражнения для спины
-                </MenuItem>
-                <MenuItem onClick={handleClose} sx={{
-                  ...styles.menuItem,
-                  "&:hover": {
-                    backgroundColor: "rgb(42, 41, 223)",
-                    color: "white",
-                  },
-                }}>
-                  Упражнения для рук
-                </MenuItem>
-                <MenuItem onClick={handleClose} sx={{
-                  ...styles.menuItem,
-                  "&:hover": {
-                    backgroundColor: "rgb(42, 41, 223)",
-                    color: "white",
-                  },
-                }}>
-                  Упражнения для ног
-                </MenuItem>
-                <MenuItem onClick={handleClose} sx={{
-                  ...styles.menuItem,
-                  "&:hover": {
-                    backgroundColor: "rgb(42, 41, 223)",
-                    color: "white",
-                  },
-                }}>
-                  Упражнения для пресса
-                </MenuItem>
-                <MenuItem onClick={handleClose} sx={{
-                  ...styles.menuItem,
-                  "&:hover": {
-                    backgroundColor: "rgb(42, 41, 223)",
-                    color: "white",
-                  },
-                }}>
-                  Упражнения для плеч
-                </MenuItem>
-                <MenuItem onClick={handleClose} sx={{
-                  ...styles.menuItem,
-                  "&:hover": {
-                    backgroundColor: "rgb(42, 41, 223)",
-                    color: "white",
-                  },
-                }}>
-                  Общие упражнения
-                </MenuItem>
-              </Menu>
             </Typography>
             <Typography variant="body1" sx={styles.typography}>
               {user ? (
