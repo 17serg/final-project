@@ -128,4 +128,4 @@ export const {
 } = chatSlice.actions;
 
 export { socket };
-export default chatSlice.reducer; 
+export default chatSlice.reducer;

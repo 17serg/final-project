@@ -30,7 +30,6 @@ export const useSocketChat = () => {
     });
 
     socket.on('unreadCount', ({ count }) => {
-        console.log('новое уведомление')
       dispatch(updateUnreadCount(count));
     });
 

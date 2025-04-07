@@ -7,6 +7,10 @@ import { getUserColor } from "@/shared/utils/userColor";
 import { ChatPage } from "../ChatPage/ChatPage";
 import { CalendarPage } from "../CalendarPage";
 import AnthropometryPage from "../AnthropometryPage/AnthropometryPage";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "../../app/store";
+import { getUnreadCount, addMessage, socket } from '../../entities/chat/store/chatSlice';
 
 const styles = {
   container: {
@@ -134,6 +138,7 @@ const styles = {
     justifyContent: "center",
     transition: "border-color 0.3s ease",
     flex: 1,
+    position: "relative",
     "& .MuiTypography-root": {
       transition: "color 0.3s ease",
       fontSize: "1.3rem",
@@ -187,9 +192,36 @@ const styles = {
 };
 
 export default function ProfilePage(): React.JSX.Element {
+  const dispatch = useDispatch<AppDispatch>();
   const { user } = useUser();
   const [profile, setProfile] = React.useState<IUserProfile | null>(null);
   const [activeTab, setActiveTab] = React.useState<number | null>(null);
+  const userId = user?.id;
+  const { messages, unreadCount } = useSelector((state: RootState) => state.chat);
+
+  useEffect(() => {
+    if (userId) {
+      dispatch(getUnreadCount(userId)); // Получаем количество непрочитанных сообщений для текущего пользователя
+      
+      // Добавляем прослушивание сокета для новых сообщений
+      socket.on('newMessage', (message) => {
+        dispatch(addMessage(message));
+        
+        // Если сообщение предназначено текущему пользователю, обновляем счетчик непрочитанных
+        if (message.receiverId === userId) {
+          dispatch(getUnreadCount(userId));
+        }
+      });
+      
+      return () => {
+        socket.off('newMessage');
+      };
+    }
+  }, [userId, dispatch]);
+
+  const unreadMessagesCount = messages.filter(
+    (msg) => msg.receiverId === userId && !msg.isRead
+  ).length;
 
   React.useEffect(() => {
     const loadProfile = async (): Promise<void> => {
@@ -197,7 +229,7 @@ export default function ProfilePage(): React.JSX.Element {
         const response = await UserApi.getProfile();
         setProfile(response.data);
       } catch (error) {
-        console.error('Error loading profile:', error);
+        console.error("Error loading profile:", error);
       }
     };
 
@@ -212,76 +244,68 @@ export default function ProfilePage(): React.JSX.Element {
 
   const getGenderText = (gender: string): string => {
     switch (gender) {
-      case 'male':
-        return 'Мужской';
-      case 'female':
-        return 'Женский';
+      case "male":
+        return "Мужской";
+      case "female":
+        return "Женский";
       default:
-        return 'Другой';
+        return "Другой";
     }
   };
 
-  // Формируем URL для аватара
   const getAvatarUrl = (): string => {
     if (profile?.avatar) {
-      // Убираем /api из VITE_API, так как статические файлы обслуживаются напрямую
-      const baseUrl = import.meta.env.VITE_API.replace('/api', '');
+      const baseUrl = import.meta.env.VITE_API.replace("/api", "");
       return `${baseUrl}${profile.avatar}`;
     }
     return "";
   };
 
-  // Получаем цвет пользователя для аватара
   const getUserAvatarColor = (): string => {
     if (user?.email) {
       return getUserColor(user.email);
     }
-    return "#BAE1FF"; // Возвращаем нежно-голубой цвет по умолчанию
+    return "#BAE1FF";
   };
 
-  // Функция для обработки клика по вкладке
   const handleTabClick = (index: number) => (event: React.MouseEvent): void => {
     event.preventDefault();
-    if (activeTab === index) {
-      setActiveTab(null);
-    } else {
-      setActiveTab(index);
-    }
+    setActiveTab((prev) => (prev === index ? null : index));
   };
 
   return (
-    <Box sx={{...styles.container, paddingBottom: "0px", marginBottom: "0px"}}>
+    <Box sx={styles.container}>
       <Paper sx={styles.profileCard}>
         <Box sx={styles.header}>
-          <Avatar 
-            src={getAvatarUrl()} 
-            alt={user.name} 
+          <Avatar
+            src={getAvatarUrl()}
+            alt={user.name}
             sx={{
               ...styles.avatar,
               bgcolor: getUserAvatarColor(),
-              "& .MuiAvatar-root": {
-                fontSize: "120px",
-              },
             }}
           >
-            <Typography variant="h1" sx={{ fontSize: "120px", fontWeight: "bold" }}>
+            <Typography
+              variant="h1"
+              sx={{ fontSize: "120px", fontWeight: "bold" }}
+            >
               {user.name?.[0] || "U"}
             </Typography>
           </Avatar>
-          
+
           <Box sx={styles.userInfo}>
             <Typography sx={styles.userName}>{user.name}</Typography>
             <Typography sx={styles.userEmail}>{user.email}</Typography>
-            
+
             <Box sx={styles.profileInfo}>
               <Typography sx={styles.profileLabel}>Пол</Typography>
               <Typography sx={styles.profileValue}>
-                {profile ? getGenderText(profile.gender) : 'Не указан'}
+                {profile ? getGenderText(profile.gender) : "Не указан"}
               </Typography>
-              
+
               <Typography sx={styles.profileLabel}>Стаж тренировок</Typography>
               <Typography sx={styles.profileValue}>
-                {profile ? `${profile.trainingExperience} лет` : 'Не указан'}
+                {profile ? `${profile.trainingExperience} лет` : "Не указан"}
               </Typography>
             </Box>
           </Box>
@@ -303,83 +327,78 @@ export default function ProfilePage(): React.JSX.Element {
         </Paper>
       </Box>
 
-      <Box sx={{ 
-        display: "flex", 
-        flexDirection: "column", 
-        width: "100%", 
-        marginTop: "12.5%",
-        marginBottom: "0px", 
-        paddingBottom: "0px",
-        position: "relative",
-        zIndex: 10
-      }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+          marginTop: "12.5%",
+          paddingBottom: "0px",
+          position: "relative",
+          zIndex: 10,
+        }}
+      >
         <Box sx={styles.tabsContainer}>
           <Box sx={styles.tabs}>
             <Box sx={styles.tabsWrapper}>
-              <Box 
-                onClick={handleTabClick(0)} 
-                sx={{ 
-                  ...styles.tab, 
-                  ...(activeTab === 0 ? styles.activeTab : {})
-                }}
+              <Box
+                onClick={handleTabClick(0)}
+                sx={{ ...styles.tab, ...(activeTab === 0 ? styles.activeTab : {}) }}
               >
-                <Typography sx={{ fontWeight: activeTab === 0 ? "bold" : "normal" }}>
-                  Календарь тренировок
-                </Typography>
+                <Typography>Календарь тренировок</Typography>
               </Box>
-              <Box 
-                onClick={handleTabClick(1)} 
-                sx={{ 
-                  ...styles.tab, 
-                  ...(activeTab === 1 ? styles.activeTab : {})
-                }}
+              <Box
+                onClick={handleTabClick(1)}
+                sx={{ ...styles.tab, ...(activeTab === 1 ? styles.activeTab : {}) }}
               >
-                <Typography sx={{ fontWeight: activeTab === 1 ? "bold" : "normal" }}>
-                  Журнал прогресса
-                </Typography>
+                <Typography>Журнал прогресса</Typography>
               </Box>
-              <Box 
-                onClick={handleTabClick(2)} 
-                sx={{ 
-                  ...styles.tab, 
-                  ...(activeTab === 2 ? styles.activeTab : {})
-                }}
+              <Box
+                onClick={handleTabClick(2)}
+                sx={{ ...styles.tab, ...(activeTab === 2 ? styles.activeTab : {}) }}
               >
-                <Typography sx={{ fontWeight: activeTab === 2 ? "bold" : "normal" }}>
-                  Рекомендации
-                </Typography>
+                <Typography>Рекомендации</Typography>
               </Box>
-              <Box 
-                onClick={handleTabClick(3)} 
-                sx={{ 
-                  ...styles.tab, 
-                  ...(activeTab === 3 ? styles.activeTab : {})
-                }}
+              <Box
+                onClick={handleTabClick(3)}
+                sx={{ ...styles.tab, ...(activeTab === 3 ? styles.activeTab : {}) }}
               >
-                <Typography sx={{ fontWeight: activeTab === 3 ? "bold" : "normal" }}>
-                  Чат с тренером
-                </Typography>
+                <Typography>Чат с тренером</Typography>
+
+                {unreadMessagesCount > 0 && (
+                  <Box
+                    component="span"
+                    sx={{
+                      position: "absolute",
+                      top: 4,
+                      right: 8,
+                      backgroundColor: "red",
+                      color: "white",
+                      borderRadius: "50%",
+                      padding: "2px 6px",
+                      fontSize: "12px",
+                      fontWeight: "bold",
+                      minWidth: "20px",
+                      height: "20px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {unreadMessagesCount}
+                  </Box>
+                )}
               </Box>
             </Box>
           </Box>
         </Box>
 
         {activeTab !== null && (
-          <Box sx={{...styles.tabPanel, marginBottom: "30px", paddingBottom: "0px"}}>
-            {activeTab === 0 && (
-              <Box>
-                <CalendarPage/>
-              </Box>
-            )}
-            {activeTab === 1 && (
-              <AnthropometryPage/>
-            )}
-            {activeTab === 2 && (
-              <Typography variant="h6">Содержимое вкладки "Рекомендации"</Typography>
-            )}
-            {activeTab === 3 && (
-              <ChatPage/>
-            )}
+          <Box sx={{ ...styles.tabPanel, marginBottom: "30px" }}>
+            {activeTab === 0 && <CalendarPage />}
+            {activeTab === 1 && <AnthropometryPage />}
+            {activeTab === 2 && <Typography>Рекомендации</Typography>}
+            {activeTab === 3 && <ChatPage />}
           </Box>
         )}
       </Box>
