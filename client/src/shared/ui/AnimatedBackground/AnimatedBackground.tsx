@@ -24,6 +24,7 @@ const styles = {
   }
 };
 
+
 export const AnimatedBackground: React.FC = () => {
   const [currentImage, setCurrentImage] = React.useState(0);
   const images = [
