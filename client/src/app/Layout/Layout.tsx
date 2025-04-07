@@ -30,7 +30,7 @@ export default function Layout(): React.JSX.Element {
       <Container sx={{ 
         flex: 1, 
         py: 3,
-        mb: '42px' // Убрали отступ для футера
+        mb: '44px' // Убрали отступ для футера
       }}>
         <Outlet />
       </Container>
