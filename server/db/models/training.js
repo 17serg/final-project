@@ -6,7 +6,10 @@ module.exports = (sequelize, DataTypes) => {
     static associate({ Day, User, ExerciseOfTraining }) {
       this.belongsTo(Day, { foreignKey: 'dayId' });
       this.belongsTo(User, { foreignKey: 'userId' });
-      this.hasMany(ExerciseOfTraining, { foreignKey: 'trainingId' });
+      this.hasMany(ExerciseOfTraining, {
+        foreignKey: 'trainingId',
+        onDelete: 'CASCADE',
+      });
     }
   }
   Training.init(

@@ -1,11 +1,17 @@
 'use strict';
+
 const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Exercise extends Model {
-    static associate({ ExerciseOfTraining }) {
-      this.hasMany(ExerciseOfTraining, { foreignKey: 'exerciseId' });
+    static associate(models) {
+      Exercise.hasMany(models.ExerciseOfTraining, {
+        foreignKey: 'exerciseId',
+        as: 'exerciseOfTrainings',
+      });
     }
   }
+
   Exercise.init(
     {
       name: {
@@ -13,29 +19,35 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       description: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: DataTypes.TEXT,
+        allowNull: true,
       },
       category: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       difficulty: {
-        type: DataTypes.STRING,
+        type: DataTypes.ENUM('beginner', 'intermediate', 'advanced'),
         allowNull: false,
+        defaultValue: 'beginner',
       },
-      muscle_group: {
-        type: DataTypes.STRING,
+      muscle_groups: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
         allowNull: false,
+        defaultValue: [],
       },
       equipment: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
-      },
-      image_url: {
         type: DataTypes.STRING,
         allowNull: true,
+      },
+      image: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      exercise_type: {
+        type: DataTypes.ENUM('compound', 'isolation', 'cardio', 'bodyweight'),
+        allowNull: false,
+        defaultValue: 'compound',
       },
     },
     {
@@ -43,5 +55,6 @@ module.exports = (sequelize, DataTypes) => {
       modelName: 'Exercise',
     },
   );
+
   return Exercise;
 };

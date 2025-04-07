@@ -5,25 +5,39 @@ export interface Exercise {
   name: string;
   description: string;
   category: string;
-  difficulty: string;
-  muscle_group: string;
-  equipment: boolean;
-  image_url: string | null;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  muscle_groups: string[];
+  equipment: string;
+  image: string;
+  exercise_type: 'compound' | 'isolation' | 'cardio' | 'bodyweight';
 }
 
 export const ExerciseApi = {
-  async getAllExercises() {
-    const response = await axiosInstance.get<Exercise[]>('/exercises');
-    return response;
+  getAllExercises: async () => {
+    return await axiosInstance.get<Exercise[]>('/exercises');
   },
 
-  async getMuscleGroups() {
-    const response = await axiosInstance.get<string[]>('/exercises/muscle-groups');
-    return response;
+  getMuscleGroups: async () => {
+    return await axiosInstance.get<string[]>('/exercises/muscle-groups');
   },
 
-  async getExercisesByMuscleGroup(muscleGroup: string) {
-    const response = await axiosInstance.get<Exercise[]>(`/exercises/muscle-group/${muscleGroup}`);
-    return response;
+  getExercisesByMuscleGroup: async (muscleGroup: string) => {
+    return await axiosInstance.get<Exercise[]>(`/exercises/muscle-group/${muscleGroup}`);
+  },
+
+  getExercisesByType: async (type: Exercise['exercise_type']) => {
+    return await axiosInstance.get<Exercise[]>(`/exercises/type/${type}`);
+  },
+
+  createExercise: async (exercise: Omit<Exercise, 'id'>) => {
+    return await axiosInstance.post<Exercise>('/exercises', exercise);
+  },
+
+  updateExercise: async (id: number, exercise: Partial<Exercise>) => {
+    return await axiosInstance.put<Exercise>(`/exercises/${id}`, exercise);
+  },
+
+  deleteExercise: async (id: number) => {
+    return await axiosInstance.delete(`/exercises/${id}`);
   },
 };

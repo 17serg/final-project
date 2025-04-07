@@ -1,5 +1,6 @@
 import { axiosInstance } from '@/shared/lib/axiosInstance';
 import { Training, CreateTrainingDto } from '../model';
+import { Exercise } from '@/entities/exercise/api/ExerciseApi';
 
 export interface CreateExerciseOfTrainingDto {
   trainingId: number;
@@ -18,17 +19,8 @@ export interface ExerciseOfTraining {
   weight: number;
   sets: number;
   reps: number;
-  order: number;
-  Exercise: {
-    id: number;
-    name: string;
-    description: string;
-    category: string;
-    difficulty: string;
-    muscle_group: string;
-    equipment: boolean;
-    image_url: string | null;
-  };
+  muscle_groups: string[];
+  exercise: Exercise;
 }
 
 export const TrainingApi = {
@@ -55,8 +47,13 @@ export const TrainingApi = {
   },
 
   async deleteTraining(id: number) {
-    const response = await axiosInstance.delete(`/trainings/${id}`);
-    return response;
+    try {
+      const response = await axiosInstance.delete(`/trainings/${id}`);
+      return response;
+    } catch (error) {
+      console.error('Ошибка при удалении тренировки:', error);
+      throw error;
+    }
   },
 
   getTrainingsByDayId: async (dayId: number) => {
@@ -82,9 +79,5 @@ export const TrainingApi = {
       { exerciseIds },
     );
     return response;
-  },
-
-  deleteTraining(trainingId: number) {
-    return axiosInstance.delete<void>(`/trainings/${trainingId}`);
   },
 };

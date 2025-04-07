@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt');
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
+    const now = new Date();
+
     await queryInterface.bulkInsert(
       'Users',
       [
@@ -15,6 +17,8 @@ module.exports = {
           email: 'q@q',
           password: await bcrypt.hash('111111', 10),
           trener: true,
+          createdAt: now,
+          updatedAt: now,
         },
         {
           name: 'w',
@@ -23,57 +27,71 @@ module.exports = {
           email: 'w@w',
           password: await bcrypt.hash('111111', 10),
           trener: false,
+          createdAt: now,
+          updatedAt: now,
         },
       ],
       {},
     );
 
-    await queryInterface.bulkInsert('Exercises', [
-      {
-        name: 'Приседания',
-        description: 'Базовое упражнение для ног и ягодиц.',
-        category: 'Ноги',
-        difficulty: 'Начинающий',
-        muscle_group: 'Квадрицепсы, ягодицы',
-        equipment: false,
-        image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Squat_exercise.jpg/320px-Squat_exercise.jpg',
-      },
-      {
-        name: 'Отжимания',
-        description: 'Упражнение для груди и трицепсов.',
-        category: 'Грудь',
-        difficulty: 'Начинающий',
-        muscle_group: 'Грудные мышцы, трицепсы',
-        equipment: false,
-        image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Push_up.jpg/320px-Push_up.jpg',
-      },
-      {
-        name: 'Подтягивания',
-        description: 'Упражнение для спины и бицепсов.',
-        category: 'Спина',
-        difficulty: 'Продвинутый',
-        muscle_group: 'Широчайшие мышцы спины, бицепсы',
-        equipment: true, // Турник — это оборудование
-        image_url: 'https://live.staticflickr.com/65535/51134208147_1e0d1a8e7b_c.jpg',
-      },
-      {
-        name: 'Становая тяга',
-        description: 'Упражнение для спины и ног со штангой.',
-        category: 'Спина',
-        difficulty: 'Продвинутый',
-        muscle_group: 'Поясница, бицепс бедра',
-        equipment: true, // Штанга — оборудование
-        image_url: 'https://live.staticflickr.com/65535/49036800361_9c1803d5ba_b.jpg',
-      }
-    ], {});
+    await queryInterface.bulkInsert(
+      'Exercises',
+      [
+        {
+          name: 'Приседания со штангой',
+          description: 'Базовое упражнение для развития мышц ног',
+          category: 'Ноги',
+          difficulty: 'intermediate',
+          muscle_groups: ['Квадрицепсы', 'Ягодицы'],
+          equipment: 'Штанга',
+          image: '/exercises/squat.jpg',
+          exercise_type: 'compound',
+          createdAt: now,
+          updatedAt: now,
+        },
+        {
+          name: 'Жим штанги лежа',
+          description: 'Базовое упражнение для развития грудных мышц',
+          category: 'Грудь',
+          difficulty: 'intermediate',
+          muscle_groups: ['Грудные мышцы', 'Трицепсы'],
+          equipment: 'Штанга',
+          image: '/exercises/bench-press.jpg',
+          exercise_type: 'compound',
+          createdAt: now,
+          updatedAt: now,
+        },
+        {
+          name: 'Подтягивания',
+          description: 'Базовое упражнение для развития мышц спины',
+          category: 'Спина',
+          difficulty: 'advanced',
+          muscle_groups: ['Широчайшие мышцы спины', 'Бицепсы'],
+          equipment: 'Турник',
+          image: '/exercises/pull-ups.jpg',
+          exercise_type: 'bodyweight',
+          createdAt: now,
+          updatedAt: now,
+        },
+        {
+          name: 'Становая тяга',
+          description: 'Базовое упражнение для развития мышц спины и ног',
+          category: 'Спина',
+          difficulty: 'advanced',
+          muscle_groups: ['Поясница', 'Бицепс бедра'],
+          equipment: 'Штанга',
+          image: '/exercises/deadlift.jpg',
+          exercise_type: 'compound',
+          createdAt: now,
+          updatedAt: now,
+        },
+      ],
+      {},
+    );
   },
 
   async down(queryInterface, Sequelize) {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
+    await queryInterface.bulkDelete('Users', null, {});
+    await queryInterface.bulkDelete('Exercises', null, {});
   },
 };

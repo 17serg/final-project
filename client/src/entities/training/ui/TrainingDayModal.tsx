@@ -19,6 +19,9 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
+  Snackbar,
+  Alert,
+  AlertColor,
 } from '@mui/material';
 import { useNavigate } from 'react-router';
 import { useContext, useEffect, useState } from 'react';
@@ -78,6 +81,15 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [trainingToDelete, setTrainingToDelete] = useState<Training | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: AlertColor;
+  }>({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
 
   useEffect(() => {
     const fetchDayAndTrainings = async () => {
@@ -247,13 +259,28 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
     setIsDeleting(true);
     try {
       await TrainingApi.deleteTraining(trainingToDelete.id);
+
+      // Обновляем список тренировок
       setTrainings((prev) => prev.filter((t) => t.id !== trainingToDelete.id));
+
+      // Обновляем индекс выбранной тренировки
       if (selectedTrainingIndex >= trainings.length - 1) {
         setSelectedTrainingIndex(Math.max(0, trainings.length - 2));
       }
+
+      // Показываем уведомление об успешном удалении
+      setSnackbar({
+        open: true,
+        message: 'Тренировка успешно удалена',
+        severity: 'success',
+      });
     } catch (error) {
       console.error('Ошибка при удалении тренировки:', error);
-      setError('Не удалось удалить тренировку');
+      setSnackbar({
+        open: true,
+        message: 'Не удалось удалить тренировку',
+        severity: 'error',
+      });
     } finally {
       setIsDeleting(false);
       setDeleteDialogOpen(false);
@@ -475,6 +502,21 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Snackbar для уведомлений */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

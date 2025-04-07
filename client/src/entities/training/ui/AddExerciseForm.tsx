@@ -7,6 +7,8 @@ import {
   Select,
   FormControl,
   InputLabel,
+  Chip,
+  OutlinedInput,
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { ExerciseApi, Exercise } from '@/entities/exercise/api/ExerciseApi';
@@ -21,6 +23,19 @@ interface AddExerciseFormProps {
   }) => void;
 }
 
+const EXERCISE_TYPES = [
+  { value: 'compound', label: 'Базовое (многосуставное)' },
+  { value: 'isolation', label: 'Изолированное' },
+  { value: 'cardio', label: 'Кардио' },
+  { value: 'bodyweight', label: 'С весом тела' },
+];
+
+const DIFFICULTY_LEVELS = [
+  { value: 'beginner', label: 'Начальный' },
+  { value: 'intermediate', label: 'Средний' },
+  { value: 'advanced', label: 'Продвинутый' },
+];
+
 const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
   const [exerciseId, setExerciseId] = useState('');
   const [duration, setDuration] = useState('');
@@ -28,9 +43,11 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
   const [sets, setSets] = useState('');
   const [reps, setReps] = useState('');
   const [muscleGroups, setMuscleGroups] = useState<string[]>([]);
-  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState('');
+  const [selectedMuscleGroups, setSelectedMuscleGroups] = useState<string[]>([]);
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [exerciseType, setExerciseType] = useState<Exercise['exercise_type']>('compound');
+  const [difficulty, setDifficulty] = useState<Exercise['difficulty']>('beginner');
 
   useEffect(() => {
     const fetchMuscleGroups = async () => {
@@ -47,10 +64,15 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
 
   useEffect(() => {
     const fetchExercises = async () => {
-      if (selectedMuscleGroup) {
+      if (selectedMuscleGroups.length > 0) {
         try {
-          const response = await ExerciseApi.getExercisesByMuscleGroup(selectedMuscleGroup);
-          setExercises(response.data);
+          const exercises = await Promise.all(
+            selectedMuscleGroups.map((group) => ExerciseApi.getExercisesByMuscleGroup(group)),
+          );
+          const uniqueExercises = [
+            ...new Set(exercises.flatMap((response: { data: Exercise[] }) => response.data)),
+          ] as Exercise[];
+          setExercises(uniqueExercises);
         } catch (error) {
           console.error('Ошибка при получении упражнений:', error);
         }
@@ -60,12 +82,11 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
     };
 
     fetchExercises();
-  }, [selectedMuscleGroup]);
+  }, [selectedMuscleGroups]);
 
-  const handleMuscleGroupChange = (event: any) => {
-    setSelectedMuscleGroup(event.target.value);
-    setSelectedExercise(null);
-    setExerciseId('');
+  const handleMuscleGroupsChange = (event: any) => {
+    const value = event.target.value;
+    setSelectedMuscleGroups(typeof value === 'string' ? value.split(',') : value);
   };
 
   const handleExerciseChange = (event: any) => {
@@ -92,12 +113,19 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
       </Typography>
 
       <FormControl fullWidth margin="normal">
-        <InputLabel>Группа мышц</InputLabel>
+        <InputLabel>Группы мышц</InputLabel>
         <Select
-          value={selectedMuscleGroup}
-          onChange={handleMuscleGroupChange}
-          label="Группа мышц"
-          required
+          multiple
+          value={selectedMuscleGroups}
+          onChange={handleMuscleGroupsChange}
+          input={<OutlinedInput label="Группы мышц" />}
+          renderValue={(selected) => (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+              {selected.map((value) => (
+                <Chip key={value} label={value} />
+              ))}
+            </Box>
+          )}
         >
           {muscleGroups.map((group) => (
             <MenuItem key={group} value={group}>
@@ -108,14 +136,38 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
       </FormControl>
 
       <FormControl fullWidth margin="normal">
-        <InputLabel>Упражнение</InputLabel>
+        <InputLabel>Тип упражнения</InputLabel>
         <Select
-          value={exerciseId}
-          onChange={handleExerciseChange}
-          label="Упражнение"
-          required
-          disabled={!selectedMuscleGroup}
+          value={exerciseType}
+          onChange={(e) => setExerciseType(e.target.value as Exercise['exercise_type'])}
+          label="Тип упражнения"
         >
+          {EXERCISE_TYPES.map((type) => (
+            <MenuItem key={type.value} value={type.value}>
+              {type.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl fullWidth margin="normal">
+        <InputLabel>Сложность</InputLabel>
+        <Select
+          value={difficulty}
+          onChange={(e) => setDifficulty(e.target.value as Exercise['difficulty'])}
+          label="Сложность"
+        >
+          {DIFFICULTY_LEVELS.map((level) => (
+            <MenuItem key={level.value} value={level.value}>
+              {level.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl fullWidth margin="normal">
+        <InputLabel>Упражнение</InputLabel>
+        <Select value={exerciseId} onChange={handleExerciseChange} label="Упражнение" required>
           {exercises.map((exercise) => (
             <MenuItem key={exercise.id} value={exercise.id}>
               {exercise.name}
@@ -125,38 +177,44 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
       </FormControl>
 
       <TextField
-        label="Продолжительность (мин)"
+        fullWidth
+        margin="normal"
+        label="Длительность (сек)"
+        type="number"
         value={duration}
         onChange={(e) => setDuration(e.target.value)}
+      />
+
+      <TextField
         fullWidth
         margin="normal"
-        required
-      />
-      <TextField
         label="Вес (кг)"
+        type="number"
         value={weight}
         onChange={(e) => setWeight(e.target.value)}
+      />
+
+      <TextField
         fullWidth
         margin="normal"
-        required
-      />
-      <TextField
         label="Количество подходов"
+        type="number"
         value={sets}
         onChange={(e) => setSets(e.target.value)}
-        fullWidth
-        margin="normal"
         required
       />
+
       <TextField
+        fullWidth
+        margin="normal"
         label="Количество повторений"
+        type="number"
         value={reps}
         onChange={(e) => setReps(e.target.value)}
-        fullWidth
-        margin="normal"
         required
       />
-      <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
+
+      <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
         Добавить
       </Button>
     </Box>

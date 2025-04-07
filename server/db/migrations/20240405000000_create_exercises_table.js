@@ -1,7 +1,8 @@
 'use strict';
 
+/** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Exercises', {
       id: {
         allowNull: false,
@@ -14,44 +15,48 @@ module.exports = {
         allowNull: false,
       },
       description: {
-        type: Sequelize.STRING,
-        allowNull: false,
+        type: Sequelize.TEXT,
+        allowNull: true,
       },
       category: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       difficulty: {
-        type: Sequelize.STRING,
+        type: Sequelize.ENUM('beginner', 'intermediate', 'advanced'),
         allowNull: false,
+        defaultValue: 'beginner',
       },
-      muscle_group: {
-        type: Sequelize.STRING,
+      muscle_groups: {
+        type: Sequelize.ARRAY(Sequelize.STRING),
         allowNull: false,
+        defaultValue: [],
       },
       equipment: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
-      },
-      image_url: {
         type: Sequelize.STRING,
         allowNull: true,
+      },
+      image: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      exercise_type: {
+        type: Sequelize.ENUM('compound', 'isolation', 'cardio', 'bodyweight'),
+        allowNull: false,
+        defaultValue: 'compound',
       },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.fn('NOW'),
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.fn('NOW'),
       },
     });
   },
 
-  down: async (queryInterface, Sequelize) => {
+  async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Exercises');
   },
 };
