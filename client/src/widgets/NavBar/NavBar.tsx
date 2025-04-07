@@ -15,6 +15,8 @@ import { CLIENT_ROUTES } from "@/shared/enums/clientRoutes";
 import ProfileForm from '@/features/ProfileForm/ProfileForm';
 import { IUserProfile } from '@/entities/user/model';
 import { getUserColor } from '@/shared/utils/userColor';
+import { AuthModal } from '@/shared/ui/AuthModal/AuthModal';
+import { useTheme } from '@mui/material/styles';
 
 const styles = {
   navLink: {
@@ -136,6 +138,8 @@ export default function NavBar(): React.JSX.Element {
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
   const profileOpen = Boolean(profileAnchorEl);
+  const theme = useTheme();
+  const [authModalOpen, setAuthModalOpen] = React.useState(false);
 
   React.useEffect(() => {
     const loadProfile = async (): Promise<void> => {
@@ -225,156 +229,179 @@ export default function NavBar(): React.JSX.Element {
     };
   }, [user]);
 
+  const handleMenu = (event: React.MouseEvent<HTMLElement>): void => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleNavigate = (route: string): void => {
+    if (!user) {
+      setAuthModalOpen(true);
+      return;
+    }
+    navigate(route);
+  };
+
   return (
-    <Box sx={{ flexGrow: 1, ...styles.box }}>
-      <AppBar position="static" sx={styles.appBar}>
-        <Toolbar sx={styles.toolbar}>
-          <Box sx={styles.navContainer}>
-            <Typography variant="h6" component="div" sx={styles.typography}>
-              <NavLink to="/" style={styles.siteTitle}>
-                MotionLab
-            </NavLink>
-            </Typography>
-            <Typography variant="body1" sx={styles.typography}>
-              <Button 
-                component={NavLink} 
-                to={CLIENT_ROUTES.MAIN} 
-                sx={styles.navLink}
-                className={location.pathname === CLIENT_ROUTES.MAIN ? "active" : ""}
-              >
-                О проекте
-              </Button>
-            </Typography>
-            <Typography variant="body1" sx={styles.typography}>
-              <Button 
-                component={NavLink} 
-                to={user?.trener ? CLIENT_ROUTES.ALLCLIENTS : CLIENT_ROUTES.ALLTRENER} 
-                sx={styles.navLink}
-                className={location.pathname === (user?.trener ? CLIENT_ROUTES.ALLCLIENTS : CLIENT_ROUTES.ALLTRENER) ? "active" : ""}
-              >
-                {user?.trener ? "Список клиентов" : "Список тренеров"} 
-              </Button>
-            </Typography>
-            <Typography variant="body1" sx={styles.typography}>
-              <Button
-                onClick={handleCatalogExNavigate}
-                sx={{
-                  ...styles.navLink,
-                  backgroundColor: location.pathname.startsWith("/exercises") ? "rgb(42, 41, 223)" : "transparent",
-                  color: location.pathname.startsWith("/exercises") ? "white" : "black",
-                }}
-              >
-                Каталог упражнений
-              </Button>
-            </Typography>
-            <Typography variant="body1" sx={styles.typography}>
-              {user ? (
-                <>
-                  <Button 
-                    onClick={handleProfileClick}
-                    sx={styles.navLink}
-                    className={location.pathname === CLIENT_ROUTES.PROFILE ? "active" : ""}
-                  >
-                    Профиль
-                  </Button>
-                  <Menu
-                    anchorEl={profileAnchorEl}
-                    open={profileOpen}
-                    onClose={handleProfileClose}
-                    transitionDuration={0}
-                    PaperProps={{
-                      sx: {
-                        width: profileAnchorEl ? profileAnchorEl.getBoundingClientRect().width : "auto",
-                        maxHeight: 300,
-                        marginTop: "4px",
-                        borderRadius: "16px",
-                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
-                        border: "2px solid rgb(42, 41, 223)",
-                        backgroundColor: "white",
-                      },
-                    }}
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "left",
-                    }}
-                    transformOrigin={{
-                      vertical: "top",
-                      horizontal: "left",
-                    }}
-                  >
-                    <MenuItem 
-                      onClick={handleProfileNavigate} 
-                      sx={{
-                        ...styles.menuItem,
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        "&:hover": {
-                          backgroundColor: "rgb(42, 41, 223)",
-                          color: "white",
-                        },
-                      }}
-                    >
-                      Перейти в профиль
-                      <Avatar 
-                        src={getAvatarUrl()}
-                        sx={{ 
-                          width: 42, 
-                          height: 42,
-                          bgcolor: getUserColor(user.email),
-                          border: "2px solid rgb(42, 41, 223)",
-                        }}
-                      >
-                        {user.name?.[0] || "U"}
-                      </Avatar>
-                    </MenuItem>
-                    <MenuItem 
-                      onClick={() => setIsProfileFormOpen(true)} 
-                      sx={{
-                        ...styles.menuItem,
-                        "&:hover": {
-                          backgroundColor: "rgb(42, 41, 223)",
-                          color: "white",
-                        },
-                      }}
-                    >
-                      Настройка профиля
-                    </MenuItem>
-                    <MenuItem 
-                      onClick={handleLogout} 
-                      sx={{
-                        ...styles.menuItem,
-                        "&:hover": {
-                          backgroundColor: "rgb(42, 41, 223)",
-                          color: "white",
-                        },
-                      }}
-                    >
-                      Выйти
-                    </MenuItem>
-                  </Menu>
-                </>
-              ) : (
+    <>
+      <Box sx={{ flexGrow: 1, ...styles.box }}>
+        <AppBar position="static" sx={styles.appBar}>
+          <Toolbar sx={styles.toolbar}>
+            <Box sx={styles.navContainer}>
+              <Typography variant="h6" component="div" sx={styles.typography}>
+                <NavLink to="/" style={styles.siteTitle}>
+                  MotionLab
+                </NavLink>
+              </Typography>
+              <Typography variant="body1" sx={styles.typography}>
                 <Button 
                   component={NavLink} 
-                  to={CLIENT_ROUTES.LOGIN} 
+                  to={CLIENT_ROUTES.MAIN} 
                   sx={styles.navLink}
-                  className={location.pathname === CLIENT_ROUTES.LOGIN ? "active" : ""}
+                  className={location.pathname === CLIENT_ROUTES.MAIN ? "active" : ""}
                 >
-                  Войти
+                  О проекте
                 </Button>
-            )}
-          </Typography>
-          </Box>
-        </Toolbar>
-      </AppBar>
-      {isProfileFormOpen && (
-        <ProfileForm 
-          open={isProfileFormOpen} 
-          onClose={() => setIsProfileFormOpen(false)} 
-          userId={user?.id || 0}
-        />
-      )}
-    </Box>
+              </Typography>
+              <Typography variant="body1" sx={styles.typography}>
+                <Button 
+                  component={NavLink} 
+                  to={user?.trener ? CLIENT_ROUTES.ALLCLIENTS : CLIENT_ROUTES.ALLTRENER} 
+                  sx={styles.navLink}
+                  className={location.pathname === (user?.trener ? CLIENT_ROUTES.ALLCLIENTS : CLIENT_ROUTES.ALLTRENER) ? "active" : ""}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavigate(user?.trener ? CLIENT_ROUTES.ALLCLIENTS : CLIENT_ROUTES.ALLTRENER);
+                  }}
+                >
+                  {user?.trener ? "Список клиентов" : "Список тренеров"} 
+                </Button>
+              </Typography>
+              <Typography variant="body1" sx={styles.typography}>
+                <Button
+                  onClick={() => handleNavigate(CLIENT_ROUTES.CATALOGEXERCISE)}
+                  sx={{
+                    ...styles.navLink,
+                    backgroundColor: location.pathname.startsWith("/exercises") ? "rgb(42, 41, 223)" : "transparent",
+                    color: location.pathname.startsWith("/exercises") ? "white" : "black",
+                  }}
+                >
+                  Каталог упражнений
+                </Button>
+              </Typography>
+              <Typography variant="body1" sx={styles.typography}>
+                {user ? (
+                  <>
+                    <Button 
+                      onClick={handleProfileClick}
+                      sx={styles.navLink}
+                      className={location.pathname === CLIENT_ROUTES.PROFILE ? "active" : ""}
+                    >
+                      Профиль
+                    </Button>
+                    <Menu
+                      anchorEl={profileAnchorEl}
+                      open={profileOpen}
+                      onClose={handleProfileClose}
+                      transitionDuration={0}
+                      PaperProps={{
+                        sx: {
+                          width: profileAnchorEl ? profileAnchorEl.getBoundingClientRect().width : "auto",
+                          maxHeight: 300,
+                          marginTop: "4px",
+                          borderRadius: "16px",
+                          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
+                          border: "2px solid rgb(42, 41, 223)",
+                          backgroundColor: "white",
+                        },
+                      }}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "left",
+                      }}
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "left",
+                      }}
+                    >
+                      <MenuItem 
+                        onClick={handleProfileNavigate} 
+                        sx={{
+                          ...styles.menuItem,
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          "&:hover": {
+                            backgroundColor: "rgb(42, 41, 223)",
+                            color: "white",
+                          },
+                        }}
+                      >
+                        Перейти в профиль
+                        <Avatar 
+                          src={getAvatarUrl()}
+                          sx={{ 
+                            width: 42, 
+                            height: 42,
+                            bgcolor: getUserColor(user.email),
+                            border: "2px solid rgb(42, 41, 223)",
+                          }}
+                        >
+                          {user.name?.[0] || "U"}
+                        </Avatar>
+                      </MenuItem>
+                      <MenuItem 
+                        onClick={() => setIsProfileFormOpen(true)} 
+                        sx={{
+                          ...styles.menuItem,
+                          "&:hover": {
+                            backgroundColor: "rgb(42, 41, 223)",
+                            color: "white",
+                          },
+                        }}
+                      >
+                        Настройка профиля
+                      </MenuItem>
+                      <MenuItem 
+                        onClick={handleLogout} 
+                        sx={{
+                          ...styles.menuItem,
+                          "&:hover": {
+                            backgroundColor: "rgb(42, 41, 223)",
+                            color: "white",
+                          },
+                        }}
+                      >
+                        Выйти
+                      </MenuItem>
+                    </Menu>
+                  </>
+                ) : (
+                  <Button 
+                    component={NavLink} 
+                    to={CLIENT_ROUTES.LOGIN} 
+                    sx={styles.navLink}
+                    className={location.pathname === CLIENT_ROUTES.LOGIN ? "active" : ""}
+                  >
+                    Войти
+                  </Button>
+                )}
+              </Typography>
+            </Box>
+          </Toolbar>
+        </AppBar>
+        {isProfileFormOpen && (
+          <ProfileForm 
+            open={isProfileFormOpen} 
+            onClose={() => setIsProfileFormOpen(false)} 
+            userId={user?.id || 0}
+          />
+        )}
+      </Box>
+
+      <AuthModal 
+        open={authModalOpen} 
+        onClose={() => setAuthModalOpen(false)} 
+      />
+    </>
   );
 }
