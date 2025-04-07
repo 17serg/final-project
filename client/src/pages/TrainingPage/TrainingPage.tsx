@@ -200,6 +200,28 @@ export const TrainingPage = (): React.ReactElement => {
     navigate('/profile', { state: { scrollToCalendar: true } });
   };
 
+  const handleDeleteExercise = async (exerciseId: number): Promise<void> => {
+    if (window.confirm('Вы уверены, что хотите удалить это упражнение?')) {
+      try {
+        await TrainingApi.deleteExerciseOfTraining(exerciseId);
+        setExercises(exercises.filter((ex) => ex.id !== exerciseId));
+
+        setSnackbar({
+          open: true,
+          message: 'Упражнение удалено',
+          severity: 'success',
+        });
+      } catch (error) {
+        console.error('Ошибка при удалении упражнения:', error);
+        setSnackbar({
+          open: true,
+          message: 'Не удалось удалить упражнение',
+          severity: 'error',
+        });
+      }
+    }
+  };
+
   return (
     <Container maxWidth="md">
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -216,7 +238,7 @@ export const TrainingPage = (): React.ReactElement => {
             },
           }}
         >
-          Перейти к календарю
+          ◀ Вернуться в календарь
         </Button>
       </Box>
       <Box sx={{ py: 4 }}>
@@ -237,14 +259,18 @@ export const TrainingPage = (): React.ReactElement => {
           </>
         )}
 
-        <ExerciseList exercises={exercises} onMoveExercise={handleMoveExercise} />
+        <ExerciseList
+          exercises={exercises}
+          onMoveExercise={handleMoveExercise}
+          onDeleteExercise={handleDeleteExercise}
+        />
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
           <Button variant="contained" color="primary" onClick={handleAddExercise}>
             Добавить упражнение +
           </Button>
 
-          {training && (
+          {training && exercises.length > 0 && (
             <Button
               variant="contained"
               color={training.complete ? 'error' : 'success'}
