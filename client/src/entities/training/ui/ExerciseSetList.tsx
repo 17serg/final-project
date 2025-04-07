@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -21,13 +21,14 @@ import {
   Grid,
   Tooltip,
 } from '@mui/material';
-import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
 import {
   ExerciseSetApi,
   ExerciseSet,
   CreateExerciseSetDto,
   UpdateExerciseSetDto,
 } from '../api/ExerciseSetApi';
+import { debounce } from 'lodash';
 
 interface ExerciseSetListProps {
   exerciseOfTrainingId: number;
@@ -59,6 +60,34 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
     fetchExerciseSets();
   }, [exerciseOfTrainingId]);
 
+  // Изменяем обработчик для автоматического заполнения значений по умолчанию
+  useEffect(() => {
+    const updateEmptySets = async () => {
+      try {
+        const response = await ExerciseSetApi.getExerciseSets(exerciseOfTrainingId);
+        const sets = response.data.data;
+
+        // Обновляем каждый пустой сет значениями по умолчанию
+        const updatePromises = sets.map(async (set) => {
+          if (!set.actualWeight && !set.actualReps) {
+            await ExerciseSetApi.updateExerciseSet(set.id, {
+              actualWeight: plannedWeight,
+              actualReps: plannedReps,
+            });
+          }
+        });
+
+        await Promise.all(updatePromises);
+        await fetchExerciseSets(); // Перезагружаем сеты после обновления
+      } catch (error) {
+        console.error('Ошибка при обновлении подходов:', error);
+        setError('Не удалось обновить подходы');
+      }
+    };
+
+    updateEmptySets();
+  }, [exerciseOfTrainingId, plannedWeight, plannedReps]);
+
   // Загрузка подходов
   const fetchExerciseSets = async (): Promise<void> => {
     try {
@@ -86,36 +115,15 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
     setIsDialogOpen(true);
   };
 
-  // Закрытие диалога
-  const handleCloseDialog = (): void => {
-    setIsDialogOpen(false);
-    setEditingSet(null);
-    setFormData({
-      actualWeight: plannedWeight,
-      actualReps: plannedReps,
-      isCompleted: false,
-      notes: '',
-    });
-  };
-
-  // Обработка изменений в форме
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value,
-    });
-  };
-
-  // Сохранение подхода
+  // Изменяем обработчик создания нового подхода
   const handleSaveSet = async (): Promise<void> => {
     try {
       setIsSaving(true);
       if (editingSet) {
         // Обновление существующего подхода
         const updateData: UpdateExerciseSetDto = {
-          actualWeight: formData.actualWeight ? Number(formData.actualWeight) : undefined,
-          actualReps: formData.actualReps ? Number(formData.actualReps) : undefined,
+          actualWeight: formData.actualWeight ?? plannedWeight, // Используем значение по умолчанию
+          actualReps: formData.actualReps ?? plannedReps, // Используем значение по умолчанию
           isCompleted: formData.isCompleted,
           notes: formData.notes || undefined,
         };
@@ -124,8 +132,8 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
         // Создание нового подхода
         const createData: CreateExerciseSetDto = {
           setNumber: formData.setNumber as number,
-          actualWeight: formData.actualWeight ? Number(formData.actualWeight) : undefined,
-          actualReps: formData.actualReps ? Number(formData.actualReps) : undefined,
+          actualWeight: formData.actualWeight ?? plannedWeight, // Используем значение по умолчанию
+          actualReps: formData.actualReps ?? plannedReps, // Используем значение по умолчанию
           isCompleted: formData.isCompleted,
           notes: formData.notes || undefined,
         };
@@ -141,6 +149,32 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
     }
   };
 
+  // Изменяем начальное состояние formData
+  const resetFormData = () => {
+    setFormData({
+      actualWeight: plannedWeight,
+      actualReps: plannedReps,
+      isCompleted: false,
+      notes: '',
+    });
+  };
+
+  // Обновляем handleCloseDialog
+  const handleCloseDialog = (): void => {
+    setIsDialogOpen(false);
+    setEditingSet(null);
+    resetFormData();
+  };
+
+  // Обработка изменений в форме
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value,
+    });
+  };
+
   // Удаление подхода
   const handleDeleteSet = async (id: number): Promise<void> => {
     if (window.confirm('Вы уверены, что хотите удалить этот подход?')) {
@@ -154,16 +188,67 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
     }
   };
 
-  // Быстрое обновление статуса выполнения
+  // Оптимизированное обновление веса и повторений с debounce
+  const debouncedUpdateSet = useCallback(
+    debounce(async (setId: number, updateData: Partial<UpdateExerciseSetDto>) => {
+      try {
+        await ExerciseSetApi.updateExerciseSet(setId, updateData);
+        // Обновляем локальное состояние без перезагрузки с сервера
+        setExerciseSets((prevSets) =>
+          prevSets.map((set) => (set.id === setId ? { ...set, ...updateData } : set)),
+        );
+      } catch (error) {
+        console.error('Ошибка при обновлении подхода:', error);
+      }
+    }, 500),
+    [],
+  );
+
+  // Оптимизированное обновление статуса выполнения
   const handleToggleCompleted = async (set: ExerciseSet): Promise<void> => {
     try {
+      // Сначала обновляем UI
+      setExerciseSets((prevSets) =>
+        prevSets.map((s) => (s.id === set.id ? { ...s, isCompleted: !s.isCompleted } : s)),
+      );
+
+      // Затем отправляем запрос на сервер
       await ExerciseSetApi.updateExerciseSet(set.id, {
         isCompleted: !set.isCompleted,
       });
-      await fetchExerciseSets();
     } catch (error) {
+      // В случае ошибки возвращаем предыдущее состояние
+      setExerciseSets((prevSets) =>
+        prevSets.map((s) => (s.id === set.id ? { ...s, isCompleted: set.isCompleted } : s)),
+      );
       console.error('Ошибка при обновлении статуса подхода:', error);
       setError('Не удалось обновить статус подхода');
+    }
+  };
+
+  const handleAddSet = async () => {
+    try {
+      const newSetNumber = exerciseSets.length + 1;
+      const newSet = {
+        setNumber: newSetNumber,
+        actualWeight: plannedWeight,
+        actualReps: plannedReps,
+        isCompleted: false,
+      };
+
+      // Оптимистичное обновление UI
+      setExerciseSets((prev) => [...prev, { ...newSet, id: Date.now() }]);
+
+      await ExerciseSetApi.createExerciseSet(exerciseOfTrainingId, newSet);
+
+      // Тихое обновление данных с сервера
+      const response = await ExerciseSetApi.getExerciseSets(exerciseOfTrainingId);
+      setExerciseSets(response.data);
+    } catch (error) {
+      console.error('Ошибка при добавлении подхода:', error);
+      setError('Не удалось добавить подход');
+      // Возвращаем предыдущее состояние в случае ошибки
+      await fetchExerciseSets();
     }
   };
 
@@ -208,9 +293,12 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
                     value={set.actualWeight || ''}
                     onChange={(e) => {
                       const value = e.target.value ? Number(e.target.value) : undefined;
-                      ExerciseSetApi.updateExerciseSet(set.id, { actualWeight: value })
-                        .then(() => fetchExerciseSets())
-                        .catch((error) => console.error('Ошибка при обновлении веса:', error));
+                      // Обновляем локальное состояние немедленно
+                      setExerciseSets((prevSets) =>
+                        prevSets.map((s) => (s.id === set.id ? { ...s, actualWeight: value } : s)),
+                      );
+                      // Отправляем обновление на сервер с задержкой
+                      debouncedUpdateSet(set.id, { actualWeight: value });
                     }}
                     inputProps={{ min: 0, step: 0.5 }}
                     sx={{ width: '80px' }}
@@ -223,11 +311,12 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
                     value={set.actualReps || ''}
                     onChange={(e) => {
                       const value = e.target.value ? Number(e.target.value) : undefined;
-                      ExerciseSetApi.updateExerciseSet(set.id, { actualReps: value })
-                        .then(() => fetchExerciseSets())
-                        .catch((error) =>
-                          console.error('Ошибка при обновлении повторений:', error),
-                        );
+                      // Обновляем локальное состояние немедленно
+                      setExerciseSets((prevSets) =>
+                        prevSets.map((s) => (s.id === set.id ? { ...s, actualReps: value } : s)),
+                      );
+                      // Отправляем обновление на сервер с задержкой
+                      debouncedUpdateSet(set.id, { actualReps: value });
                     }}
                     inputProps={{ min: 0 }}
                     sx={{ width: '80px' }}
@@ -328,6 +417,10 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Button variant="outlined" onClick={handleAddSet} sx={{ mt: 2 }} startIcon={<AddIcon />}>
+        Добавить подход
+      </Button>
     </Box>
   );
 };

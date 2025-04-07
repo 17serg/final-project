@@ -80,4 +80,8 @@ export const TrainingApi = {
     );
     return response;
   },
+
+  deleteExerciseOfTraining: async (exerciseId: number): Promise<void> => {
+    return axiosInstance.delete(`/exercise-of-trainings/${exerciseId}`);
+  },
 };
