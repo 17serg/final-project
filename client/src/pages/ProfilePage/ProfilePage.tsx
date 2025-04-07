@@ -373,8 +373,7 @@ export default function ProfilePage(): React.JSX.Element {
           <Typography sx={styles.statLabel}>Количество тренировок</Typography>
         </Paper>
       </Box>
-
-      <Box
+      <Box 
         ref={calendarRef}
         sx={{ 
           display: "flex", 
