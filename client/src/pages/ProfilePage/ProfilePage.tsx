@@ -301,7 +301,6 @@ export default function ProfilePage(): React.JSX.Element {
   const getAvatarUrl = (): string => {
     if (profile?.avatar) {
       const baseUrl = import.meta.env.VITE_API.replace("/api", "");
-      // const baseUrl = import.meta.env.VITE_API.replace('/api', '');
       return `${baseUrl}${profile.avatar}`;
     }
     return "";
