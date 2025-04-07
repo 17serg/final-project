@@ -11,6 +11,8 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../../app/store";
 import { getUnreadCount, addMessage, socket } from '../../entities/chat/store/chatSlice';
+import { useLocation } from 'react-router-dom';
+
 
 const styles = {
   container: {
@@ -194,8 +196,10 @@ const styles = {
 export default function ProfilePage(): React.JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useUser();
+  const location = useLocation();
   const [profile, setProfile] = React.useState<IUserProfile | null>(null);
   const [activeTab, setActiveTab] = React.useState<number | null>(null);
+
   const userId = user?.id;
   const { messages, unreadCount } = useSelector((state: RootState) => state.chat);
 
@@ -223,6 +227,8 @@ export default function ProfilePage(): React.JSX.Element {
     (msg) => msg.receiverId === userId && !msg.isRead
   ).length;
 
+  const calendarRef = React.useRef<HTMLDivElement>(null);
+
   React.useEffect(() => {
     const loadProfile = async (): Promise<void> => {
       try {
@@ -237,6 +243,45 @@ export default function ProfilePage(): React.JSX.Element {
       loadProfile();
     }
   }, [user]);
+
+  // Добавляем обработчик события для обновления профиля
+  React.useEffect(() => {
+    const handleProfileUpdate = async (): Promise<void> => {
+      if (user) {
+        try {
+          const response = await UserApi.getProfile();
+          if (response.data) {
+            setProfile(response.data);
+          }
+        } catch (error) {
+          console.error('Error updating profile:', error);
+        }
+      }
+    };
+
+    // Добавляем слушатель события
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+
+    // Удаляем слушатель при размонтировании компонента
+    return (): void => {
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+    };
+  }, [user]);
+
+  // Обработка автоматической прокрутки к календарю
+  React.useEffect(() => {
+    if (location.state?.scrollToCalendar) {
+      // Активируем вкладку с календарем
+      setActiveTab(0);
+      
+      // Даем время на рендеринг вкладки и прокручиваем к календарю
+      setTimeout(() => {
+        if (calendarRef.current) {
+          calendarRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [location.state]);
 
   if (!user) {
     return <Typography>Пользователь не найден</Typography>;
@@ -256,16 +301,19 @@ export default function ProfilePage(): React.JSX.Element {
   const getAvatarUrl = (): string => {
     if (profile?.avatar) {
       const baseUrl = import.meta.env.VITE_API.replace("/api", "");
+      const baseUrl = import.meta.env.VITE_API.replace('/api', '');
       return `${baseUrl}${profile.avatar}`;
     }
     return "";
   };
 
   const getUserAvatarColor = (): string => {
+
     if (user?.email) {
       return getUserColor(user.email);
     }
     return "#BAE1FF";
+    return user ? getUserColor(user.email) : '#1976d2';
   };
 
   const handleTabClick = (index: number) => (event: React.MouseEvent): void => {
@@ -336,6 +384,18 @@ export default function ProfilePage(): React.JSX.Element {
           paddingBottom: "0px",
           position: "relative",
           zIndex: 10,
+
+      <Box 
+        ref={calendarRef}
+        sx={{ 
+          display: "flex", 
+          flexDirection: "column", 
+          width: "100%", 
+          marginTop: "12.5%",
+          marginBottom: "0px", 
+          paddingBottom: "0px",
+          position: "relative",
+          zIndex: 10
         }}
       >
         <Box sx={styles.tabsContainer}>

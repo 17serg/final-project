@@ -10,7 +10,7 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 import { useState, useEffect } from 'react';
 import { TrainingApi, ExerciseOfTraining } from '@/entities/training/api/TrainingApi';
 import AddExerciseForm from '@/entities/training/ui/AddExerciseForm';
@@ -18,6 +18,7 @@ import ExerciseList from '@/entities/training/ui/ExerciseList';
 
 export const TrainingPage = (): React.ReactElement => {
   const { trainingId } = useParams();
+  const navigate = useNavigate();
   const [training, setTraining] = useState<{ dayId: number; complete: boolean } | null>(null);
   const [showAddExerciseForm, setShowAddExerciseForm] = useState(false);
   const [exercises, setExercises] = useState<ExerciseOfTraining[]>([]);
@@ -195,8 +196,29 @@ export const TrainingPage = (): React.ReactElement => {
     setSnackbar({ ...snackbar, open: false });
   };
 
+  const handleNavigateToCalendar = (): void => {
+    navigate('/profile', { state: { scrollToCalendar: true } });
+  };
+
   return (
     <Container maxWidth="md">
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" component="h1">
+          Тренировка
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={handleNavigateToCalendar}
+          sx={{
+            backgroundColor: 'rgb(42, 41, 223)',
+            '&:hover': {
+              backgroundColor: 'rgba(42, 41, 223, 0.8)',
+            },
+          }}
+        >
+          Перейти к календарю
+        </Button>
+      </Box>
       <Box sx={{ py: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Создание тренировочного плана

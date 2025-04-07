@@ -63,7 +63,6 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
               const baseUrl = import.meta.env.VITE_API.replace('/api', '');
               setPreviewUrl(`${baseUrl}${response.data.avatar}`);
             } else {
-              // Сбрасываем URL для аватара, если его нет
               setPreviewUrl(null);
             }
           }
@@ -79,21 +78,69 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     try {
-      await UserApi.updateProfile(formData);
+      const formDataToSend = new FormData();
+      formDataToSend.append('gender', formData.gender);
+      formDataToSend.append('trainingExperience', formData.trainingExperience === '' ? '0' : formData.trainingExperience.toString());
+      formDataToSend.append('about', formData.about);
+      
+      if (fileInputRef.current?.files?.[0]) {
+        formDataToSend.append('avatar', fileInputRef.current.files[0]);
+      }
+      
+      const response = await UserApi.updateProfile(formDataToSend);
+      
+      if (response.data) {
+        const baseUrl = import.meta.env.VITE_API.replace('/api', '');
+        setPreviewUrl(response.data.avatar ? `${baseUrl}${response.data.avatar}` : null);
+      }
+      
       onClose();
-      // Генерируем событие обновления профиля
       window.dispatchEvent(new Event('profileUpdated'));
     } catch (error) {
       console.error('Error updating profile:', error);
     }
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    const { name, value } = event.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const { name, value } = e.target;
+    
+    if (name === 'trainingExperience') {
+      // Если поле пустое, устанавливаем пустую строку
+      if (value === '') {
+        setFormData(prev => ({
+          ...prev,
+          [name]: '',
+          UserProfile: {
+            ...prev.UserProfile,
+            [name]: ''
+          }
+        }));
+        return;
+      }
+
+      // Преобразуем значение в число и проверяем, что оно не отрицательное
+      const numValue = parseInt(value, 10);
+      if (isNaN(numValue) || numValue < 0) {
+        return; // Игнорируем отрицательные значения
+      }
+      setFormData(prev => ({
+        ...prev,
+        [name]: numValue,
+        UserProfile: {
+          ...prev.UserProfile,
+          [name]: numValue
+        }
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        UserProfile: {
+          ...prev.UserProfile,
+          [name]: value
+        }
+      }));
+    }
   };
 
   const handleSelectChange = (event: SelectChangeEvent): void => {
@@ -235,7 +282,7 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
             name="trainingExperience"
             type="number"
             value={formData.trainingExperience}
-            onChange={handleChange}
+            onChange={handleInputChange}
             sx={{ 
               mt: 2,
               '& .MuiOutlinedInput-root': {
@@ -255,7 +302,7 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
             multiline
             rows={4}
             value={formData.about}
-            onChange={handleChange}
+            onChange={handleInputChange}
             sx={{ 
               mt: 2,
               '& .MuiOutlinedInput-root': {
