@@ -30,49 +30,37 @@ const EXERCISE_TYPES = [
   { value: 'bodyweight', label: 'С весом тела' },
 ];
 
-const DIFFICULTY_LEVELS = [
-  { value: 'beginner', label: 'Начальный' },
-  { value: 'intermediate', label: 'Средний' },
-  { value: 'advanced', label: 'Продвинутый' },
-];
-
 const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
   const [exerciseId, setExerciseId] = useState('');
   const [duration, setDuration] = useState('');
   const [weight, setWeight] = useState('');
   const [sets, setSets] = useState('');
   const [reps, setReps] = useState('');
-  const [muscleGroups, setMuscleGroups] = useState<string[]>([]);
-  const [selectedMuscleGroups, setSelectedMuscleGroups] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [exerciseType, setExerciseType] = useState<Exercise['exercise_type']>('compound');
-  const [difficulty, setDifficulty] = useState<Exercise['difficulty']>('beginner');
 
   useEffect(() => {
-    const fetchMuscleGroups = async () => {
+    const fetchCategories = async () => {
       try {
-        const response = await ExerciseApi.getMuscleGroups();
-        setMuscleGroups(response.data);
+        const response = await ExerciseApi.getCategories();
+        setCategories(response.data);
       } catch (error) {
-        console.error('Ошибка при получении групп мышц:', error);
+        console.error('Ошибка при получении категорий:', error);
       }
     };
 
-    fetchMuscleGroups();
+    fetchCategories();
   }, []);
 
   useEffect(() => {
     const fetchExercises = async () => {
-      if (selectedMuscleGroups.length > 0) {
+      if (selectedCategory) {
         try {
-          const exercises = await Promise.all(
-            selectedMuscleGroups.map((group) => ExerciseApi.getExercisesByMuscleGroup(group)),
-          );
-          const uniqueExercises = [
-            ...new Set(exercises.flatMap((response: { data: Exercise[] }) => response.data)),
-          ] as Exercise[];
-          setExercises(uniqueExercises);
+          const response = await ExerciseApi.getExercisesByCategory(selectedCategory);
+          setExercises(response.data);
         } catch (error) {
           console.error('Ошибка при получении упражнений:', error);
         }
@@ -82,11 +70,10 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
     };
 
     fetchExercises();
-  }, [selectedMuscleGroups]);
+  }, [selectedCategory]);
 
-  const handleMuscleGroupsChange = (event: any) => {
-    const value = event.target.value;
-    setSelectedMuscleGroups(typeof value === 'string' ? value.split(',') : value);
+  const handleCategoryChange = (event: any) => {
+    setSelectedCategory(event.target.value);
   };
 
   const handleExerciseChange = (event: any) => {
@@ -113,23 +100,15 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
       </Typography>
 
       <FormControl fullWidth margin="normal">
-        <InputLabel>Группы мышц</InputLabel>
+        <InputLabel>Категория</InputLabel>
         <Select
-          multiple
-          value={selectedMuscleGroups}
-          onChange={handleMuscleGroupsChange}
-          input={<OutlinedInput label="Группы мышц" />}
-          renderValue={(selected) => (
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-              {selected.map((value) => (
-                <Chip key={value} label={value} />
-              ))}
-            </Box>
-          )}
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          label="Категория"
         >
-          {muscleGroups.map((group) => (
-            <MenuItem key={group} value={group}>
-              {group}
+          {categories.map((category) => (
+            <MenuItem key={category} value={category}>
+              {category}
             </MenuItem>
           ))}
         </Select>
@@ -151,68 +130,68 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
       </FormControl>
 
       <FormControl fullWidth margin="normal">
-        <InputLabel>Сложность</InputLabel>
-        <Select
-          value={difficulty}
-          onChange={(e) => setDifficulty(e.target.value as Exercise['difficulty'])}
-          label="Сложность"
-        >
-          {DIFFICULTY_LEVELS.map((level) => (
-            <MenuItem key={level.value} value={level.value}>
-              {level.label}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <FormControl fullWidth margin="normal">
         <InputLabel>Упражнение</InputLabel>
         <Select value={exerciseId} onChange={handleExerciseChange} label="Упражнение" required>
           {exercises.map((exercise) => (
             <MenuItem key={exercise.id} value={exercise.id}>
-              {exercise.name}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                {exercise.image && (
+                  <img
+                    src={exercise.image}
+                    alt={exercise.name}
+                    style={{ width: 30, height: 30, objectFit: 'cover' }}
+                  />
+                )}
+                {exercise.name}
+              </Box>
             </MenuItem>
           ))}
         </Select>
       </FormControl>
 
-      <TextField
-        fullWidth
-        margin="normal"
-        label="Длительность (сек)"
-        type="number"
-        value={duration}
-        onChange={(e) => setDuration(e.target.value)}
-      />
+      {selectedCategory === 'Кардио' ? (
+        <TextField
+          fullWidth
+          margin="normal"
+          label="Длительность (сек)"
+          type="number"
+          value={duration}
+          onChange={(e) => setDuration(e.target.value)}
+          required
+        />
+      ) : (
+        <>
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Вес (кг)"
+            type="number"
+            value={weight}
+            onChange={(e) => setWeight(e.target.value)}
+            required
+          />
 
-      <TextField
-        fullWidth
-        margin="normal"
-        label="Вес (кг)"
-        type="number"
-        value={weight}
-        onChange={(e) => setWeight(e.target.value)}
-      />
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Количество подходов"
+            type="number"
+            value={sets}
+            onChange={(e) => setSets(e.target.value)}
+            required
+          />
 
-      <TextField
-        fullWidth
-        margin="normal"
-        label="Количество подходов"
-        type="number"
-        value={sets}
-        onChange={(e) => setSets(e.target.value)}
-        required
-      />
-
-      <TextField
-        fullWidth
-        margin="normal"
-        label="Количество повторений"
-        type="number"
-        value={reps}
-        onChange={(e) => setReps(e.target.value)}
-        required
-      />
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Количество повторений"
+            type="number"
+            value={reps}
+            onChange={(e) => setReps(e.target.value)}
+            required
+          />
+        </>
+      )}
 
       <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
         Добавить
