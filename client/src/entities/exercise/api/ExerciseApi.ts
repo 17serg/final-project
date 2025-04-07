@@ -12,69 +12,42 @@ export interface Exercise {
   exercise_type: 'compound' | 'isolation' | 'cardio' | 'bodyweight';
 }
 
-export class ExerciseApi {
-  private static instance: ExerciseApi;
-  private baseUrl: string;
+export const ExerciseApi = {
+  getAllExercises: async () => {
+    return await axiosInstance.get<Exercise[]>('/exercises');
+  },
 
-  private constructor() {
-    this.baseUrl = '/exercises';
-  }
+  getMuscleGroups: async () => {
+    return await axiosInstance.get<string[]>('/exercises/muscle-groups');
+  },
 
-  public static getInstance(): ExerciseApi {
-    if (!ExerciseApi.instance) {
-      ExerciseApi.instance = new ExerciseApi();
-    }
-    return ExerciseApi.instance;
-  }
+  getExercisesByMuscleGroup: async (muscleGroup: string) => {
+    return await axiosInstance.get<Exercise[]>(`/exercises/muscle-group/${muscleGroup}`);
+  },
 
-  async getAllExercises(): Promise<{ data: Exercise[] }> {
-    const response = await axiosInstance.get(this.baseUrl);
-    return response;
-  }
+  getExercisesByType: async (type: Exercise['exercise_type']) => {
+    return await axiosInstance.get<Exercise[]>(`/exercises/type/${type}`);
+  },
 
-  async getExerciseById(id: number): Promise<{ data: Exercise }> {
-    const response = await axiosInstance.get(`${this.baseUrl}/${id}`);
-    return response;
-  }
+  createExercise: async (exercise: Omit<Exercise, 'id'>) => {
+    return await axiosInstance.post<Exercise>('/exercises', exercise);
+  },
 
-  async getExercisesByCategory(category: string): Promise<{ data: Exercise[] }> {
-    const response = await axiosInstance.get(`${this.baseUrl}/category/${category}`);
-    return response;
-  }
+  updateExercise: async (id: number, exercise: Partial<Exercise>) => {
+    return await axiosInstance.put<Exercise>(`/exercises/${id}`, exercise);
+  },
 
-  async getMuscleGroups(): Promise<{ data: string[] }> {
-    const response = await axiosInstance.get(`${this.baseUrl}/muscle-groups`);
-    return response;
-  }
+  getCategories: async () => {
+    return await axiosInstance.get<string[]>('/exercises/categories');
+  },
 
-  async getExercisesByMuscleGroup(muscleGroup: string): Promise<{ data: Exercise[] }> {
-    const response = await axiosInstance.get(`${this.baseUrl}/muscle-group/${muscleGroup}`);
-    return response;
-  }
+  deleteExercise: async (id: number) => {
+    return await axiosInstance.delete(`/exercises/${id}`);
+  },
 
-  async getExercisesByType(type: Exercise['exercise_type']): Promise<{ data: Exercise[] }> {
-    const response = await axiosInstance.get(`${this.baseUrl}/type/${type}`);
-    return response;
-  }
+  
 
-  async createExercise(exercise: Omit<Exercise, 'id'>): Promise<{ data: Exercise }> {
-    const response = await axiosInstance.post(this.baseUrl, exercise);
-    return response;
-  }
-
-  async updateExercise(id: number, exercise: Partial<Exercise>): Promise<{ data: Exercise }> {
-    const response = await axiosInstance.put(`${this.baseUrl}/${id}`, exercise);
-    return response;
-  }
-
-  async deleteExercise(id: number): Promise<void> {
-    await axiosInstance.delete(`${this.baseUrl}/${id}`);
-  }
-
-  async getCategories(): Promise<{ data: string[] }> {
-    const response = await axiosInstance.get(`${this.baseUrl}/categories`);
-    return response;
-  }
-}
-
-export const exerciseApi = ExerciseApi.getInstance();
+  getExercisesByCategory: async (category: string) => {
+    return await axiosInstance.get<Exercise[]>(`/exercises/by-category/${category}`);
+  },
+};

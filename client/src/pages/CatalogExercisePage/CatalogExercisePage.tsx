@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Typography, Box, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
 import { ExerciseCategory } from '@/entities/exercise/ui/ExerciseCategory/ExerciseCategory';
-import { exerciseApi } from '@/entities/exercise/api/ExerciseApi';
+// import { exerciseApi } from '@/entities/exercise/api/ExerciseApi';
+import { ExerciseApi } from '@/entities/exercise/api/ExerciseApi';
 
 interface Exercise {
   id: number;
@@ -23,7 +24,7 @@ export default function CatalogExercisePage(): React.JSX.Element {
   useEffect(() => {
     const fetchExercises = async (): Promise<void> => {
       try {
-        const response = await exerciseApi.getAllExercises();
+        const response = await ExerciseApi.getAllExercises();
         const exercisesData = response.data as Exercise[];
         setExercises(exercisesData);
         

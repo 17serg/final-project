@@ -121,7 +121,7 @@ const styles = {
     width: "100%",
   },
   tab: {
-    marginTop: "0",
+    marginTop: "9px",
     fontSize: "1.1rem",
     fontWeight: 500,
     textTransform: "none",
