@@ -202,7 +202,9 @@ export default function NavBar(): React.JSX.Element {
       if (user) {
         try {
           const response = await UserApi.getProfile();
-          setProfile(response.data);
+          if (response.data) {
+            setProfile(response.data);
+          }
         } catch (error) {
           console.error('Error updating profile:', error);
         }

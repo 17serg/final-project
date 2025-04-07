@@ -7,6 +7,7 @@ import { getUserColor } from "@/shared/utils/userColor";
 import { ChatPage } from "../ChatPage/ChatPage";
 import { CalendarPage } from "../CalendarPage";
 import AnthropometryPage from "../AnthropometryPage/AnthropometryPage";
+import { useLocation } from 'react-router-dom';
 
 const styles = {
   container: {
@@ -188,8 +189,10 @@ const styles = {
 
 export default function ProfilePage(): React.JSX.Element {
   const { user } = useUser();
+  const location = useLocation();
   const [profile, setProfile] = React.useState<IUserProfile | null>(null);
   const [activeTab, setActiveTab] = React.useState<number | null>(null);
+  const calendarRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     const loadProfile = async (): Promise<void> => {
@@ -205,6 +208,45 @@ export default function ProfilePage(): React.JSX.Element {
       loadProfile();
     }
   }, [user]);
+
+  // Добавляем обработчик события для обновления профиля
+  React.useEffect(() => {
+    const handleProfileUpdate = async (): Promise<void> => {
+      if (user) {
+        try {
+          const response = await UserApi.getProfile();
+          if (response.data) {
+            setProfile(response.data);
+          }
+        } catch (error) {
+          console.error('Error updating profile:', error);
+        }
+      }
+    };
+
+    // Добавляем слушатель события
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+
+    // Удаляем слушатель при размонтировании компонента
+    return (): void => {
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+    };
+  }, [user]);
+
+  // Обработка автоматической прокрутки к календарю
+  React.useEffect(() => {
+    if (location.state?.scrollToCalendar) {
+      // Активируем вкладку с календарем
+      setActiveTab(0);
+      
+      // Даем время на рендеринг вкладки и прокручиваем к календарю
+      setTimeout(() => {
+        if (calendarRef.current) {
+          calendarRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [location.state]);
 
   if (!user) {
     return <Typography>Пользователь не найден</Typography>;
@@ -224,7 +266,6 @@ export default function ProfilePage(): React.JSX.Element {
   // Формируем URL для аватара
   const getAvatarUrl = (): string => {
     if (profile?.avatar) {
-      // Убираем /api из VITE_API, так как статические файлы обслуживаются напрямую
       const baseUrl = import.meta.env.VITE_API.replace('/api', '');
       return `${baseUrl}${profile.avatar}`;
     }
@@ -233,10 +274,7 @@ export default function ProfilePage(): React.JSX.Element {
 
   // Получаем цвет пользователя для аватара
   const getUserAvatarColor = (): string => {
-    if (user?.email) {
-      return getUserColor(user.email);
-    }
-    return "#BAE1FF"; // Возвращаем нежно-голубой цвет по умолчанию
+    return user ? getUserColor(user.email) : '#1976d2';
   };
 
   // Функция для обработки клика по вкладке
@@ -303,16 +341,19 @@ export default function ProfilePage(): React.JSX.Element {
         </Paper>
       </Box>
 
-      <Box sx={{ 
-        display: "flex", 
-        flexDirection: "column", 
-        width: "100%", 
-        marginTop: "12.5%",
-        marginBottom: "0px", 
-        paddingBottom: "0px",
-        position: "relative",
-        zIndex: 10
-      }}>
+      <Box 
+        ref={calendarRef}
+        sx={{ 
+          display: "flex", 
+          flexDirection: "column", 
+          width: "100%", 
+          marginTop: "12.5%",
+          marginBottom: "0px", 
+          paddingBottom: "0px",
+          position: "relative",
+          zIndex: 10
+        }}
+      >
         <Box sx={styles.tabsContainer}>
           <Box sx={styles.tabs}>
             <Box sx={styles.tabsWrapper}>

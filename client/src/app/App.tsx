@@ -1,20 +1,29 @@
 import React from "react";
-import RouterProvider from "./router/RouterProvider";
 import { UserProvider } from "@/entities/user/provider/UserProvider";
 import { Provider } from "react-redux";
 import { store } from "./store";
+import { RouterProvider } from "./router/RouterProvider";
+import { AnimatedBackground } from "@/shared/ui/AnimatedBackground/AnimatedBackground";
+import { Box } from "@mui/material";
 
+const styles = {
+  appContainer: {
+    minHeight: '90vh',
+    position: 'relative',
+    zIndex: 1,
+    // backgroundColor: 'rgba(255, 255, 255, 0.9)',
+  }
+};
 
-function App(): React.JSX.Element {
+export default function App(): React.JSX.Element {
   return (
-    // <BookProvider>
-      <UserProvider>
+    <UserProvider>
       <Provider store={store}>
-        <RouterProvider />;
-        </Provider>
-      </UserProvider>
-    // </BookProvider>
+        <AnimatedBackground />
+        <Box sx={styles.appContainer}>
+          <RouterProvider />
+        </Box>
+      </Provider>
+    </UserProvider>
   );
 }
-
-export default App;
