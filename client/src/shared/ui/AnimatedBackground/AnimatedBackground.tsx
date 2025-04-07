@@ -28,8 +28,8 @@ const styles = {
 export const AnimatedBackground: React.FC = () => {
   const [currentImage, setCurrentImage] = React.useState(0);
   const images = [
-    '/background/photo_2025-04-07_12-11-45.jpg',
-    '/background/photo_2025-04-07_12-11-49.jpg'
+    // '/background/photo_2025-04-07_12-11-45.jpg',
+    // '/background/photo_2025-04-07_12-11-49.jpg'
   ];
 
   React.useEffect(() => {
