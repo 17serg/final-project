@@ -57,7 +57,6 @@ export function ChatPage(): React.JSX.Element {
   // Получение количества непрочитанных сообщений
   useEffect(() => {
     if (userId) {
-      console.log(userId ,'+++++')
       dispatch(getUnreadCount(userId));
     }
   }, [userId]);
@@ -244,24 +243,24 @@ export function ChatPage(): React.JSX.Element {
               display: 'flex',
               flexDirection: 'column',
             }}>
-              {filteredMessages.map((msg) => (
-                <div key={msg.id} style={{ padding: '5px', borderRadius: '5px' }}>
-                  <p>
-                    <strong>{msg.senderId === userId ? 'Вы' : 'Собеседник'}:</strong> {msg.text}
-                    <br />
-                    <span style={{ fontSize: '12px', color: 'gray' }}>
-                      {formatTime(msg.createdAt)}{' '}
-                      {msg.senderId === userId && (
-                        <>
-                          {msg.isSent ? '✅' : '⌛'} {msg.isRead ? '✅' : ''}
-                        </>
-                      )}
-                    </span>
-                  </p>
-                  <MessageReactions message={msg} />
-                  <ReactionPicker messageId={msg.id!} />
-                </div>
-              ))}
+              {filteredMessages.map((msg, index) => (
+  <div key={`${msg.id}-${userId}-${index}`} style={{ padding: '5px', borderRadius: '5px' }}>
+    <p>
+      <strong>{msg.senderId === userId ? 'Вы' : 'Собеседник'}:</strong> {msg.text}
+      <br />
+      <span style={{ fontSize: '12px', color: 'gray' }}>
+        {formatTime(msg.createdAt)}{' '}
+        {msg.senderId === userId && (
+          <>
+            {msg.isSent ? '✅' : '⌛'} {msg.isRead ? '✅' : ''}
+          </>
+        )}
+      </span>
+    </p>
+    <MessageReactions message={msg} />
+    <ReactionPicker messageId={msg.id!} />
+  </div>
+))}
               <div ref={messagesEndRef} />
             </div>
 
