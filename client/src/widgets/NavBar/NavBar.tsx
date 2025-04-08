@@ -28,20 +28,21 @@ const styles = {
     fontWeight: 500,
     display: "block",
     width: "100%",
-    border: "2px solid rgb(42, 41, 223)",
+    border: "2px solid white",
     borderRadius: "16px",
     padding: "8px 16px",
     transition: "all 0.3s ease",
     textTransform: "none",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
     "&:hover": {
-      backgroundColor: "rgb(42, 41, 223)",
+      background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.55), rgba(187, 187, 187, 0.42) 70%)',
       color: "white",
       boxShadow: "0 6px 12px rgba(42, 41, 223, 0.3)",
     },
     "&.active": {
-      backgroundColor: "rgb(42, 41, 223)",
-    color: "white",
+      background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.55), rgba(187, 187, 187, 0.42) 70%)',
+      backdropFilter: "blur(9px)",
+      color: "white",
       boxShadow: "0 6px 12px rgba(42, 41, 223, 0.3)",
     },
   },
@@ -278,7 +279,12 @@ export default function NavBar(): React.JSX.Element {
               </Typography>
               <Typography variant="body1" sx={styles.typography}>
                 <Button
-                  onClick={() => handleNavigate(CLIENT_ROUTES.CATALOGEXERCISE)}
+                  component={NavLink} 
+                  to={CLIENT_ROUTES.CATALOGEXERCISE}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavigate(CLIENT_ROUTES.CATALOGEXERCISE);
+                  }}
                   sx={{
                     ...styles.navLink,
                     backgroundColor: location.pathname.startsWith("/exercises") ? "rgb(42, 41, 223)" : "transparent",
@@ -310,8 +316,9 @@ export default function NavBar(): React.JSX.Element {
                           marginTop: "4px",
                           borderRadius: "16px",
                           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
-                          border: "2px solid rgb(42, 41, 223)",
-                          backgroundColor: "white",
+                          color: "white",
+                          // border: "2px solid white",
+                          background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
                         },
                       }}
                       anchorOrigin={{
@@ -331,7 +338,7 @@ export default function NavBar(): React.JSX.Element {
                           justifyContent: "space-between",
                           alignItems: "center",
                           "&:hover": {
-                            backgroundColor: "rgb(42, 41, 223)",
+                            backgroundColor: 'rgba(160, 158, 158, 0.57)',
                             color: "white",
                           },
                         }}
@@ -343,7 +350,7 @@ export default function NavBar(): React.JSX.Element {
                             width: 42, 
                             height: 42,
                             bgcolor: getUserColor(user.email),
-                            border: "2px solid rgb(42, 41, 223)",
+                            border: "2px solid rgba(161, 161, 161, 0.93)",
                           }}
                         >
                           {user.name?.[0] || "U"}
@@ -354,7 +361,7 @@ export default function NavBar(): React.JSX.Element {
                         sx={{
                           ...styles.menuItem,
                           "&:hover": {
-                            backgroundColor: "rgb(42, 41, 223)",
+                            backgroundColor: 'rgba(160, 158, 158, 0.57)',
                             color: "white",
                           },
                         }}
@@ -366,7 +373,7 @@ export default function NavBar(): React.JSX.Element {
                         sx={{
                           ...styles.menuItem,
                           "&:hover": {
-                            backgroundColor: "rgb(42, 41, 223)",
+                            backgroundColor: 'rgba(160, 158, 158, 0.57)',
                             color: "white",
                           },
                         }}

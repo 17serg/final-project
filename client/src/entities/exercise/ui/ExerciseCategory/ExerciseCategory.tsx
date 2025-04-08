@@ -15,7 +15,7 @@ const styles = {
   categoryTitle: {
     marginBottom: 2,
     paddingBottom: 1,
-    borderBottom: '2px solid #1976d2',
+    borderBottom: '2px solid rgb(160, 158, 158)',
   },
 };
 

@@ -178,6 +178,9 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
       fullWidth
       PaperProps={{
         sx: {
+          background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.29), rgba(143, 141, 141, 0.11) 70%)',
+          transition: "all 0.3s ease",
+          backdropFilter: "blur(20px)",
           borderRadius: '16px',
           boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
           overflow: 'hidden',
@@ -186,7 +189,8 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
     >
       <DialogTitle 
         sx={{ 
-          backgroundColor: 'rgb(42, 41, 223)', 
+          backgroundColor: 'rgba(80, 80, 80, 0.75)', 
+          borderRadius: '16px 16px 0px 0px',
           color: 'white',
           fontWeight: 'bold',
           boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
@@ -255,7 +259,7 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
           />
           
           <FormControl fullWidth>
-            <InputLabel id="gender-label">Пол</InputLabel>
+            <InputLabel id="gender-label" sx={{ color: 'rgba(192, 192, 192, 0.9)' }}>Пол</InputLabel>
             <Select
               labelId="gender-label"
               name="gender"
@@ -267,6 +271,22 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
                 boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
                 '&:hover': {
                   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgb(255, 255, 255)',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgb(255, 255, 255)',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgb(177, 174, 174)',
+                  borderWidth: '1px',
+                },
+                '& .MuiSelect-select': {
+                  color: 'rgb(255, 255, 255)',
+                },
+                '& .MuiSvgIcon-root': {
+                  color: 'rgb(255, 255, 255)',
                 }
               }}
             >
@@ -290,6 +310,22 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
                 boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
                 '&:hover': {
                   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgb(255, 255, 255)',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgb(255, 255, 255)',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgb(255, 255, 255)',
+                  borderWidth: '1px',
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(255, 255, 255, 0.9)',
+                },
+                '& .MuiInputBase-input': {
+                  color: 'rgba(255, 255, 255, 0.9)',
                 }
               }
             }}
@@ -310,6 +346,22 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
                 boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
                 '&:hover': {
                   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(255, 255, 255, 0.7)',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(255, 255, 255, 0.9)',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(255, 255, 255, 0.9)',
+                  borderWidth: '1px',
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(255, 255, 255, 0.9)',
+                },
+                '& .MuiInputBase-input': {
+                  color: 'rgba(255, 255, 255, 0.9)',
                 }
               }
             }}
@@ -320,7 +372,7 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
         <Button 
           onClick={onClose} 
           sx={{ 
-            color: 'text.secondary',
+            color: 'rgba(167, 167, 167, 0.9)',
             boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
             '&:hover': {
               boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
@@ -333,11 +385,11 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
           onClick={handleSubmit} 
           variant="contained"
           sx={{ 
-            backgroundColor: 'rgb(42, 41, 223)',
-            boxShadow: '0 4px 8px rgba(42, 41, 223, 0.3)',
+            backgroundColor: 'rgba(128, 128, 128, 0.9)',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
             '&:hover': {
-              backgroundColor: 'rgba(42, 41, 223, 0.8)',
-              boxShadow: '0 6px 12px rgba(42, 41, 223, 0.4)',
+              backgroundColor: 'rgba(128, 128, 128, 0.7)',
+              boxShadow: '0 6px 12px rgba(0, 0, 0, 0.25)',
             }
           }}
         >

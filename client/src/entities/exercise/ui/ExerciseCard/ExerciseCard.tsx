@@ -8,11 +8,14 @@ interface ExerciseCardProps {
 
 const styles = {
   card: {
+    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+    transition: "all 0.3s ease",
+    backdropFilter: "blur(9px)",
+    boxShadow: "0 6px 8px rgba(0, 0, 0, 0.4)",
     maxWidth: 300,
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    transition: 'transform 0.2s',
     '&:hover': {
       transform: 'scale(1.02)',
     },
@@ -22,6 +25,7 @@ const styles = {
     objectFit: 'cover',
   },
   content: {
+    color: 'white',
     flexGrow: 1,
   },
   category: {
@@ -54,7 +58,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise }) => {
         <Typography gutterBottom variant="h6" component="div">
           {exercise.name}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="rgba(230, 230, 230, 0.62)">
           {exercise.description}
         </Typography>
       </CardContent>

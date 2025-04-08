@@ -23,6 +23,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
         maxWidth: '90%',
         margin: '20px',
         borderRadius: '8px',
+        background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.73), rgba(128, 128, 128, 0.73) 70%)',
+        transition: "all 0.3s ease",
+        backdropFilter: "blur(9px)",
         padding: '20px',
         position: 'relative',
         overflow: 'visible',
@@ -67,9 +70,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
           color="primary" 
           onClick={handleConfirm}
           sx={{ 
-            backgroundColor: 'rgb(42, 41, 223)',
+            backgroundColor: 'rgba(160, 158, 158, 0.57)',
             '&:hover': {
-              backgroundColor: 'rgb(32, 31, 173)',
+              backgroundColor: 'rgb(160, 158, 158)',
             }
           }}
         >

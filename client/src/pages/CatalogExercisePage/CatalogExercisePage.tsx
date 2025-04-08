@@ -61,10 +61,51 @@ export default function CatalogExercisePage(): React.JSX.Element {
       mb: 4,
     },
     title: {
+      color: 'white',
       textAlign: 'center',
     },
     filter: {
+      background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+      transition: "all 0.3s ease",
+      backdropFilter: "blur(10px)",
+      borderRadius: '8px',
       minWidth: 200,
+      '& .MuiOutlinedInput-notchedOutline': {
+        borderColor: 'rgba(0, 0, 0, 0.7)',
+      },
+      '&:hover .MuiOutlinedInput-notchedOutline': {
+        borderColor: 'rgba(128, 128, 128, 0.9)',
+      },
+      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+        borderColor: 'rgba(128, 128, 128, 0.9)',
+        borderWidth: '1px',
+      },
+      '& .MuiSelect-select': {
+        color: 'rgba(128, 128, 128, 0.9)',
+      },
+      '& .MuiInputLabel-root': {
+        color: 'rgba(207, 207, 207, 0.9)',
+      },
+      '& .MuiSvgIcon-root': {
+        color: 'rgba(207, 207, 207, 0.9)',
+      },
+      '& .MuiOutlinedInput-root': {
+        '&.Mui-focused': {
+          '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'rgba(128, 128, 128, 0.9)',
+            borderWidth: '1px',
+          },
+        },
+      },
+      '& .MuiMenuItem-root': {
+        color: 'rgba(128, 128, 128, 0.9)',
+        '&.Mui-selected': {
+          backgroundColor: 'rgba(128, 128, 128, 0.2)',
+        },
+        '&:hover': {
+          backgroundColor: 'rgba(128, 128, 128, 0.1)',
+        },
+      },
     },
   };
 

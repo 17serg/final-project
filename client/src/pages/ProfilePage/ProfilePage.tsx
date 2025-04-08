@@ -26,14 +26,18 @@ const styles = {
     paddingRight: "20px",
     gap: "0px",
     marginBottom: "0px",
+    
   },
   profileCard: {
     width: "100%",
     maxWidth: "800px",
     padding: "30px",
     borderRadius: "16px",
-    backgroundColor: "white",
+    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+    transition: "all 0.3s ease",
+    backdropFilter: "blur(9px)",
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.7)",
+    
   },
   header: {
     width: "100%",
@@ -45,7 +49,7 @@ const styles = {
   avatar: {
     width: 300,
     height: 300,
-    border: "4px solid rgb(42, 41, 223)",
+    border: "4px solid rgba(160, 158, 158, 0.57)",
     "& .MuiAvatar-root": {
       fontSize: "120px",
     },
@@ -58,11 +62,11 @@ const styles = {
   userName: {
     fontSize: "2rem",
     fontWeight: "bold",
-    color: "black",
+    color: "white",
   },
   userEmail: {
     fontSize: "1.2rem",
-    color: "gray",
+    color: "rgba(255, 255, 255, 0.7)",
     marginBottom: "16px",
   },
   profileInfo: {
@@ -72,11 +76,11 @@ const styles = {
   },
   profileLabel: {
     fontSize: "1.2rem",
-    color: "gray",
+    color: "rgba(255, 255, 255, 0.7)",
   },
   profileValue: {
     fontSize: "1.4rem",
-    color: "black",
+    color: "rgba(255, 255, 255, 0.7)",
     marginBottom: "8px",
   },
   statsContainer: {
@@ -90,17 +94,19 @@ const styles = {
     borderRadius: "16px",
     textAlign: "center",
     minWidth: "200px",
-    backgroundColor: "white",
+    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+    transition: "all 0.3s ease",
+    backdropFilter: "blur(9px)",
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.7)",
   },
   statValue: {
     fontSize: "2rem",
     fontWeight: "bold",
-    color: "rgb(42, 41, 223)",
+    color: "white",
   },
   statLabel: {
     fontSize: "1.2rem",
-    color: "black",
+    color: "rgba(255, 255, 255, 0.7)",
     marginTop: "8px",
   },
   tabsContainer: {
@@ -120,16 +126,19 @@ const styles = {
     width: "100%",
   },
   tab: {
+    color: "white",
     marginTop: "9px",
     fontSize: "1.1rem",
     fontWeight: 500,
     textTransform: "none",
-    backgroundColor: "white",
+    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+    transition: "all 0.3s ease",
+    backdropFilter: "blur(9px)",
     boxShadow: "0 0px 8px rgba(0, 0, 0, 0.4)",
     borderTopLeftRadius: "16px",
     borderTopRightRadius: "16px",
-    border: "2px solid rgb(42, 41, 223)",
-    borderBottom: "0px solid rgb(42, 41, 223)",
+    border: "2px solid rgba(161, 161, 161, 0.93)",
+    borderBottom: "0px solid rgba(161, 161, 161, 0.93)",
     marginRight: "4px",
     padding: "8px 16px",
     minHeight: "40px",
@@ -137,7 +146,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    transition: "border-color 0.3s ease",
+
     flex: 1,
     position: "relative",
     "& .MuiTypography-root": {
@@ -148,19 +157,21 @@ const styles = {
   activeTab: {
     color: "white",
     fontWeight: "bold",
-    backgroundColor: "rgba(42, 41, 223, 0.7)",
+    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.55), rgba(187, 187, 187, 0.42) 70%)',
     marginBottom: "0px",
     position: "relative",
     zIndex: 3,
   },
   tabPanel: {
-    width: "95.9%",
+    width: "95.8%",
     padding: "20px",
-    backgroundColor: "rgba(42, 41, 223, 0.7)",
+    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+    transition: "all 0.3s ease",
+    backdropFilter: "blur(9px)",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
     borderRadius: "0 0 16px 16px",
     marginTop: "0px",
-    border: "2px solid rgb(42, 41, 223)",
+    border: "2px solid rgba(161, 161, 161, 0.93)",
     borderTop: "none",
     position: "relative",
     zIndex: 1,

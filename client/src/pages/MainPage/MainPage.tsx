@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router";
-import { CLIENT_ROUTES } from "@/shared/enums/clientRoutes";
+// import { CLIENT_ROUTES } from "@/shared/enums/clientRoutes";
 import { useUser } from '@/entities/user/hooks/useUser';
 
 const styles = {
@@ -43,11 +43,11 @@ const styles = {
     transform: "translateY(-50%)",
     padding: "16px 32px",
     fontSize: "1.5rem",
-    backgroundColor: "rgb(42, 41, 223)",
+    backgroundColor: "rgba(160, 158, 158, 0.57)",
     color: "white",
     borderRadius: "16px",
     "&:hover": {
-      backgroundColor: "rgb(32, 31, 173)",
+      backgroundColor: "rgb(160, 158, 158)",
     },
   },
   buttonsContainer: {
