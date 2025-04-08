@@ -3,6 +3,7 @@ import { Box, Typography, Avatar, Paper, Button } from '@mui/material';
 import { IUserProfile } from '@/entities/user/model';
 import { getUserColor } from '@/shared/utils/userColor';
 import { useUser } from '@/entities/user/hooks/useUser';
+import { useNavigate } from 'react-router-dom';
 
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
@@ -80,6 +81,19 @@ const styles = {
       backgroundColor: "rgb(22, 22, 24)",
     },
   },
+  chatButton: {
+    marginTop: "12px",
+    backgroundColor: "rgb(42, 41, 223)",
+    color: "white",
+    "&:hover": {
+      backgroundColor: "rgb(32, 31, 213)",
+    },
+  },
+  buttonsContainer: {
+    display: "flex",
+    gap: "10px",
+    marginTop: "12px",
+  },
 };
 
 export default function TranerCard({ char }: TranerCardProps): React.JSX.Element {
@@ -87,6 +101,7 @@ export default function TranerCard({ char }: TranerCardProps): React.JSX.Element
   const MAX_CHARS = 100;
   const { user } = useUser();
   const isTrainer = user?.trener || false;
+  const navigate = useNavigate();
 
   const getGenderText = (gender: string): string => {
     switch (gender) {
@@ -113,6 +128,16 @@ export default function TranerCard({ char }: TranerCardProps): React.JSX.Element
 
   const toggleExpand = (): void => {
     setIsExpanded(!isExpanded);
+  };
+
+  const handleChatClick = (): void => {
+    navigate('/profile', { 
+      state: { 
+        scrollToChat: true,
+        trainerId: char.id,
+        openChatWithTrainer: true // Добавляем флаг для открытия чата с конкретным тренером
+      } 
+    });
   };
 
   const renderAboutText = (): React.JSX.Element | null => {
@@ -170,6 +195,16 @@ export default function TranerCard({ char }: TranerCardProps): React.JSX.Element
         </Box>
 
         {renderAboutText()}
+
+        <Box sx={styles.buttonsContainer}>
+          <Button
+            variant="contained"
+            onClick={handleChatClick}
+            sx={styles.chatButton}
+          >
+            {isTrainer ? 'Написать тренеру' : 'Написать посетителю'}
+          </Button>
+        </Box>
       </Box>
     </Paper>
   );

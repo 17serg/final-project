@@ -10,9 +10,8 @@ import AnthropometryPage from "../AnthropometryPage/AnthropometryPage";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../../app/store";
-import { getUnreadCount, addMessage, socket } from '../../entities/chat/store/chatSlice';
+import { getUnreadCount, setChatPartner } from '../../entities/chat/store/chatSlice';
 import { useLocation } from 'react-router-dom';
-
 
 const styles = {
   container: {
@@ -199,35 +198,36 @@ export default function ProfilePage(): React.JSX.Element {
   const location = useLocation();
   const [profile, setProfile] = React.useState<IUserProfile | null>(null);
   const [activeTab, setActiveTab] = React.useState<number | null>(null);
+  const chatRef = React.useRef<HTMLDivElement>(null); // Добавляем ref для чата
 
   const userId = user?.id;
-  const { messages, unreadCount } = useSelector((state: RootState) => state.chat);
+  const { messages } = useSelector((state: RootState) => state.chat);
+
+  useEffect(() => {
+    console.log('ProfilePage location state:', location.state);
+    if (location.state?.scrollToChat) {
+      setActiveTab(3); // Открываем вкладку чата
+      if (location.state?.trainerId && location.state?.openChatWithTrainer) {
+        dispatch(setChatPartner(location.state.trainerId)); // Устанавливаем тренера как собеседника
+      }
+      // Увеличиваем задержку для прокрутки
+      setTimeout(() => {
+        if (chatRef.current) {
+          chatRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 500); // Увеличили задержку до 500мс
+    }
+  }, [location.state, dispatch]);
 
   useEffect(() => {
     if (userId) {
-      dispatch(getUnreadCount(userId)); // Получаем количество непрочитанных сообщений для текущего пользователя
-      
-      // Добавляем прослушивание сокета для новых сообщений
-      socket.on('newMessage', (message) => {
-        dispatch(addMessage(message));
-        
-        // Если сообщение предназначено текущему пользователю, обновляем счетчик непрочитанных
-        if (message.receiverId === userId) {
-          dispatch(getUnreadCount(userId));
-        }
-      });
-      
-      return () => {
-        socket.off('newMessage');
-      };
+      dispatch(getUnreadCount(userId)); 
     }
   }, [userId, dispatch]);
 
   const unreadMessagesCount = messages.filter(
     (msg) => msg.receiverId === userId && !msg.isRead
   ).length;
-
-  const calendarRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     const loadProfile = async (): Promise<void> => {
@@ -243,45 +243,6 @@ export default function ProfilePage(): React.JSX.Element {
       loadProfile();
     }
   }, [user]);
-
-  // Добавляем обработчик события для обновления профиля
-  React.useEffect(() => {
-    const handleProfileUpdate = async (): Promise<void> => {
-      if (user) {
-        try {
-          const response = await UserApi.getProfile();
-          if (response.data) {
-            setProfile(response.data);
-          }
-        } catch (error) {
-          console.error('Error updating profile:', error);
-        }
-      }
-    };
-
-    // Добавляем слушатель события
-    window.addEventListener('profileUpdated', handleProfileUpdate);
-
-    // Удаляем слушатель при размонтировании компонента
-    return (): void => {
-      window.removeEventListener('profileUpdated', handleProfileUpdate);
-    };
-  }, [user]);
-
-  // Обработка автоматической прокрутки к календарю
-  React.useEffect(() => {
-    if (location.state?.scrollToCalendar) {
-      // Активируем вкладку с календарем
-      setActiveTab(0);
-      
-      // Даем время на рендеринг вкладки и прокручиваем к календарю
-      setTimeout(() => {
-        if (calendarRef.current) {
-          calendarRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 100);
-    }
-  }, [location.state]);
 
   if (!user) {
     return <Typography>Пользователь не найден</Typography>;
@@ -307,12 +268,10 @@ export default function ProfilePage(): React.JSX.Element {
   };
 
   const getUserAvatarColor = (): string => {
-
     if (user?.email) {
       return getUserColor(user.email);
     }
     return "#BAE1FF";
-    return user ? getUserColor(user.email) : '#1976d2';
   };
 
   const handleTabClick = (index: number) => (event: React.MouseEvent): void => {
@@ -374,7 +333,7 @@ export default function ProfilePage(): React.JSX.Element {
         </Paper>
       </Box>
       <Box 
-        ref={calendarRef}
+        ref={chatRef} // Присваиваем ref для прокрутки к чату
         sx={{ 
           display: "flex", 
           flexDirection: "column", 

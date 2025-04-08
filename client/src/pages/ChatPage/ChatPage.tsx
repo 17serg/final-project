@@ -16,10 +16,13 @@ import {
 import { RootState, AppDispatch } from '../../app/store';
 import { useUser } from '@/entities/user/hooks/useUser';
 import { useSocketChat } from './../../entities/chat/api/socketApi';
+import { useLocation } from 'react-router-dom';
+import { CircularProgress } from '@mui/material';
 
 const REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '😡'];
 
 export function ChatPage(): React.JSX.Element {
+  const location = useLocation();
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useUser();
   const { emitCheckMessages } = useSocketChat();
@@ -30,6 +33,8 @@ export function ChatPage(): React.JSX.Element {
 
   const [text, setText] = useState('');
   const [chatPartnerId, setChatPartnerId] = useState<number | null>(null);
+  const [loadingMessages, setLoadingMessages] = useState<boolean>(false); // Состояние загрузки
+
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -41,11 +46,17 @@ export function ChatPage(): React.JSX.Element {
     }
   }, []);
 
-  // Обработка входа/выхода из чата
   useEffect(() => {
     if (chatPartnerId && userId) {
+      setLoadingMessages(true); // Устанавливаем состояние загрузки
       dispatch(joinChat({ userId, chatPartnerId }));
-      dispatch(fetchMessages({ userId, chatPartnerId }));
+      dispatch(fetchMessages({ userId, chatPartnerId })).then(() => {
+        setLoadingMessages(false); // Сбрасываем состояние загрузки после загрузки сообщений
+        // Прокручиваем к последнему сообщению после загрузки
+        if (messagesEndRef.current) {
+          messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
       emitCheckMessages(userId, chatPartnerId);
       
       return () => {
@@ -54,7 +65,6 @@ export function ChatPage(): React.JSX.Element {
     }
   }, [chatPartnerId, userId]);
 
-  // Получение количества непрочитанных сообщений
   useEffect(() => {
     if (userId) {
       dispatch(getUnreadCount(userId));
@@ -72,7 +82,7 @@ export function ChatPage(): React.JSX.Element {
     messages.filter(msg => 
       (msg.senderId === userId && msg.receiverId === chatPartnerId) ||
       (msg.senderId === chatPartnerId && msg.receiverId === userId)
-    ),
+    ).reverse(), // Изменено на .reverse() для отображения новых сообщений первыми
     [messages, userId, chatPartnerId]
   );
 
@@ -81,6 +91,13 @@ export function ChatPage(): React.JSX.Element {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [filteredMessages]);
+
+  useEffect(() => {
+    const { trainerId, openChatWithTrainer } = location.state || {};
+    if (trainerId && openChatWithTrainer) {
+      setChatPartnerId(trainerId);
+    }
+  }, [location.state]);
 
   const handleSendMessage = useCallback(() => {
     if (text.trim() && chatPartnerId !== null && userId !== undefined) {
@@ -119,10 +136,10 @@ export function ChatPage(): React.JSX.Element {
 
   const MessageReactions = useCallback(({ message }: { message: Message }) => {
     const reactions = message.reactions || {};
-    const reactionCounts = Object.values(reactions).reduce((acc, reaction) => {
+    const reactionCounts = Object.values(reactions).reduce<Record<string, number>>((acc, reaction) => {
       acc[reaction] = (acc[reaction] || 0) + 1;
       return acc;
-    }, {} as Record<string, number>);
+    }, {});
 
     return (
       <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
@@ -195,9 +212,18 @@ export function ChatPage(): React.JSX.Element {
   );
 
   return (
-    <div style={{ display: 'flex', gap: '20px' }}>
-      <div style={{ width: '250px', borderRight: '1px solid gray', paddingRight: '10px' }}>
-        <h3>Диалоги</h3>
+    <div style={{ display: 'flex', gap: '20px', backgroundColor: '#f3f4f8', height: '50vh' }}>
+      {/* Список диалогов */}
+      <div
+        style={{
+          width: '200px',
+          borderRight: '1px solid #e0e0e0',
+          paddingRight: '10px',
+          backgroundColor: 'white',
+          boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)',
+        }}
+      >
+        <h3 style={{ padding: '15px 0', textAlign: 'center', color: '#4a4a4a' }}>Диалоги</h3>
         {chatList.map((partner) => (
           <button
             key={partner.id}
@@ -205,80 +231,139 @@ export function ChatPage(): React.JSX.Element {
             style={{
               display: 'flex',
               width: '100%',
-              padding: '10px',
+              padding: '15px',
               margin: '5px 0',
-              border: '1px solid lightgray',
-              backgroundColor: chatPartnerId === partner.id ? '#ddd' : 'white',
+              border: 'none',
+              backgroundColor: chatPartnerId === partner.id ? '#e6f0ff' : 'white',
               cursor: 'pointer',
+              borderRadius: '10px',
+              transition: 'background-color 0.3s ease',
+              alignItems: 'center',
               position: 'relative',
+              boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.05)',
             }}
           >
-            <span style={{ flex: 1 }}>{partner.name} {partner.surname}</span>
+            <span style={{ flex: 1, fontWeight: '500', color: '#333' }}>
+              {partner.name} {partner.surname}
+            </span>
             {unreadMessagesCount(partner.id) > 0 && (
-              <span style={{
-                position: 'absolute',
-                right: '10px',
-                backgroundColor: 'red',
-                color: 'white',
-                borderRadius: '50%',
-                padding: '2px 6px',
-                fontSize: '12px',
-              }}>
+              <span
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '10px',
+                  backgroundColor: '#ff4747',
+                  color: 'white',
+                  borderRadius: '50%',
+                  padding: '5px 8px',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  minWidth: '20px',
+                  textAlign: 'center',
+                }}
+              >
                 {unreadMessagesCount(partner.id)}
               </span>
             )}
           </button>
         ))}
       </div>
-
-      <div style={{ flex: 1 }}>
-        <h2>Чат</h2>
+  
+      {/* Чат с собеседником */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '20px' }}>
+        <h2 style={{ marginBottom: '20px', fontSize: '24px', color: '#333' }}>Чат</h2>
         {chatPartnerId ? (
           <>
-            <div style={{
-              height: '300px',
-              overflowY: 'scroll',
-              border: '1px solid gray',
-              padding: '10px',
-              display: 'flex',
-              flexDirection: 'column',
-            }}>
-              {filteredMessages.map((msg, index) => (
-  <div key={`${msg.id}-${userId}-${index}`} style={{ padding: '5px', borderRadius: '5px' }}>
-    <p>
-      <strong>{msg.senderId === userId ? 'Вы' : 'Собеседник'}:</strong> {msg.text}
-      <br />
-      <span style={{ fontSize: '12px', color: 'gray' }}>
-        {formatTime(msg.createdAt)}{' '}
-        {msg.senderId === userId && (
-          <>
-            {msg.isSent ? '✅' : '⌛'} {msg.isRead ? '✅' : ''}
-          </>
-        )}
-      </span>
-    </p>
-    <MessageReactions message={msg} />
-    <ReactionPicker messageId={msg.id!} />
-  </div>
-))}
-              <div ref={messagesEndRef} />
+            {loadingMessages ? ( // Индикатор загрузки
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                <CircularProgress />
+              </div>
+            ) : (
+              <div
+                style={{
+                  height: '35vh',
+                  overflowY: 'scroll',
+                  borderRadius: '10px',
+                  backgroundColor: '#fff',
+                  padding: '15px',
+                  boxShadow: '0px 3px 15px rgba(0, 0, 0, 0.1)',
+                  display: 'flex',
+                  flexDirection: 'column', // Изменено с 'column-reverse' на 'column'
+                }}
+              >
+                {filteredMessages.map((msg, index) => (
+                  <div
+                    key={`${msg.id}-${userId}-${index}`}
+                    style={{
+                      padding: '8px 15px',
+                      borderRadius: '20px',
+                      backgroundColor: msg.senderId === userId ? '#DCF8C6' : '#fff',
+                      margin: '5px 0',
+                      maxWidth: '80%',
+                      alignSelf: msg.senderId === userId ? 'flex-end' : 'flex-start',
+                      position: 'relative',
+                    }}
+                  >
+                    <p
+                      style={{
+                        margin: '0',
+                        fontSize: '14px',
+                        color: '#333',
+                        lineHeight: '1.4',
+                      }}
+                    >
+                      <strong>{msg.senderId === userId ? 'Вы' : 'Собеседник'}:</strong> {msg.text}
+                      <br />
+                      <span style={{ fontSize: '12px', color: '#888' }}>
+                        {formatTime(msg.createdAt)}{' '}
+                        {msg.senderId === userId && (
+                          <>
+                            {msg.isSent ? '✅' : '⌛'} {msg.isRead ? '✅' : ''}
+                          </>
+                        )}
+                      </span>
+                    </p>
+                    <MessageReactions message={msg} />
+                    <ReactionPicker messageId={msg.id!} />
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+            )}
+  
+            <div style={{ display: 'flex', marginTop: '15px' }}>
+              <input
+                value={text}
+                onChange={handleTextChange}
+                onKeyDown={handleKeyPress}
+                style={{
+                  flex: 1,
+                  padding: '10px',
+                  borderRadius: '20px',
+                  border: '1px solid #e0e0e0',
+                  fontSize: '14px',
+                  marginRight: '10px',
+                  backgroundColor: '#f9f9f9',
+                }}
+              />
+              <button
+                onClick={handleSendMessage}
+                style={{
+                  padding: '10px 20px',
+                  borderRadius: '20px',
+                  backgroundColor: '#4CAF50',
+                  color: 'white',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.3s',
+                }}
+              >
+                Отправить
+              </button>
             </div>
-
-            <input
-              value={text}
-              onChange={handleTextChange}
-              onKeyDown={handleKeyPress}
-              style={{ width: '100%', padding: '10px', marginTop: '10px' }}
-            />
-            <button
-              onClick={handleSendMessage}
-              style={{ padding: '10px', marginTop: '10px', cursor: 'pointer' }}
-            >
-              Отправить
-            </button>
           </>
         ) : (
-          <p>Выберите диалог</p>
+          <p style={{ color: '#777' }}>Выберите диалог</p>
         )}
       </div>
     </div>

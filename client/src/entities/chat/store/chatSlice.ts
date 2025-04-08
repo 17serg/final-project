@@ -1,7 +1,7 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction , createAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import io from 'socket.io-client';
-import { ChatState, Message} from './../model/index'
+import { ChatState, Message } from './../model/index'
 
 const socket = io('http://localhost:3000');
 
@@ -77,7 +77,10 @@ const initialState: ChatState = {
   usersWithChats: [],
   loading: false,
   unreadCount: 0,
+  chatPartner: null,
 };
+
+export const setChatPartner = createAction<number | null>('chat/setChatPartner');
 
 const chatSlice = createSlice({
   name: 'chat',
@@ -116,6 +119,9 @@ const chatSlice = createSlice({
       })
       .addCase(fetchMessages.fulfilled, (state, action) => {
         state.messages = action.payload;
+      })
+      .addCase(setChatPartner, (state, action) => {
+        state.chatPartner = action.payload;
       });
   },
 });
