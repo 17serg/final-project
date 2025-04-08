@@ -244,7 +244,12 @@ export const TrainingPage = (): React.ReactElement => {
 
   return (
     <Container maxWidth="md">
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 3 }}>
+      <Box sx={{ 
+        display: 'flex',
+        justifyContent: 'flex-end',
+        mb: 3,
+         
+        }}>
         <Button
           variant="contained"
           onClick={handleNavigateToCalendar}
@@ -259,7 +264,7 @@ export const TrainingPage = (): React.ReactElement => {
         </Button>
       </Box>
       <Box sx={{ py: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 3, textAlign: 'center' }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 3, textAlign: 'center',color: 'white' }}>
           Тренировочный план
         </Typography>
 

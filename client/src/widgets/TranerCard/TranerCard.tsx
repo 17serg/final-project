@@ -18,12 +18,55 @@ const styles = {
     width: "100%",
     padding: "20px",
     borderRadius: "16px",
-    backgroundColor: "rgba(128, 128, 128, 0.7)",
-    backdropFilter: "blur(10px)",
+    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+    transition: "all 0.3s ease",
+    backdropFilter: "blur(9px)",
     boxShadow: "0 6px 8px rgba(0, 0, 0, 0.4)",
     display: "flex",
     gap: "20px",
     alignItems: "flex-start",
+    position: "relative",
+    overflow: "hidden",
+    "&::before": {
+      content: '""',
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      height: "7px",
+      borderRadius: "16px",
+      background: "rgba(153, 152, 152, 0.93)",
+      filter: "blur(5px)",
+    },
+    "&::after": {
+      content: '""',
+      position: "absolute",
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: "2px",
+      background: "rgba(153, 152, 152, 0.93)",
+      filter: "blur(5px)",
+    },
+    "& .left-glow": {
+      position: "absolute",
+      left: 0,
+      top: 0,
+      bottom: 0,
+      width: "4px",
+      borderRadius: "16px",
+      background: "rgba(153, 152, 152, 0.93)",
+      filter: "blur(5px)",
+    },
+    "& .right-glow": {
+      position: "absolute",
+      right: 0,
+      top: 0,
+      bottom: 0,
+      width: "2px",
+      background: "rgba(153, 152, 152, 0.93)",
+      filter: "blur(5px)",
+    },
   },
   avatar: {
     width: 100,
@@ -31,6 +74,7 @@ const styles = {
     border: "4px solid rgba(128, 128, 128, 0.7)",
   },
   info: {
+    color: "white",
     flex: 1,
     width: "100%",
     overflow: "hidden",
@@ -38,12 +82,12 @@ const styles = {
   name: {
     fontSize: "1.5rem",
     fontWeight: "bold",
-    color: "black",
+    color: "white",
     marginBottom: "4px",
   },
   email: {
     fontSize: "1rem",
-    color: "gray",
+    color: "rgba(255, 255, 255, 0.7)",
     marginBottom: "8px",
   },
   details: {
@@ -54,14 +98,14 @@ const styles = {
   },
   detail: {
     fontSize: "1rem",
-    color: "black",
+    color: "rgba(255, 255, 255, 0.7)",
   },
   about: {
     fontSize: "1rem",
-    color: "black",
+    color: "white",
     marginTop: "8px",
     padding: "12px",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "rgba(160, 158, 158, 0.57)",
     borderRadius: "8px",
     whiteSpace: "pre-wrap" as const,
     wordBreak: "break-word" as const,
@@ -77,7 +121,7 @@ const styles = {
     fontWeight: "bold",
     textTransform: "none",
     "&:hover": {
-      backgroundColor: "rgb(22, 22, 24)",
+      backgroundColor: "rgb(160, 158, 158)",
     },
   },
 };
@@ -143,6 +187,8 @@ export default function TranerCard({ char }: TranerCardProps): React.JSX.Element
 
   return (
     <Paper sx={styles.card}>
+      <div className="left-glow" />
+      <div className="right-glow" />
       <Avatar
         src={getAvatarUrl()}
         alt={char.name}
