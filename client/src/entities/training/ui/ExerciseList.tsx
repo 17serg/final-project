@@ -1,9 +1,19 @@
 import React from 'react';
-import { Box, Typography, Paper, IconButton, Collapse } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Paper,
+  IconButton,
+  Collapse,
+  List,
+  ListItem,
+  ListItemText,
+} from '@mui/material';
 import {
   ArrowUpward as ArrowUpwardIcon,
   ArrowDownward as ArrowDownwardIcon,
   ExpandMore as ExpandMoreIcon,
+  Delete as DeleteIcon,
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExerciseOfTraining } from '../api/TrainingApi';
@@ -12,13 +22,25 @@ import ExerciseSetList from './ExerciseSetList';
 interface ExerciseListProps {
   exercises: ExerciseOfTraining[];
   onMoveExercise: (fromIndex: number, toIndex: number) => void;
+  onDeleteExercise: (exerciseId: number) => void;
 }
 
-const ExerciseList: React.FC<ExerciseListProps> = ({ exercises, onMoveExercise }) => {
+const ExerciseList: React.FC<ExerciseListProps> = ({
+  exercises,
+  onMoveExercise,
+  onDeleteExercise,
+}) => {
   const [expandedExercise, setExpandedExercise] = React.useState<number | null>(null);
 
   const handleToggleExpand = (exerciseId: number): void => {
     setExpandedExercise(expandedExercise === exerciseId ? null : exerciseId);
+  };
+
+  const formatDuration = (seconds: number): string => {
+    if (seconds < 60) return `${seconds} сек`;
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return remainingSeconds > 0 ? `${minutes} мин ${remainingSeconds} сек` : `${minutes} мин`;
   };
 
   return (
@@ -77,36 +99,57 @@ const ExerciseList: React.FC<ExerciseListProps> = ({ exercises, onMoveExercise }
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ mr: 2 }}>
-                    {exercise.sets} подходов × {exercise.reps} повторений
-                    {exercise.weight && ` × ${exercise.weight} кг`}
-                  </Typography>
-                  <IconButton
-                    size="small"
-                    onClick={() => handleToggleExpand(exercise.id)}
-                    sx={{
-                      transform: expandedExercise === exercise.id ? 'rotate(180deg)' : 'none',
-                      transition: 'transform 0.3s',
-                      color: 'primary.main',
-                      '& .MuiSvgIcon-root': {
-                        fontSize: '1.5rem',
-                        fontWeight: 'bold',
-                      },
-                    }}
-                  >
-                    <ExpandMoreIcon />
-                  </IconButton>
+                  <ListItemText
+                    primary={
+                      <Box>
+                        {exercise.Exercise.category === 'Кардио' ? (
+                          <Typography variant="body2">
+                            Длительность: {exercise.duration} мин
+                          </Typography>
+                        ) : (
+                          <>
+                            <Typography variant="body2">
+                              Подходы: {exercise.sets} | Повторения: {exercise.reps} | Вес:{' '}
+                              {exercise.weight} кг
+                            </Typography>
+                          </>
+                        )}
+                      </Box>
+                    }
+                  />
+                  {exercise.Exercise.category !== 'Кардио' && (
+                    <IconButton
+                      size="small"
+                      onClick={() => handleToggleExpand(exercise.id)}
+                      sx={{
+                        transform: expandedExercise === exercise.id ? 'rotate(180deg)' : 'none',
+                        transition: 'transform 0.3s',
+                        color: 'primary.main',
+                        '& .MuiSvgIcon-root': {
+                          fontSize: '1.5rem',
+                          fontWeight: 'bold',
+                        },
+                      }}
+                    >
+                      <ExpandMoreIcon />
+                    </IconButton>
+                  )}
                 </Box>
+                <IconButton onClick={() => onDeleteExercise(exercise.id)}>
+                  <DeleteIcon />
+                </IconButton>
               </Box>
 
-              <Collapse in={expandedExercise === exercise.id}>
-                <ExerciseSetList
-                  exerciseOfTrainingId={exercise.id}
-                  plannedSets={exercise.sets}
-                  plannedReps={exercise.reps}
-                  plannedWeight={exercise.weight || 0}
-                />
-              </Collapse>
+              {exercise.Exercise.category !== 'Кардио' && (
+                <Collapse in={expandedExercise === exercise.id}>
+                  <ExerciseSetList
+                    exerciseOfTrainingId={exercise.id}
+                    plannedSets={exercise.sets}
+                    plannedReps={exercise.reps}
+                    plannedWeight={exercise.weight || 0}
+                  />
+                </Collapse>
+              )}
             </Paper>
           </motion.div>
         ))}

@@ -37,13 +37,15 @@ export const ExerciseApi = {
     return await axiosInstance.put<Exercise>(`/exercises/${id}`, exercise);
   },
 
+  getCategories: async () => {
+    return await axiosInstance.get<string[]>('/exercises/categories');
+  },
+
   deleteExercise: async (id: number) => {
     return await axiosInstance.delete(`/exercises/${id}`);
   },
 
-  getCategories: async () => {
-    return await axiosInstance.get<string[]>('/exercises/categories');
-  },
+  
 
   getExercisesByCategory: async (category: string) => {
     return await axiosInstance.get<Exercise[]>(`/exercises/by-category/${category}`);

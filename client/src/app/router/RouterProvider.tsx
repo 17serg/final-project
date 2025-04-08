@@ -8,6 +8,7 @@ import { ProtectedRoute } from '../providers/ProtectedRoute';
 import ProfilePage from '@/pages/ProfilePage/ProfilePage';
 import { CalendarPage } from '@/pages/CalendarPage';
 import { TrainingPage } from '@/pages/TrainingPage/TrainingPage';
+import CatalogExercisePage from '@/pages/CatalogExercisePage/CatalogExercisePage';
 
 export function RouterProvider(): React.JSX.Element {
   return (
@@ -43,6 +44,11 @@ export function RouterProvider(): React.JSX.Element {
         <Route path={CLIENT_ROUTES.ALLCLIENTS} element={
           <ProtectedRoute>
             <AllClientsPage />
+          </ProtectedRoute>
+        } />
+        <Route path={CLIENT_ROUTES.CATALOGEXERCISE} element={
+          <ProtectedRoute>
+            <CatalogExercisePage />
           </ProtectedRoute>
         } />
         <Route path={CLIENT_ROUTES.PROFILE} element={

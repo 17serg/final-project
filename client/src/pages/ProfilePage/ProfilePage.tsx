@@ -120,7 +120,7 @@ const styles = {
     width: "100%",
   },
   tab: {
-    marginTop: "0",
+    marginTop: "9px",
     fontSize: "1.1rem",
     fontWeight: 500,
     textTransform: "none",
@@ -332,7 +332,6 @@ export default function ProfilePage(): React.JSX.Element {
           <Typography sx={styles.statLabel}>Количество тренировок</Typography>
         </Paper>
       </Box>
-
       <Box 
         ref={chatRef} // Присваиваем ref для прокрутки к чату
         sx={{ 

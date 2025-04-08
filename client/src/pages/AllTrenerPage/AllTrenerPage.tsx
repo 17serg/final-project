@@ -13,7 +13,7 @@ const styles = {
   title: {
     fontSize: "2rem",
     fontWeight: "bold",
-    color: "rgb(42, 41, 223)",
+    color: "white",
     marginBottom: "20px",
     textAlign: "center" as const,
   },

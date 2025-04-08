@@ -9,9 +9,11 @@ import {
   InputLabel,
   Chip,
   OutlinedInput,
+  Divider,
 } from '@mui/material';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ExerciseApi, Exercise } from '@/entities/exercise/api/ExerciseApi';
+import { debounce } from 'lodash';
 
 interface AddExerciseFormProps {
   onSubmit: (data: {
@@ -23,13 +25,6 @@ interface AddExerciseFormProps {
   }) => void;
 }
 
-const EXERCISE_TYPES = [
-  { value: 'compound', label: 'Базовое (многосуставное)' },
-  { value: 'isolation', label: 'Изолированное' },
-  { value: 'cardio', label: 'Кардио' },
-  { value: 'bodyweight', label: 'С весом тела' },
-];
-
 const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
   const [exerciseId, setExerciseId] = useState('');
   const [duration, setDuration] = useState('');
@@ -40,7 +35,6 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
-  const [exerciseType, setExerciseType] = useState<Exercise['exercise_type']>('compound');
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -93,6 +87,23 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
     });
   };
 
+  // Функция для сортировки категорий
+  const sortCategories = (categories: string[]) => {
+    const cardio = categories.filter((cat) => cat === 'Кардио');
+    const functional = categories.filter((cat) => cat === 'Функциональные');
+    const others = categories.filter((cat) => cat !== 'Кардио' && cat !== 'Функциональные');
+
+    return { cardio, functional, others };
+  };
+
+  // Оптимизированное обновление длительности
+  const debouncedSetDuration = useCallback(
+    debounce((value: string) => {
+      setDuration(value);
+    }, 300),
+    [],
+  );
+
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
       <Typography variant="h6" gutterBottom>
@@ -101,29 +112,31 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
 
       <FormControl fullWidth margin="normal">
         <InputLabel>Категория</InputLabel>
-        <Select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          label="Категория"
-        >
-          {categories.map((category) => (
+        <Select value={selectedCategory} onChange={handleCategoryChange} label="Категория">
+          {/* Кардио */}
+          {sortCategories(categories).cardio.map((category) => (
             <MenuItem key={category} value={category}>
               {category}
             </MenuItem>
           ))}
-        </Select>
-      </FormControl>
 
-      <FormControl fullWidth margin="normal">
-        <InputLabel>Тип упражнения</InputLabel>
-        <Select
-          value={exerciseType}
-          onChange={(e) => setExerciseType(e.target.value as Exercise['exercise_type'])}
-          label="Тип упражнения"
-        >
-          {EXERCISE_TYPES.map((type) => (
-            <MenuItem key={type.value} value={type.value}>
-              {type.label}
+          {/* Разделитель после Кардио */}
+          {sortCategories(categories).cardio.length > 0 && <Divider />}
+
+          {/* Функциональные */}
+          {sortCategories(categories).functional.map((category) => (
+            <MenuItem key={category} value={category}>
+              {category}
+            </MenuItem>
+          ))}
+
+          {/* Разделитель после Функциональных */}
+          {sortCategories(categories).functional.length > 0 && <Divider />}
+
+          {/* Остальные категории */}
+          {sortCategories(categories).others.map((category) => (
+            <MenuItem key={category} value={category}>
+              {category}
             </MenuItem>
           ))}
         </Select>
@@ -153,10 +166,10 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
         <TextField
           fullWidth
           margin="normal"
-          label="Длительность (сек)"
+          label="Длительность (минуты)"
           type="number"
-          value={duration}
-          onChange={(e) => setDuration(e.target.value)}
+          defaultValue={duration}
+          onChange={(e) => debouncedSetDuration(e.target.value)}
           required
         />
       ) : (

@@ -19,12 +19,26 @@ import ExerciseList from '@/entities/training/ui/ExerciseList';
 export const TrainingPage = (): React.ReactElement => {
   const { trainingId } = useParams();
   const navigate = useNavigate();
-  const [training, setTraining] = useState<{ dayId: number; complete: boolean } | null>(null);
+  const [training, setTraining] = useState<{
+    id: number;
+    dayId: number;
+    complete: boolean;
+    day?: {
+      date: string;
+    };
+  } | null>(null);
   const [showAddExerciseForm, setShowAddExerciseForm] = useState(false);
   const [exercises, setExercises] = useState<ExerciseOfTraining[]>([]);
   const [isUpdating, setIsUpdating] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<{ open: boolean }>({
     open: false,
+  });
+  const [deleteConfirmDialog, setDeleteConfirmDialog] = useState<{
+    open: boolean;
+    exerciseId: number | null;
+  }>({
+    open: false,
+    exerciseId: null,
   });
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -97,7 +111,7 @@ export const TrainingPage = (): React.ReactElement => {
     }
   };
 
-  const handleMoveExercise = async (fromIndex: number, toIndex: number) => {
+  const handleMoveExercise = async (fromIndex: number, toIndex: number): Promise<void> => {
     if (toIndex < 0 || toIndex >= exercises.length || isUpdating) return;
 
     try {
@@ -200,12 +214,37 @@ export const TrainingPage = (): React.ReactElement => {
     navigate('/profile', { state: { scrollToCalendar: true } });
   };
 
+  const handleDeleteExercise = async (exerciseId: number): Promise<void> => {
+    setDeleteConfirmDialog({ open: true, exerciseId });
+  };
+
+  const handleConfirmDelete = async (): Promise<void> => {
+    if (deleteConfirmDialog.exerciseId === null) return;
+
+    try {
+      await TrainingApi.deleteExerciseOfTraining(deleteConfirmDialog.exerciseId);
+      setExercises(exercises.filter((ex) => ex.id !== deleteConfirmDialog.exerciseId));
+
+      setSnackbar({
+        open: true,
+        message: 'Упражнение удалено',
+        severity: 'success',
+      });
+    } catch (error) {
+      console.error('Ошибка при удалении упражнения:', error);
+      setSnackbar({
+        open: true,
+        message: 'Не удалось удалить упражнение',
+        severity: 'error',
+      });
+    } finally {
+      setDeleteConfirmDialog({ open: false, exerciseId: null });
+    }
+  };
+
   return (
     <Container maxWidth="md">
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1">
-          Тренировка
-        </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 3 }}>
         <Button
           variant="contained"
           onClick={handleNavigateToCalendar}
@@ -216,35 +255,42 @@ export const TrainingPage = (): React.ReactElement => {
             },
           }}
         >
-          Перейти к календарю
+          ◀ Вернуться в календарь
         </Button>
       </Box>
       <Box sx={{ py: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Создание тренировочного плана
+        <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 3, textAlign: 'center' }}>
+          Тренировочный план
         </Typography>
-        <Typography variant="body1" color="text.secondary" paragraph>
-          ID тренировки: {trainingId}
-        </Typography>
-        {training && (
-          <>
-            <Typography variant="body1" color="text.secondary" paragraph>
-              Дата тренировки: {new Date(training.dayId).toLocaleDateString('ru-RU')}
-            </Typography>
-            <Typography variant="body1" color="text.secondary" paragraph>
-              Статус: {training.complete ? 'Выполнена' : 'Не выполнена'}
-            </Typography>
-          </>
+
+        {training && training.day && (
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            paragraph
+            sx={{ mb: 4, textAlign: 'center' }}
+          >
+            Дата:{' '}
+            {new Date(training.day.date).toLocaleDateString('ru-RU', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })}
+          </Typography>
         )}
 
-        <ExerciseList exercises={exercises} onMoveExercise={handleMoveExercise} />
+        <ExerciseList
+          exercises={exercises}
+          onMoveExercise={handleMoveExercise}
+          onDeleteExercise={handleDeleteExercise}
+        />
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
           <Button variant="contained" color="primary" onClick={handleAddExercise}>
             Добавить упражнение +
           </Button>
 
-          {training && (
+          {training && exercises.length > 0 && (
             <Button
               variant="contained"
               color={training.complete ? 'error' : 'success'}
@@ -267,35 +313,53 @@ export const TrainingPage = (): React.ReactElement => {
         {showAddExerciseForm && <AddExerciseForm onSubmit={handleExerciseSubmit} />}
 
         {/* Диалог подтверждения отмены выполнения */}
-        <Dialog open={confirmDialog.open} onClose={handleCloseConfirmDialog}>
-          <DialogTitle>Подтверждение отмены выполнения</DialogTitle>
+        <Dialog open={confirmDialog.open} onClose={() => setConfirmDialog({ open: false })}>
+          <DialogTitle>Подтверждение</DialogTitle>
           <DialogContent>
-            <Typography>Вы уверены, что хотите отменить выполнение тренировки?</Typography>
+            <Typography>
+              Вы уверены, что хотите отменить выполнение тренировки? Это действие нельзя отменить.
+            </Typography>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseConfirmDialog}>Отмена</Button>
-            <Button
-              onClick={handleConfirmCancel}
-              variant="contained"
-              color="error"
-              sx={{
-                bgcolor: 'rgba(211, 47, 47, 0.8)',
-                '&:hover': { bgcolor: 'rgba(211, 47, 47, 0.9)' },
-              }}
-              autoFocus
-            >
-              Отменить выполнение
+            <Button onClick={() => setConfirmDialog({ open: false })}>Отмена</Button>
+            <Button onClick={handleConfirmCancel} color="error" variant="contained">
+              Подтвердить
             </Button>
           </DialogActions>
         </Dialog>
 
+        {/* Диалог подтверждения удаления упражнения */}
+        <Dialog
+          open={deleteConfirmDialog.open}
+          onClose={() => setDeleteConfirmDialog({ open: false, exerciseId: null })}
+        >
+          <DialogTitle>Подтверждение удаления</DialogTitle>
+          <DialogContent>
+            <Typography>
+              Вы уверены, что хотите удалить это упражнение? Это действие нельзя отменить.
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDeleteConfirmDialog({ open: false, exerciseId: null })}>
+              Отмена
+            </Button>
+            <Button onClick={handleConfirmDelete} color="error" variant="contained">
+              Удалить
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Снэкбар для уведомлений */}
         <Snackbar
           open={snackbar.open}
           autoHideDuration={6000}
-          onClose={handleCloseSnackbar}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
         >
-          <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          <Alert
+            onClose={() => setSnackbar({ ...snackbar, open: false })}
+            severity={snackbar.severity}
+            sx={{ width: '100%' }}
+          >
             {snackbar.message}
           </Alert>
         </Snackbar>
