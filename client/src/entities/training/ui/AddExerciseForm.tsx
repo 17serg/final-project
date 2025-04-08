@@ -10,10 +10,14 @@ import {
   Chip,
   OutlinedInput,
   Divider,
+  Avatar,
+  Modal,
+  IconButton,
 } from '@mui/material';
 import { useState, useEffect, useCallback } from 'react';
 import { ExerciseApi, Exercise } from '@/entities/exercise/api/ExerciseApi';
 import { debounce } from 'lodash';
+import { Search as SearchIcon } from '@mui/icons-material';
 
 interface AddExerciseFormProps {
   onSubmit: (data: {
@@ -25,6 +29,65 @@ interface AddExerciseFormProps {
   }) => void;
 }
 
+const styles = {
+  exerciseOption: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 2,
+  },
+  exerciseImage: {
+    width: 80,
+    height: 80,
+    objectFit: 'cover',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    transition: 'transform 0.2s',
+    '&:hover': {
+      transform: 'scale(1.05)',
+    },
+  },
+  imageContainer: {
+    position: 'relative',
+    display: 'inline-block',
+  },
+  zoomIcon: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    color: 'white',
+    opacity: 0,
+    transition: 'opacity 0.2s',
+    width: 32,
+    height: 32,
+    '&:hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    },
+  },
+  imageContainerHover: {
+    '&:hover $zoomIcon': {
+      opacity: 1,
+    },
+  },
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalContent: {
+    position: 'relative',
+    maxWidth: '90vw',
+    maxHeight: '90vh',
+    outline: 'none',
+  },
+  modalImage: {
+    maxWidth: '100%',
+    maxHeight: '90vh',
+    objectFit: 'contain' as const,
+  },
+};
+
 const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
   const [exerciseId, setExerciseId] = useState('');
   const [duration, setDuration] = useState('');
@@ -35,6 +98,10 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string>('');
+  const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -104,6 +171,21 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
     [],
   );
 
+  const getImageUrl = (imagePath: string): string => {
+    const baseUrl = import.meta.env.VITE_API.replace('/api', '');
+    return `${baseUrl}${imagePath}`;
+  };
+
+  const handleImageClick = (e: React.MouseEvent, imagePath: string): void => {
+    e.stopPropagation(); // Предотвращаем всплытие события
+    setSelectedImage(getImageUrl(imagePath));
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = (): void => {
+    setModalOpen(false);
+  };
+
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
       <Typography variant="h6" gutterBottom>
@@ -113,28 +195,10 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
       <FormControl fullWidth margin="normal">
         <InputLabel>Категория</InputLabel>
         <Select value={selectedCategory} onChange={handleCategoryChange} label="Категория">
-          {/* Кардио */}
-          {sortCategories(categories).cardio.map((category) => (
-            <MenuItem key={category} value={category}>
-              {category}
-            </MenuItem>
-          ))}
-
-          {/* Разделитель после Кардио */}
-          {sortCategories(categories).cardio.length > 0 && <Divider />}
-
-          {/* Функциональные */}
-          {sortCategories(categories).functional.map((category) => (
-            <MenuItem key={category} value={category}>
-              {category}
-            </MenuItem>
-          ))}
-
-          {/* Разделитель после Функциональных */}
-          {sortCategories(categories).functional.length > 0 && <Divider />}
-
-          {/* Остальные категории */}
-          {sortCategories(categories).others.map((category) => (
+          <MenuItem value="">
+            <em>Все категории</em>
+          </MenuItem>
+          {categories.map((category) => (
             <MenuItem key={category} value={category}>
               {category}
             </MenuItem>
@@ -142,20 +206,28 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
         </Select>
       </FormControl>
 
-      <FormControl fullWidth margin="normal">
+      <FormControl fullWidth sx={{ mb: 2 }}>
         <InputLabel>Упражнение</InputLabel>
-        <Select value={exerciseId} onChange={handleExerciseChange} label="Упражнение" required>
+        <Select value={exerciseId} onChange={handleExerciseChange} label="Упражнение">
           {exercises.map((exercise) => (
             <MenuItem key={exercise.id} value={exercise.id}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                {exercise.image && (
-                  <img
-                    src={exercise.image}
-                    alt={exercise.name}
-                    style={{ width: 30, height: 30, objectFit: 'cover' }}
+              <Box sx={styles.exerciseOption}>
+                <Box sx={{ ...styles.imageContainer, ...styles.imageContainerHover }}>
+                  <Avatar
+                    src={getImageUrl(exercise.image)}
+                    variant="rounded"
+                    sx={styles.exerciseImage}
+                    onClick={(e) => handleImageClick(e, exercise.image)}
                   />
-                )}
-                {exercise.name}
+                  <IconButton
+                    size="small"
+                    sx={styles.zoomIcon}
+                    onClick={(e) => handleImageClick(e, exercise.image)}
+                  >
+                    <SearchIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+                <Typography>{exercise.name}</Typography>
               </Box>
             </MenuItem>
           ))}
@@ -209,6 +281,12 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
       <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
         Добавить
       </Button>
+
+      <Modal open={modalOpen} onClose={handleCloseModal} sx={styles.modal}>
+        <Box sx={styles.modalContent} onClick={handleCloseModal}>
+          <img src={selectedImage} alt="Увеличенное изображение" style={styles.modalImage} />
+        </Box>
+      </Modal>
     </Box>
   );
 };
