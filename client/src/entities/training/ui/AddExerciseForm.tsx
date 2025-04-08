@@ -35,7 +35,6 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
-  const [timeUnit, setTimeUnit] = useState<'minutes' | 'seconds'>('minutes');
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -164,25 +163,15 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
       </FormControl>
 
       {selectedCategory === 'Кардио' ? (
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-          <TextField
-            fullWidth
-            margin="normal"
-            label="Длительность"
-            type="number"
-            defaultValue={duration}
-            onChange={(e) => debouncedSetDuration(e.target.value)}
-            required
-          />
-          <Select
-            value={timeUnit}
-            onChange={(e) => setTimeUnit(e.target.value as 'minutes' | 'seconds')}
-            sx={{ minWidth: 120 }}
-          >
-            <MenuItem value="minutes">минуты</MenuItem>
-            <MenuItem value="seconds">секунды</MenuItem>
-          </Select>
-        </Box>
+        <TextField
+          fullWidth
+          margin="normal"
+          label="Длительность (минуты)"
+          type="number"
+          defaultValue={duration}
+          onChange={(e) => debouncedSetDuration(e.target.value)}
+          required
+        />
       ) : (
         <>
           <TextField

@@ -104,7 +104,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
                       <Box>
                         {exercise.Exercise.category === 'Кардио' ? (
                           <Typography variant="body2">
-                            Длительность: {formatDuration(exercise.duration)}
+                            Длительность: {exercise.duration} мин
                           </Typography>
                         ) : (
                           <>
@@ -117,35 +117,39 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
                       </Box>
                     }
                   />
-                  <IconButton
-                    size="small"
-                    onClick={() => handleToggleExpand(exercise.id)}
-                    sx={{
-                      transform: expandedExercise === exercise.id ? 'rotate(180deg)' : 'none',
-                      transition: 'transform 0.3s',
-                      color: 'primary.main',
-                      '& .MuiSvgIcon-root': {
-                        fontSize: '1.5rem',
-                        fontWeight: 'bold',
-                      },
-                    }}
-                  >
-                    <ExpandMoreIcon />
-                  </IconButton>
+                  {exercise.Exercise.category !== 'Кардио' && (
+                    <IconButton
+                      size="small"
+                      onClick={() => handleToggleExpand(exercise.id)}
+                      sx={{
+                        transform: expandedExercise === exercise.id ? 'rotate(180deg)' : 'none',
+                        transition: 'transform 0.3s',
+                        color: 'primary.main',
+                        '& .MuiSvgIcon-root': {
+                          fontSize: '1.5rem',
+                          fontWeight: 'bold',
+                        },
+                      }}
+                    >
+                      <ExpandMoreIcon />
+                    </IconButton>
+                  )}
                 </Box>
                 <IconButton onClick={() => onDeleteExercise(exercise.id)}>
                   <DeleteIcon />
                 </IconButton>
               </Box>
 
-              <Collapse in={expandedExercise === exercise.id}>
-                <ExerciseSetList
-                  exerciseOfTrainingId={exercise.id}
-                  plannedSets={exercise.sets}
-                  plannedReps={exercise.reps}
-                  plannedWeight={exercise.weight || 0}
-                />
-              </Collapse>
+              {exercise.Exercise.category !== 'Кардио' && (
+                <Collapse in={expandedExercise === exercise.id}>
+                  <ExerciseSetList
+                    exerciseOfTrainingId={exercise.id}
+                    plannedSets={exercise.sets}
+                    plannedReps={exercise.reps}
+                    plannedWeight={exercise.weight || 0}
+                  />
+                </Collapse>
+              )}
             </Paper>
           </motion.div>
         ))}
