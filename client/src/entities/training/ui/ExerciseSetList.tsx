@@ -93,11 +93,17 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
     try {
       setLoading(true);
       const response = await ExerciseSetApi.getExerciseSets(exerciseOfTrainingId);
-      setExerciseSets(response.data.data);
-      setError(null);
+
+      if (response.data.success && Array.isArray(response.data.data)) {
+        setExerciseSets(response.data.data);
+        setError(null);
+      } else {
+        throw new Error('Неверный формат данных от сервера');
+      }
     } catch (error) {
       console.error('Ошибка при загрузке подходов:', error);
       setError('Не удалось загрузить подходы');
+      setExerciseSets([]); // Сбрасываем состояние в случае ошибки
     } finally {
       setLoading(false);
     }
@@ -226,29 +232,57 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
     }
   };
 
-  const handleAddSet = async () => {
+  const handleAddSet = async (): Promise<void> => {
     try {
       const newSetNumber = exerciseSets.length + 1;
-      const newSet = {
+
+      // Создаем временный ID для оптимистичного обновления
+      const tempId = -Date.now();
+
+      // Создаем новый подход с правильной типизацией
+      const newSet: CreateExerciseSetDto = {
         setNumber: newSetNumber,
         actualWeight: plannedWeight,
         actualReps: plannedReps,
         isCompleted: false,
       };
 
-      // Оптимистичное обновление UI
-      setExerciseSets((prev) => [...prev, { ...newSet, id: Date.now() }]);
+      // Создаем временный объект для оптимистичного обновления
+      const tempSet: ExerciseSet = {
+        id: tempId,
+        exerciseOfTrainingId,
+        setNumber: newSetNumber,
+        actualWeight: plannedWeight,
+        actualReps: plannedReps,
+        isCompleted: false,
+        notes: null,
+        executionDate: null,
+        executionTime: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
 
-      await ExerciseSetApi.createExerciseSet(exerciseOfTrainingId, newSet);
+      // Оптимистично обновляем UI без перерендера
+      setExerciseSets((prevSets) => [...prevSets, tempSet]);
 
-      // Тихое обновление данных с сервера
-      const response = await ExerciseSetApi.getExerciseSets(exerciseOfTrainingId);
-      setExerciseSets(response.data);
+      // Создаем подход на сервере
+      const response = await ExerciseSetApi.createExerciseSet(exerciseOfTrainingId, newSet);
+
+      if (response.data.success && response.data.data) {
+        // Заменяем временный объект на реальный без перерендера
+        setExerciseSets((prevSets) =>
+          prevSets.map((set) => (set.id === tempId ? response.data.data : set)),
+        );
+        setError(null);
+      } else {
+        throw new Error('Не удалось создать подход');
+      }
     } catch (error) {
       console.error('Ошибка при добавлении подхода:', error);
       setError('Не удалось добавить подход');
-      // Возвращаем предыдущее состояние в случае ошибки
-      await fetchExerciseSets();
+
+      // Удаляем временный объект в случае ошибки без перерендера
+      setExerciseSets((prevSets) => prevSets.filter((set) => set.id !== -Date.now()));
     }
   };
 
