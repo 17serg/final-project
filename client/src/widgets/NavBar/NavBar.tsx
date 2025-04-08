@@ -20,7 +20,7 @@ import { useTheme } from '@mui/material/styles';
 
 const styles = {
   navLink: {
-    color: "black",
+    color: "white",
     textDecoration: "none",
     flex: 1,
     textAlign: "center" as const,
@@ -68,7 +68,7 @@ const styles = {
     gap: "20px",
   },
   siteTitle: {
-    color: "black",
+    color: "white",
     textDecoration: "none",
     fontWeight: "bold",
     fontSize: "1.5rem",
@@ -84,7 +84,7 @@ const styles = {
     borderRadius: "16px",
     padding: "8px 16px",
     transition: "all 0.3s ease",
-    color: "black",
+    color: "white",
     boxShadow: "0 4px 8px rgba(42, 41, 223, 0.2)",
     "&:hover": {
       backgroundColor: "rgb(42, 41, 223)",
@@ -282,7 +282,7 @@ export default function NavBar(): React.JSX.Element {
                   sx={{
                     ...styles.navLink,
                     backgroundColor: location.pathname.startsWith("/exercises") ? "rgb(42, 41, 223)" : "transparent",
-                    color: location.pathname.startsWith("/exercises") ? "white" : "black",
+                    color: location.pathname.startsWith("/exercises") ? "white" : "white",
                   }}
                 >
                   Каталог упражнений
@@ -384,11 +384,11 @@ export default function NavBar(): React.JSX.Element {
                   >
                     Войти
                   </Button>
-                )}
-              </Typography>
+            )}
+          </Typography>
             </Box>
-          </Toolbar>
-        </AppBar>
+        </Toolbar>
+      </AppBar>
         {isProfileFormOpen && (
           <ProfileForm 
             open={isProfileFormOpen} 
@@ -396,7 +396,7 @@ export default function NavBar(): React.JSX.Element {
             userId={user?.id || 0}
           />
         )}
-      </Box>
+    </Box>
 
       <AuthModal 
         open={authModalOpen} 
