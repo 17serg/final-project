@@ -7,7 +7,7 @@ import { getUserColor } from "@/shared/utils/userColor";
 import { ChatPage } from "../ChatPage/ChatPage";
 import { CalendarPage } from "../CalendarPage";
 import AnthropometryPage from "../AnthropometryPage/AnthropometryPage";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../../app/store";
 import { getUnreadCount, setChatPartner } from '../../entities/chat/store/chatSlice';
@@ -175,7 +175,7 @@ const styles = {
     borderTop: "none",
     position: "relative",
     zIndex: 1,
-    minHeight: "auto",
+    minHeight: "80vh",
     right: "0",
     "& h6": {
       color: "white",
@@ -206,8 +206,8 @@ const styles = {
 export default function ProfilePage(): React.JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useUser();
+  const [profile, setProfile] = useState<IUserProfile | null>(null);
   const location = useLocation();
-  const [profile, setProfile] = React.useState<IUserProfile | null>(null);
   const [activeTab, setActiveTab] = React.useState<number | null>(null);
   const chatRef = React.useRef<HTMLDivElement>(null); // Добавляем ref для чата
 
@@ -240,13 +240,38 @@ export default function ProfilePage(): React.JSX.Element {
     (msg) => msg.receiverId === userId && !msg.isRead
   ).length;
 
-  React.useEffect(() => {
+  useEffect(() => {
+    const handleProfileUpdate = (): void => {
+      const loadProfile = async (): Promise<void> => {
+        try {
+          const response = await UserApi.getProfile();
+          setProfile(response.data);
+        } catch (error) {
+          console.error('Error loading profile:', error);
+        }
+      };
+
+      if (user) {
+        loadProfile();
+      }
+    };
+
+    // Подписываемся на событие обновления профиля
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+
+    // Отписываемся при размонтировании компонента
+    return () => {
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+    };
+  }, [user]);
+
+  useEffect(() => {
     const loadProfile = async (): Promise<void> => {
       try {
         const response = await UserApi.getProfile();
         setProfile(response.data);
       } catch (error) {
-        console.error("Error loading profile:", error);
+        console.error('Error loading profile:', error);
       }
     };
 

@@ -1,9 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { Box, Button, TextField, FormControl, InputLabel, Select, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, Avatar, SelectChangeEvent, Typography } from '@mui/material';
 import { IUserProfile } from '@/entities/user/model';
 import { UserApi } from '@/entities/user/api/UserApi';
 import { useUser } from '@/entities/user/hooks/useUser';
 import { getUserColor } from '@/shared/utils/userColor';
+import { UserContext, UserContextType } from '@/entities/user/provider/UserProvider';
+import { IUser } from '@/entities/user/model';
 
 interface ProfileFormProps {
   open: boolean;
@@ -12,7 +14,7 @@ interface ProfileFormProps {
 }
 
 export default function ProfileForm({ open, onClose, userId }: ProfileFormProps): React.JSX.Element {
-  const { user, setUser } = useUser();
+  const { user, setUser } = useContext(UserContext) as UserContextType;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState<IUserProfile>({
     avatar: '',
@@ -36,6 +38,8 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
     }
   });
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Загрузка актуальных данных профиля при открытии модального окна
   useEffect(() => {
@@ -77,70 +81,62 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
+
     try {
       const formDataToSend = new FormData();
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('email', formData.email);
       formDataToSend.append('gender', formData.gender);
-      formDataToSend.append('trainingExperience', formData.trainingExperience === '' ? '0' : formData.trainingExperience.toString());
-      formDataToSend.append('about', formData.about);
-      
+      formDataToSend.append('trainingExperience', formData.trainingExperience.toString());
+      formDataToSend.append('about', formData.about || '');
       if (fileInputRef.current?.files?.[0]) {
         formDataToSend.append('avatar', fileInputRef.current.files[0]);
       }
-      
+
       const response = await UserApi.updateProfile(formDataToSend);
+      console.log('Ответ сервера:', response);
       
-      if (response.data) {
-        const baseUrl = import.meta.env.VITE_API.replace('/api', '');
-        setPreviewUrl(response.data.avatar ? `${baseUrl}${response.data.avatar}` : null);
+      if (response.data && user) {
+        // Обновляем данные пользователя в контексте
+        const updatedUser: IUser = {
+          id: user.id,
+          name: response.data.name,
+          email: response.data.email,
+          trener: user.trener,
+          UserProfile: {
+            ...user.UserProfile,
+            ...response.data,
+            trainingExperience: Number(response.data.trainingExperience),
+            userId: user.id
+          }
+        };
+        setUser(updatedUser);
+        
+        // Отправляем событие обновления профиля
+        window.dispatchEvent(new Event('profileUpdated'));
+        
+        onClose();
       }
-      
-      onClose();
-      window.dispatchEvent(new Event('profileUpdated'));
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error('Ошибка при обновлении профиля:', error);
+      setError('Не удалось обновить профиль');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     const { name, value } = e.target;
-    
-    if (name === 'trainingExperience') {
-      // Если поле пустое, устанавливаем пустую строку
-      if (value === '') {
-        setFormData(prev => ({
-          ...prev,
-          [name]: '',
-          UserProfile: {
-            ...prev.UserProfile,
-            [name]: ''
-          }
-        }));
-        return;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === 'trainingExperience' ? (value === '' ? 0 : Number(value)) : value,
+      UserProfile: {
+        ...prev.UserProfile,
+        [name]: name === 'trainingExperience' ? (value === '' ? 0 : Number(value)) : value
       }
-
-      // Преобразуем значение в число и проверяем, что оно не отрицательное
-      const numValue = parseInt(value, 10);
-      if (isNaN(numValue) || numValue < 0) {
-        return; // Игнорируем отрицательные значения
-      }
-      setFormData(prev => ({
-        ...prev,
-        [name]: numValue,
-        UserProfile: {
-          ...prev.UserProfile,
-          [name]: numValue
-        }
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value,
-        UserProfile: {
-          ...prev.UserProfile,
-          [name]: value
-        }
-      }));
-    }
+    }));
   };
 
   const handleSelectChange = (event: SelectChangeEvent): void => {
