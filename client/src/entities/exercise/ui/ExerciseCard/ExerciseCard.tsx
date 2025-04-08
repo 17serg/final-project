@@ -37,13 +37,18 @@ const styles = {
 };
 
 export const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise }) => {
+  const getImageUrl = (imagePath: string): string => {
+    const baseUrl = import.meta.env.VITE_API.replace('/api', '');
+    return `${baseUrl}${imagePath}`;
+  };
+
   return (
     <Card sx={styles.card}>
       <Box sx={{ position: 'relative' }}>
         <CardMedia
           component="img"
           sx={styles.media}
-          image={exercise.image}
+          image={getImageUrl(exercise.image)}
           alt={exercise.name}
         />
         <Typography variant="body2" sx={styles.category}>
@@ -60,4 +65,4 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise }) => {
       </CardContent>
     </Card>
   );
-}; 
+};
