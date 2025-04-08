@@ -305,175 +305,231 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
             width: 600,
             maxHeight: '80vh',
             overflowY: 'auto',
-            bgcolor: 'background.paper',
-            borderRadius: 2,
-            boxShadow: 24,
-            p: 4,
+            background: 'linear-gradient(to bottom, rgba(211, 211, 211, 0.29), rgba(133, 133, 133, 0.09) 70%)',
+            transition: "all 0.3s ease",
+            backdropFilter: "blur(20px)",
+            borderRadius: '16px',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+            overflow: 'hidden',
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <FitnessCenter sx={{ mr: 1, color: 'primary.main' }} />
+          <Box 
+            sx={{ 
+              backgroundColor: 'rgba(80, 80, 80, 0.75)', 
+              borderRadius: '16px 16px 0px 0px',
+              color: 'white',
+              fontWeight: 'bold',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+              p: 2,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1
+            }}
+          >
+            <FitnessCenter sx={{ color: 'white' }} />
             <Typography variant="h6" component="h2">
               Тренировочный день
             </Typography>
           </Box>
 
-          <Typography variant="body1" sx={{ mb: 3, color: 'text.secondary' }}>
-            {date.toLocaleDateString('ru-RU', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric',
-            })}
-          </Typography>
-
-          <Divider sx={{ my: 2 }} />
-
-          {error && (
-            <Typography color="error" sx={{ mb: 2 }}>
-              {error}
+          <Box sx={{ p: 3 }}>
+            <Typography variant="body1" sx={{ mb: 3, color: 'rgba(255, 255, 255, 0.9)' }}>
+              {date.toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })}
             </Typography>
-          )}
 
-          {isLoadingTraining ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-              <CircularProgress size={24} />
-            </Box>
-          ) : trainings.length > 0 ? (
-            <Box sx={{ mb: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                <Info color="info" fontSize="small" />
-                <Typography variant="body2" color="text.secondary">
-                  Найдено {trainings.length} {trainings.length === 1 ? 'тренировка' : 'тренировки'}
-                </Typography>
+            <Divider sx={{ my: 2, borderColor: 'rgba(255, 255, 255, 0.2)' }} />
+
+            {error && (
+              <Typography color="error" sx={{ mb: 2 }}>
+                {error}
+              </Typography>
+            )}
+
+            {isLoadingTraining ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+                <CircularProgress size={24} sx={{ color: 'rgba(255, 255, 255, 0.9)' }} />
               </Box>
+            ) : trainings.length > 0 ? (
+              <Box sx={{ mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                  <Info color="info" fontSize="small" sx={{ color: 'rgba(255, 255, 255, 0.9)' }} />
+                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                    Найдено {trainings.length} {trainings.length === 1 ? 'тренировка' : 'тренировки'}
+                  </Typography>
+                </Box>
 
-              <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
-                <Tabs
-                  value={selectedTrainingIndex}
-                  onChange={handleTabChange}
-                  aria-label="тренировки"
-                  variant="scrollable"
-                  scrollButtons="auto"
-                >
-                  {[...trainings].reverse().map((training, index) => (
-                    <Tab
-                      key={training.id}
-                      label={`Тренировка ${index + 1}`}
-                      id={`training-tab-${index}`}
-                      aria-controls={`training-tabpanel-${index}`}
-                    />
-                  ))}
-                </Tabs>
-              </Box>
-
-              {[...trainings].reverse().map((training, index) => (
-                <TabPanel key={training.id} value={selectedTrainingIndex} index={index}>
-                  <Box sx={{ mb: 2 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                      {training.complete ? (
-                        <CheckCircle color="success" />
-                      ) : (
-                        <Error color="warning" />
-                      )}
-                      <Typography variant="subtitle1" fontWeight="bold">
-                        {training.complete ? 'Тренировка выполнена' : 'Тренировка не выполнена'}
-                      </Typography>
-                      <IconButton
-                        color="error"
-                        onClick={() => handleDeleteClick(training)}
-                        sx={{ ml: 'auto' }}
-                      >
-                        <Delete />
-                      </IconButton>
-                    </Box>
-                    <Typography variant="body2" color="text.secondary">
-                      Создана: {formatDate(training.createdAt)}
-                    </Typography>
-                  </Box>
-
-                  {/* Таблица с упражнениями */}
-                  {isLoadingExercises[training.id] ? (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-                      <CircularProgress size={24} />
-                    </Box>
-                  ) : exercisesMap[training.id] && exercisesMap[training.id].length > 0 ? (
-                    <Box sx={{ mt: 3 }}>
-                      <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
-                        Упражнения в тренировке:
-                      </Typography>
-                      <TableContainer component={Paper} sx={{ maxHeight: 300 }}>
-                        <Table size="small" stickyHeader>
-                          <TableHead>
-                            <TableRow>
-                              <TableCell>№</TableCell>
-                              <TableCell>Название</TableCell>
-                              <TableCell align="right">Вес (кг)</TableCell>
-                              <TableCell align="right">Подходы</TableCell>
-                              <TableCell align="right">Повторения</TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {exercisesMap[training.id].map((exercise, index) => (
-                              <TableRow key={exercise.id}>
-                                <TableCell>{index + 1}</TableCell>
-                                <TableCell>{exercise.Exercise.name}</TableCell>
-                                <TableCell align="right">{exercise.weight}</TableCell>
-                                <TableCell align="right">{exercise.sets}</TableCell>
-                                <TableCell align="right">{exercise.reps}</TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
-                    </Box>
-                  ) : (
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-                      В тренировке пока нет упражнений
-                    </Typography>
-                  )}
-
-                  <Button
-                    variant="outlined"
-                    fullWidth
-                    onClick={() => handleGoToExistingTraining(training.id)}
+                <Box sx={{ borderBottom: 1, borderColor: 'rgba(255, 255, 255, 0.2)', mb: 2 }}>
+                  <Tabs
+                    value={selectedTrainingIndex}
+                    onChange={handleTabChange}
+                    aria-label="тренировки"
+                    variant="scrollable"
+                    scrollButtons="auto"
                     sx={{
-                      mt: 2,
-                      py: 1.5,
-                      fontSize: '1.1rem',
+                      '& .MuiTab-root': {
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        '&.Mui-selected': {
+                          color: 'rgba(255, 255, 255, 0.9)',
+                        },
+                      },
+                      '& .MuiTabs-indicator': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                      },
                     }}
                   >
-                    Перейти к тренировке
-                  </Button>
-                </TabPanel>
-              ))}
-            </Box>
-          ) : (
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" color="text.secondary">
-                Для этого дня еще не создано ни одной тренировки
-              </Typography>
-            </Box>
-          )}
+                    {[...trainings].reverse().map((training, index) => (
+                      <Tab
+                        key={training.id}
+                        label={`Тренировка ${index + 1}`}
+                        id={`training-tab-${index}`}
+                        aria-controls={`training-tabpanel-${index}`}
+                      />
+                    ))}
+                  </Tabs>
+                </Box>
 
-          {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={handleGoToTraining}
-              disabled={!day || !day.id}
-              sx={{
-                mt: 2,
-                py: 1.5,
-                fontSize: '1.1rem',
-              }}
-            >
-              Создать новую тренировку
-            </Button>
-          )}
+                {[...trainings].reverse().map((training, index) => (
+                  <TabPanel key={training.id} value={selectedTrainingIndex} index={index}>
+                    <Box sx={{ mb: 2 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        {training.complete ? (
+                          <CheckCircle color="success" />
+                        ) : (
+                          <Error color="warning" />
+                        )}
+                        <Typography variant="subtitle1" fontWeight="bold" sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                          {training.complete ? 'Тренировка выполнена' : 'Тренировка не выполнена'}
+                        </Typography>
+                        <IconButton
+                          color="error"
+                          onClick={() => handleDeleteClick(training)}
+                          sx={{ ml: 'auto' }}
+                        >
+                          <Delete />
+                        </IconButton>
+                      </Box>
+                      <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                        Создана: {formatDate(training.createdAt)}
+                      </Typography>
+                    </Box>
+
+                    {isLoadingExercises[training.id] ? (
+                      <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+                        <CircularProgress size={24} sx={{ color: 'rgba(255, 255, 255, 0.9)' }} />
+                      </Box>
+                    ) : exercisesMap[training.id] && exercisesMap[training.id].length > 0 ? (
+                      <Box sx={{ mt: 3 }}>
+                        <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1, color: 'rgba(255, 255, 255, 0.9)' }}>
+                          Упражнения в тренировке:
+                        </Typography>
+                        <TableContainer 
+                          component={Paper} 
+                          sx={{ 
+                            maxHeight: 300,
+                            background: 'rgba(255, 255, 255, 0.1)',
+                            backdropFilter: 'blur(10px)',
+                            '& .MuiTableCell-root': {
+                              color: 'rgba(255, 255, 255, 0.9)',
+                              borderColor: 'rgba(255, 255, 255, 0.2)',
+                            },
+                            '& .MuiTableHead-root .MuiTableCell-root': {
+                              fontWeight: 'bold',
+                            }
+                          }}
+                        >
+                          <Table size="small" stickyHeader>
+                            <TableHead>
+                              <TableRow>
+                                <TableCell>№</TableCell>
+                                <TableCell>Название</TableCell>
+                                <TableCell align="right">Вес (кг)</TableCell>
+                                <TableCell align="right">Подходы</TableCell>
+                                <TableCell align="right">Повторения</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {exercisesMap[training.id].map((exercise, index) => (
+                                <TableRow key={exercise.id}>
+                                  <TableCell>{index + 1}</TableCell>
+                                  <TableCell>{exercise.Exercise.name}</TableCell>
+                                  <TableCell align="right">{exercise.weight}</TableCell>
+                                  <TableCell align="right">{exercise.sets}</TableCell>
+                                  <TableCell align="right">{exercise.reps}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      </Box>
+                    ) : (
+                      <Typography variant="body2" sx={{ mt: 2, color: 'rgba(255, 255, 255, 0.7)' }}>
+                        В тренировке пока нет упражнений
+                      </Typography>
+                    )}
+
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      onClick={() => handleGoToExistingTraining(training.id)}
+                      sx={{
+                        mt: 2,
+                        py: 1.5,
+                        fontSize: '1.1rem',
+                        color: 'rgba(255, 255, 255, 0.9)',
+                        borderColor: 'rgba(255, 255, 255, 0.5)',
+                        '&:hover': {
+                          borderColor: 'rgba(255, 255, 255, 0.8)',
+                          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        }
+                      }}
+                    >
+                      Перейти к тренировке
+                    </Button>
+                  </TabPanel>
+                ))}
+              </Box>
+            ) : (
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                  Для этого дня еще не создано ни одной тренировки
+                </Typography>
+              </Box>
+            )}
+
+            {loading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+                <CircularProgress sx={{ color: 'rgba(255, 255, 255, 0.9)' }} />
+              </Box>
+            ) : (
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={handleGoToTraining}
+                disabled={!day || !day.id}
+                sx={{
+                  mt: 2,
+                  py: 1.5,
+                  fontSize: '1.1rem',
+                  backgroundColor: 'rgba(128, 128, 128, 0.9)',
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                  '&:hover': {
+                    backgroundColor: 'rgba(128, 128, 128, 0.7)',
+                    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.25)',
+                  },
+                  '&.Mui-disabled': {
+                    backgroundColor: 'rgba(128, 128, 128, 0.5)',
+                    color: 'rgba(255, 255, 255, 0.5)',
+                  }
+                }}
+              >
+                Создать новую тренировку
+              </Button>
+            )}
+          </Box>
         </Box>
       </Modal>
 
@@ -481,15 +537,44 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
         open={deleteDialogOpen}
         onClose={handleDeleteCancel}
         aria-labelledby="delete-dialog-title"
+        PaperProps={{
+          sx: {
+            background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.29), rgba(143, 141, 141, 0.11) 70%)',
+            backdropFilter: "blur(20px)",
+            borderRadius: '16px',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+          }
+        }}
       >
-        <DialogTitle id="delete-dialog-title">Подтверждение удаления</DialogTitle>
-        <DialogContent>
+        <DialogTitle 
+          id="delete-dialog-title"
+          sx={{ 
+            backgroundColor: 'rgba(80, 80, 80, 0.75)', 
+            borderRadius: '16px 16px 0px 0px',
+            color: 'white',
+            fontWeight: 'bold',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+          }}
+        >
+          Подтверждение удаления
+        </DialogTitle>
+        <DialogContent sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>
           <Typography>
             Вы уверены, что хотите удалить эту тренировку? Это действие нельзя отменить.
           </Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDeleteCancel} disabled={isDeleting}>
+        <DialogActions sx={{ p: 3 }}>
+          <Button 
+            onClick={handleDeleteCancel} 
+            disabled={isDeleting}
+            sx={{ 
+              color: 'rgba(167, 167, 167, 0.9)',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+              '&:hover': {
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+              }
+            }}
+          >
             Отмена
           </Button>
           <Button
@@ -497,6 +582,14 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
             color="error"
             variant="contained"
             disabled={isDeleting}
+            sx={{ 
+              backgroundColor: 'rgba(211, 47, 47, 0.9)',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+              '&:hover': {
+                backgroundColor: 'rgba(211, 47, 47, 0.7)',
+                boxShadow: '0 6px 12px rgba(0, 0, 0, 0.25)',
+              }
+            }}
           >
             {isDeleting ? <CircularProgress size={24} /> : 'Удалить'}
           </Button>

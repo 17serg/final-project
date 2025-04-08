@@ -14,6 +14,7 @@ export const useSocketChat = () => {
 
   useEffect(() => {
     socket.on('newMessage', (message) => {
+      // console.log(message)
       dispatch(addMessage(message));
     });
 

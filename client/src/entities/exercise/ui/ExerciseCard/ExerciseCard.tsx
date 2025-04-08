@@ -9,12 +9,18 @@ interface ExerciseCardProps {
 
 const styles = {
   card: {
+    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+    transition: "all 0.3s ease",
+    backdropFilter: "blur(9px)",
+    boxShadow: "0 6px 8px rgba(0, 0, 0, 0.4)",
     maxWidth: 300,
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
+
     transition: 'transform 0.2s',
     cursor: 'pointer',
+
     '&:hover': {
       transform: 'scale(1.02)',
     },
@@ -35,6 +41,7 @@ const styles = {
     backgroundColor: '#f5f5f5',
   },
   content: {
+    color: 'white',
     flexGrow: 1,
   },
   category: {
@@ -149,29 +156,27 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise }) => {
 
   return (
     <>
-      <Card sx={styles.card} onClick={handleOpenModal}>
-        <Box sx={{ position: 'relative' }}>
-          <Box sx={styles.mediaContainer}>
-            <CardMedia
-              component="img"
-              sx={styles.media}
-              image={getImageUrl(exercise.image)}
-              alt={exercise.name}
-            />
-          </Box>
-          <Typography variant="body2" sx={styles.category}>
-            {exercise.category}
-          </Typography>
-        </Box>
-        <CardContent sx={styles.content}>
-          <Typography gutterBottom variant="h6" component="div">
-            {exercise.name}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {exercise.description}
-          </Typography>
-        </CardContent>
-      </Card>
+      <Card sx={styles.card}>
+      <Box sx={{ position: 'relative' }}>
+        <CardMedia
+          component="img"
+          sx={styles.media}
+          image={exercise.image}
+          alt={exercise.name}
+        />
+        <Typography variant="body2" sx={styles.category}>
+          {exercise.category}
+        </Typography>
+      </Box>
+      <CardContent sx={styles.content}>
+        <Typography gutterBottom variant="h6" component="div">
+          {exercise.name}
+        </Typography>
+        <Typography variant="body2" color="rgba(230, 230, 230, 0.62)">
+          {exercise.description}
+        </Typography>
+      </CardContent>
+    </Card>
 
       <Modal open={modalOpen} onClose={handleCloseModal} sx={styles.modal}>
         <Box sx={styles.modalContent}>
@@ -206,5 +211,6 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise }) => {
         </Box>
       </Modal>
     </>
+
   );
 };

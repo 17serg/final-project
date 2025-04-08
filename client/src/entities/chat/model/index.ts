@@ -23,6 +23,7 @@ export interface Message {
     usersWithChats: User[];
     loading: boolean;
     unreadCount: number;
+    chatPartner: number | null;
   }
   
  

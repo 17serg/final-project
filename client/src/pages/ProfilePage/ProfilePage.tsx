@@ -10,9 +10,8 @@ import AnthropometryPage from "../AnthropometryPage/AnthropometryPage";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../../app/store";
-import { getUnreadCount, addMessage, socket } from '../../entities/chat/store/chatSlice';
+import { getUnreadCount, setChatPartner } from '../../entities/chat/store/chatSlice';
 import { useLocation } from 'react-router-dom';
-
 
 const styles = {
   container: {
@@ -27,14 +26,18 @@ const styles = {
     paddingRight: "20px",
     gap: "0px",
     marginBottom: "0px",
+    
   },
   profileCard: {
     width: "100%",
     maxWidth: "800px",
     padding: "30px",
     borderRadius: "16px",
-    backgroundColor: "white",
+    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+    transition: "all 0.3s ease",
+    backdropFilter: "blur(9px)",
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.7)",
+    
   },
   header: {
     width: "100%",
@@ -46,7 +49,7 @@ const styles = {
   avatar: {
     width: 300,
     height: 300,
-    border: "4px solid rgb(42, 41, 223)",
+    border: "4px solid rgba(160, 158, 158, 0.57)",
     "& .MuiAvatar-root": {
       fontSize: "120px",
     },
@@ -59,11 +62,11 @@ const styles = {
   userName: {
     fontSize: "2rem",
     fontWeight: "bold",
-    color: "black",
+    color: "white",
   },
   userEmail: {
     fontSize: "1.2rem",
-    color: "gray",
+    color: "rgba(255, 255, 255, 0.7)",
     marginBottom: "16px",
   },
   profileInfo: {
@@ -73,11 +76,11 @@ const styles = {
   },
   profileLabel: {
     fontSize: "1.2rem",
-    color: "gray",
+    color: "rgba(255, 255, 255, 0.7)",
   },
   profileValue: {
     fontSize: "1.4rem",
-    color: "black",
+    color: "rgba(255, 255, 255, 0.7)",
     marginBottom: "8px",
   },
   statsContainer: {
@@ -91,17 +94,19 @@ const styles = {
     borderRadius: "16px",
     textAlign: "center",
     minWidth: "200px",
-    backgroundColor: "white",
+    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+    transition: "all 0.3s ease",
+    backdropFilter: "blur(9px)",
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.7)",
   },
   statValue: {
     fontSize: "2rem",
     fontWeight: "bold",
-    color: "rgb(42, 41, 223)",
+    color: "white",
   },
   statLabel: {
     fontSize: "1.2rem",
-    color: "black",
+    color: "rgba(255, 255, 255, 0.7)",
     marginTop: "8px",
   },
   tabsContainer: {
@@ -121,16 +126,19 @@ const styles = {
     width: "100%",
   },
   tab: {
+    color: "white",
     marginTop: "9px",
     fontSize: "1.1rem",
     fontWeight: 500,
     textTransform: "none",
-    backgroundColor: "white",
+    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+    transition: "all 0.3s ease",
+    backdropFilter: "blur(9px)",
     boxShadow: "0 0px 8px rgba(0, 0, 0, 0.4)",
     borderTopLeftRadius: "16px",
     borderTopRightRadius: "16px",
-    border: "2px solid rgb(42, 41, 223)",
-    borderBottom: "0px solid rgb(42, 41, 223)",
+    border: "2px solid rgba(161, 161, 161, 0.93)",
+    borderBottom: "0px solid rgba(161, 161, 161, 0.93)",
     marginRight: "4px",
     padding: "8px 16px",
     minHeight: "40px",
@@ -138,7 +146,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    transition: "border-color 0.3s ease",
+
     flex: 1,
     position: "relative",
     "& .MuiTypography-root": {
@@ -149,19 +157,21 @@ const styles = {
   activeTab: {
     color: "white",
     fontWeight: "bold",
-    backgroundColor: "rgba(42, 41, 223, 0.7)",
+    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.55), rgba(187, 187, 187, 0.42) 70%)',
     marginBottom: "0px",
     position: "relative",
     zIndex: 3,
   },
   tabPanel: {
-    width: "95.9%",
+    width: "95.8%",
     padding: "20px",
-    backgroundColor: "rgba(42, 41, 223, 0.7)",
+    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+    transition: "all 0.3s ease",
+    backdropFilter: "blur(9px)",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
     borderRadius: "0 0 16px 16px",
     marginTop: "0px",
-    border: "2px solid rgb(42, 41, 223)",
+    border: "2px solid rgba(161, 161, 161, 0.93)",
     borderTop: "none",
     position: "relative",
     zIndex: 1,
@@ -199,35 +209,36 @@ export default function ProfilePage(): React.JSX.Element {
   const location = useLocation();
   const [profile, setProfile] = React.useState<IUserProfile | null>(null);
   const [activeTab, setActiveTab] = React.useState<number | null>(null);
+  const chatRef = React.useRef<HTMLDivElement>(null); // Добавляем ref для чата
 
   const userId = user?.id;
-  const { messages, unreadCount } = useSelector((state: RootState) => state.chat);
+  const { messages } = useSelector((state: RootState) => state.chat);
+
+  useEffect(() => {
+    console.log('ProfilePage location state:', location.state);
+    if (location.state?.scrollToChat) {
+      setActiveTab(3); // Открываем вкладку чата
+      if (location.state?.trainerId && location.state?.openChatWithTrainer) {
+        dispatch(setChatPartner(location.state.trainerId)); // Устанавливаем тренера как собеседника
+      }
+      // Увеличиваем задержку для прокрутки
+      setTimeout(() => {
+        if (chatRef.current) {
+          chatRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 500); // Увеличили задержку до 500мс
+    }
+  }, [location.state, dispatch]);
 
   useEffect(() => {
     if (userId) {
-      dispatch(getUnreadCount(userId)); // Получаем количество непрочитанных сообщений для текущего пользователя
-      
-      // Добавляем прослушивание сокета для новых сообщений
-      socket.on('newMessage', (message) => {
-        dispatch(addMessage(message));
-        
-        // Если сообщение предназначено текущему пользователю, обновляем счетчик непрочитанных
-        if (message.receiverId === userId) {
-          dispatch(getUnreadCount(userId));
-        }
-      });
-      
-      return () => {
-        socket.off('newMessage');
-      };
+      dispatch(getUnreadCount(userId)); 
     }
   }, [userId, dispatch]);
 
   const unreadMessagesCount = messages.filter(
     (msg) => msg.receiverId === userId && !msg.isRead
   ).length;
-
-  const calendarRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     const loadProfile = async (): Promise<void> => {
@@ -243,45 +254,6 @@ export default function ProfilePage(): React.JSX.Element {
       loadProfile();
     }
   }, [user]);
-
-  // Добавляем обработчик события для обновления профиля
-  React.useEffect(() => {
-    const handleProfileUpdate = async (): Promise<void> => {
-      if (user) {
-        try {
-          const response = await UserApi.getProfile();
-          if (response.data) {
-            setProfile(response.data);
-          }
-        } catch (error) {
-          console.error('Error updating profile:', error);
-        }
-      }
-    };
-
-    // Добавляем слушатель события
-    window.addEventListener('profileUpdated', handleProfileUpdate);
-
-    // Удаляем слушатель при размонтировании компонента
-    return (): void => {
-      window.removeEventListener('profileUpdated', handleProfileUpdate);
-    };
-  }, [user]);
-
-  // Обработка автоматической прокрутки к календарю
-  React.useEffect(() => {
-    if (location.state?.scrollToCalendar) {
-      // Активируем вкладку с календарем
-      setActiveTab(0);
-      
-      // Даем время на рендеринг вкладки и прокручиваем к календарю
-      setTimeout(() => {
-        if (calendarRef.current) {
-          calendarRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 100);
-    }
-  }, [location.state]);
 
   if (!user) {
     return <Typography>Пользователь не найден</Typography>;
@@ -307,12 +279,10 @@ export default function ProfilePage(): React.JSX.Element {
   };
 
   const getUserAvatarColor = (): string => {
-
     if (user?.email) {
       return getUserColor(user.email);
     }
     return "#BAE1FF";
-    return user ? getUserColor(user.email) : '#1976d2';
   };
 
   const handleTabClick = (index: number) => (event: React.MouseEvent): void => {
@@ -374,7 +344,7 @@ export default function ProfilePage(): React.JSX.Element {
         </Paper>
       </Box>
       <Box 
-        ref={calendarRef}
+        ref={chatRef} // Присваиваем ref для прокрутки к чату
         sx={{ 
           display: "flex", 
           flexDirection: "column", 

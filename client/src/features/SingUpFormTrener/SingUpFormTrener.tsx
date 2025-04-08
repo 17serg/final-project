@@ -137,7 +137,9 @@ export default function SingUpFormTrener(): React.JSX.Element {
           mt: 4, 
           mb: 4, 
           borderRadius: 3,
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+          transition: "all 0.3s ease",
+          backdropFilter: "blur(9px)",
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
           border: '1px solid rgba(255, 255, 255, 0.18)',
         }}
@@ -149,7 +151,7 @@ export default function SingUpFormTrener(): React.JSX.Element {
           gutterBottom
           sx={{ 
             fontWeight: 'bold', 
-            color: 'rgb(42, 41, 223)',
+            color: 'white',
             mb: 3
           }}
         >
@@ -306,15 +308,15 @@ export default function SingUpFormTrener(): React.JSX.Element {
             type="submit"
             sx={{ 
               mt: 3, 
-              backgroundColor: 'rgb(42, 41, 223)',
+              backgroundColor: 'rgba(160, 158, 158, 0.57)',
               '&:hover': {
-                backgroundColor: 'rgba(42, 41, 223, 0.8)',
+                backgroundColor: 'rgb(160, 158, 158)',
               },
               borderRadius: 2,
               py: 1.5,
               px: 4,
               fontWeight: 'bold',
-              boxShadow: '0 4px 12px rgba(42, 41, 223, 0.3)',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
               width: '100%',
             }}
           >
@@ -326,15 +328,15 @@ export default function SingUpFormTrener(): React.JSX.Element {
             onClick={() => navigate('/signup')}
             sx={{ 
               mt: 1, 
-              backgroundColor: 'rgba(42, 41, 223, 0.7)',
+              backgroundColor: 'rgba(128, 124, 124, 0.27)',
               '&:hover': {
-                backgroundColor: 'rgba(42, 41, 223, 0.8)',
+                backgroundColor: 'rgb(160, 158, 158)',
               },
               borderRadius: 2,
               py: 1,
               px: 3,
               fontWeight: 'medium',
-              boxShadow: '0 2px 8px rgba(42, 41, 223, 0.2)',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.4)',
             }}
           >
             Если вы обычный пользователь
