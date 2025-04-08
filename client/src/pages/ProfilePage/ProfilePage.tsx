@@ -210,12 +210,12 @@ export default function ProfilePage(): React.JSX.Element {
       if (location.state?.trainerId && location.state?.openChatWithTrainer) {
         dispatch(setChatPartner(location.state.trainerId)); // Устанавливаем тренера как собеседника
       }
-      // Прокручиваем к чату
+      // Увеличиваем задержку для прокрутки
       setTimeout(() => {
         if (chatRef.current) {
           chatRef.current.scrollIntoView({ behavior: 'smooth' });
         }
-      }, 100);
+      }, 500); // Увеличили задержку до 500мс
     }
   }, [location.state, dispatch]);
 

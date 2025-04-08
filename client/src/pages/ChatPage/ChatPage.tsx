@@ -17,6 +17,7 @@ import { RootState, AppDispatch } from '../../app/store';
 import { useUser } from '@/entities/user/hooks/useUser';
 import { useSocketChat } from './../../entities/chat/api/socketApi';
 import { useLocation } from 'react-router-dom';
+import { CircularProgress } from '@mui/material';
 
 const REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '😡'];
 
@@ -32,10 +33,9 @@ export function ChatPage(): React.JSX.Element {
 
   const [text, setText] = useState('');
   const [chatPartnerId, setChatPartnerId] = useState<number | null>(null);
+  const [loadingMessages, setLoadingMessages] = useState<boolean>(false); // Состояние загрузки
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
-  const lastMessageRef = useRef<boolean>(false); // Флаг для отслеживания последнего сообщения
 
   useEffect(() => {
     dispatch(fetchTrainers());
@@ -46,11 +46,17 @@ export function ChatPage(): React.JSX.Element {
     }
   }, []);
 
-  // Обработка входа/выхода из чата
   useEffect(() => {
     if (chatPartnerId && userId) {
+      setLoadingMessages(true); // Устанавливаем состояние загрузки
       dispatch(joinChat({ userId, chatPartnerId }));
-      dispatch(fetchMessages({ userId, chatPartnerId }));
+      dispatch(fetchMessages({ userId, chatPartnerId })).then(() => {
+        setLoadingMessages(false); // Сбрасываем состояние загрузки после загрузки сообщений
+        // Прокручиваем к последнему сообщению после загрузки
+        if (messagesEndRef.current) {
+          messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
       emitCheckMessages(userId, chatPartnerId);
       
       return () => {
@@ -76,16 +82,13 @@ export function ChatPage(): React.JSX.Element {
     messages.filter(msg => 
       (msg.senderId === userId && msg.receiverId === chatPartnerId) ||
       (msg.senderId === chatPartnerId && msg.receiverId === userId)
-    ),
+    ).reverse(), // Изменено на .reverse() для отображения новых сообщений первыми
     [messages, userId, chatPartnerId]
   );
 
   useEffect(() => {
-    // Если есть последнее сообщение, скроллим вниз
     if (messagesEndRef.current) {
-      if (lastMessageRef.current) {
-        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-      }
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [filteredMessages]);
 
@@ -110,7 +113,6 @@ export function ChatPage(): React.JSX.Element {
 
       dispatch(sendMessage(newMessage));
       setText('');
-      lastMessageRef.current = true; // Устанавливаем флаг для прокрутки вниз
     }
   }, [text, chatPartnerId, userId]);
 
@@ -272,56 +274,62 @@ export function ChatPage(): React.JSX.Element {
         <h2 style={{ marginBottom: '20px', fontSize: '24px', color: '#333' }}>Чат</h2>
         {chatPartnerId ? (
           <>
-            <div
-              style={{
-                height: '35vh', // Уменьшена высота чата
-                overflowY: 'scroll',
-                borderRadius: '10px',
-                backgroundColor: '#fff',
-                padding: '15px',
-                boxShadow: '0px 3px 15px rgba(0, 0, 0, 0.1)',
-                display: 'flex',
-                flexDirection: 'column-reverse',
-              }}
-            >
-              {filteredMessages.map((msg, index) => (
-                <div
-                  key={`${msg.id}-${userId}-${index}`}
-                  style={{
-                    padding: '8px 15px',
-                    borderRadius: '20px',
-                    backgroundColor: msg.senderId === userId ? '#DCF8C6' : '#fff',
-                    margin: '5px 0',
-                    maxWidth: '80%',
-                    alignSelf: msg.senderId === userId ? 'flex-end' : 'flex-start',
-                    position: 'relative',
-                  }}
-                >
-                  <p
+            {loadingMessages ? ( // Индикатор загрузки
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                <CircularProgress />
+              </div>
+            ) : (
+              <div
+                style={{
+                  height: '35vh',
+                  overflowY: 'scroll',
+                  borderRadius: '10px',
+                  backgroundColor: '#fff',
+                  padding: '15px',
+                  boxShadow: '0px 3px 15px rgba(0, 0, 0, 0.1)',
+                  display: 'flex',
+                  flexDirection: 'column', // Изменено с 'column-reverse' на 'column'
+                }}
+              >
+                {filteredMessages.map((msg, index) => (
+                  <div
+                    key={`${msg.id}-${userId}-${index}`}
                     style={{
-                      margin: '0',
-                      fontSize: '14px',
-                      color: '#333',
-                      lineHeight: '1.4',
+                      padding: '8px 15px',
+                      borderRadius: '20px',
+                      backgroundColor: msg.senderId === userId ? '#DCF8C6' : '#fff',
+                      margin: '5px 0',
+                      maxWidth: '80%',
+                      alignSelf: msg.senderId === userId ? 'flex-end' : 'flex-start',
+                      position: 'relative',
                     }}
                   >
-                    <strong>{msg.senderId === userId ? 'Вы' : 'Собеседник'}:</strong> {msg.text}
-                    <br />
-                    <span style={{ fontSize: '12px', color: '#888' }}>
-                      {formatTime(msg.createdAt)}{' '}
-                      {msg.senderId === userId && (
-                        <>
-                          {msg.isSent ? '✅' : '⌛'} {msg.isRead ? '✅' : ''}
-                        </>
-                      )}
-                    </span>
-                  </p>
-                  <MessageReactions message={msg} />
-                  <ReactionPicker messageId={msg.id!} />
-                </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
+                    <p
+                      style={{
+                        margin: '0',
+                        fontSize: '14px',
+                        color: '#333',
+                        lineHeight: '1.4',
+                      }}
+                    >
+                      <strong>{msg.senderId === userId ? 'Вы' : 'Собеседник'}:</strong> {msg.text}
+                      <br />
+                      <span style={{ fontSize: '12px', color: '#888' }}>
+                        {formatTime(msg.createdAt)}{' '}
+                        {msg.senderId === userId && (
+                          <>
+                            {msg.isSent ? '✅' : '⌛'} {msg.isRead ? '✅' : ''}
+                          </>
+                        )}
+                      </span>
+                    </p>
+                    <MessageReactions message={msg} />
+                    <ReactionPicker messageId={msg.id!} />
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+            )}
   
             <div style={{ display: 'flex', marginTop: '15px' }}>
               <input
