@@ -18,7 +18,8 @@ const styles = {
     width: "100%",
     padding: "20px",
     borderRadius: "16px",
-    backgroundColor: "white",
+    backgroundColor: "rgba(128, 128, 128, 0.7)",
+    backdropFilter: "blur(10px)",
     boxShadow: "0 6px 8px rgba(0, 0, 0, 0.4)",
     display: "flex",
     gap: "20px",
@@ -27,7 +28,7 @@ const styles = {
   avatar: {
     width: 100,
     height: 100,
-    border: "4px solid rgb(42, 41, 223)",
+    border: "4px solid rgba(128, 128, 128, 0.7)",
   },
   info: {
     flex: 1,
@@ -72,11 +73,11 @@ const styles = {
   },
   readMoreButton: {
     marginTop: "8px",
-    color: "rgb(42, 41, 223)",
+    color: "white",
     fontWeight: "bold",
     textTransform: "none",
     "&:hover": {
-      backgroundColor: "rgba(42, 41, 223, 0.1)",
+      backgroundColor: "rgb(22, 22, 24)",
     },
   },
 };
