@@ -49,8 +49,8 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState<Partial<ExerciseSet>>({
-    actualWeight: plannedWeight,
-    actualReps: plannedReps,
+    actualWeight: plannedWeight || 50,
+    actualReps: plannedReps || 10,
     isCompleted: false,
     notes: '',
   });
@@ -128,8 +128,8 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
       if (editingSet) {
         // Обновление существующего подхода
         const updateData: UpdateExerciseSetDto = {
-          actualWeight: formData.actualWeight ?? plannedWeight, // Используем значение по умолчанию
-          actualReps: formData.actualReps ?? plannedReps, // Используем значение по умолчанию
+          actualWeight: formData.actualWeight ?? (plannedWeight || 50),
+          actualReps: formData.actualReps ?? (plannedReps || 10),
           isCompleted: formData.isCompleted,
           notes: formData.notes || undefined,
         };
@@ -138,8 +138,8 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
         // Создание нового подхода
         const createData: CreateExerciseSetDto = {
           setNumber: formData.setNumber as number,
-          actualWeight: formData.actualWeight ?? plannedWeight, // Используем значение по умолчанию
-          actualReps: formData.actualReps ?? plannedReps, // Используем значение по умолчанию
+          actualWeight: formData.actualWeight ?? (plannedWeight || 50),
+          actualReps: formData.actualReps ?? (plannedReps || 10),
           isCompleted: formData.isCompleted,
           notes: formData.notes || undefined,
         };
@@ -158,8 +158,8 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
   // Изменяем начальное состояние formData
   const resetFormData = () => {
     setFormData({
-      actualWeight: plannedWeight,
-      actualReps: plannedReps,
+      actualWeight: plannedWeight || 50,
+      actualReps: plannedReps || 10,
       isCompleted: false,
       notes: '',
     });
@@ -175,10 +175,22 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
   // Обработка изменений в форме
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value,
-    });
+
+    // Проверка на отрицательные значения для числовых полей
+    if (type === 'number' && (name === 'actualWeight' || name === 'actualReps')) {
+      const numValue = parseFloat(value);
+      if (value === '' || numValue >= 0) {
+        setFormData({
+          ...formData,
+          [name]: value,
+        });
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: type === 'checkbox' ? checked : value,
+      });
+    }
   };
 
   // Удаление подхода
@@ -235,54 +247,45 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
   const handleAddSet = async (): Promise<void> => {
     try {
       const newSetNumber = exerciseSets.length + 1;
-
-      // Создаем временный ID для оптимистичного обновления
-      const tempId = -Date.now();
-
-      // Создаем новый подход с правильной типизацией
       const newSet: CreateExerciseSetDto = {
         setNumber: newSetNumber,
-        actualWeight: plannedWeight,
-        actualReps: plannedReps,
+        actualWeight: plannedWeight || 50,
+        actualReps: plannedReps || 10,
         isCompleted: false,
       };
 
-      // Создаем временный объект для оптимистичного обновления
-      const tempSet: ExerciseSet = {
-        id: tempId,
+      // Оптимистичное обновление UI
+      const optimisticSet: ExerciseSet = {
+        id: Date.now(), // Временный ID
         exerciseOfTrainingId,
         setNumber: newSetNumber,
-        actualWeight: plannedWeight,
-        actualReps: plannedReps,
+        actualWeight: newSet.actualWeight,
+        actualReps: newSet.actualReps,
         isCompleted: false,
-        notes: null,
-        executionDate: null,
-        executionTime: null,
+        notes: '',
+        executionDate: new Date().toISOString().split('T')[0],
+        executionTime: new Date().toISOString().split('T')[1].substring(0, 5),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
 
-      // Оптимистично обновляем UI без перерендера
-      setExerciseSets((prevSets) => [...prevSets, tempSet]);
+      setExerciseSets((prevSets) => [...prevSets, optimisticSet]);
 
-      // Создаем подход на сервере
+      // Отправка данных на сервер
       const response = await ExerciseSetApi.createExerciseSet(exerciseOfTrainingId, newSet);
 
-      if (response.data.success && response.data.data) {
-        // Заменяем временный объект на реальный без перерендера
+      // Обновляем локальное состояние с реальными данными с сервера
+      if (response.data) {
         setExerciseSets((prevSets) =>
-          prevSets.map((set) => (set.id === tempId ? response.data.data : set)),
+          prevSets.map((set) => (set.id === optimisticSet.id ? response.data : set)),
         );
-        setError(null);
-      } else {
-        throw new Error('Не удалось создать подход');
       }
     } catch (error) {
       console.error('Ошибка при добавлении подхода:', error);
       setError('Не удалось добавить подход');
 
-      // Удаляем временный объект в случае ошибки без перерендера
-      setExerciseSets((prevSets) => prevSets.filter((set) => set.id !== -Date.now()));
+      // Откатываем оптимистичное обновление в случае ошибки
+      setExerciseSets((prevSets) => prevSets.filter((set) => set.id !== Date.now()));
     }
   };
 

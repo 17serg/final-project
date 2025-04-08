@@ -91,9 +91,9 @@ const styles = {
 const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
   const [exerciseId, setExerciseId] = useState('');
   const [duration, setDuration] = useState('');
-  const [weight, setWeight] = useState('');
-  const [sets, setSets] = useState('');
-  const [reps, setReps] = useState('');
+  const [weight, setWeight] = useState('50');
+  const [sets, setSets] = useState('3');
+  const [reps, setReps] = useState('10');
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -171,6 +171,28 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
     [],
   );
 
+  // Обработчики для числовых полей с проверкой на отрицательные значения
+  const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === '' || parseInt(value) >= 0) {
+      setWeight(value);
+    }
+  };
+
+  const handleSetsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === '' || parseInt(value) >= 0) {
+      setSets(value);
+    }
+  };
+
+  const handleRepsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === '' || parseInt(value) >= 0) {
+      setReps(value);
+    }
+  };
+
   const getImageUrl = (imagePath: string): string => {
     const baseUrl = import.meta.env.VITE_API.replace('/api', '');
     return `${baseUrl}${imagePath}`;
@@ -243,6 +265,7 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
           defaultValue={duration}
           onChange={(e) => debouncedSetDuration(e.target.value)}
           required
+          inputProps={{ min: 0 }}
         />
       ) : (
         <>
@@ -252,8 +275,9 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
             label="Вес (кг)"
             type="number"
             value={weight}
-            onChange={(e) => setWeight(e.target.value)}
+            onChange={handleWeightChange}
             required
+            inputProps={{ min: 0 }}
           />
 
           <TextField
@@ -262,8 +286,9 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
             label="Количество подходов"
             type="number"
             value={sets}
-            onChange={(e) => setSets(e.target.value)}
+            onChange={handleSetsChange}
             required
+            inputProps={{ min: 0 }}
           />
 
           <TextField
@@ -272,8 +297,9 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
             label="Количество повторений"
             type="number"
             value={reps}
-            onChange={(e) => setReps(e.target.value)}
+            onChange={handleRepsChange}
             required
+            inputProps={{ min: 0 }}
           />
         </>
       )}
