@@ -21,6 +21,7 @@ export interface IUserProfile {
 }
 
 export interface IUser {
+  surname: string;
   id: number;
   name: string;
   email: string;
