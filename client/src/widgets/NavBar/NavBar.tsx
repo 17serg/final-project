@@ -349,11 +349,11 @@ export default function NavBar(): React.JSX.Element {
                           sx={{ 
                             width: 42, 
                             height: 42,
-                            bgcolor: getUserColor(user.email),
+                            bgcolor: user ? getUserColor(user.email) : '#BAE1FF',
                             border: "2px solid rgba(161, 161, 161, 0.93)",
                           }}
                         >
-                          {user.name?.[0] || "U"}
+                          {user?.name?.[0] || "U"}
                         </Avatar>
                       </MenuItem>
                       <MenuItem 
