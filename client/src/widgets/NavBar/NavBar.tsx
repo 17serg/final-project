@@ -17,15 +17,18 @@ import { IUserProfile } from '@/entities/user/model';
 import { getUserColor } from '@/shared/utils/userColor';
 import { AuthModal } from '@/shared/ui/AuthModal/AuthModal';
 import { useTheme } from '@mui/material/styles';
+import { fonts } from '@/shared/styles/fonts';
 
 const styles = {
   navLink: {
+    ...fonts.delaGothicOne,
     color: "white",
+    marginTop: "12px",
     textDecoration: "none",
     flex: 1,
     textAlign: "center" as const,
     fontSize: "1.3rem",
-    fontWeight: 500,
+    fontWeight: 600,
     display: "block",
     width: "100%",
     border: "2px solid white",
@@ -71,6 +74,8 @@ const styles = {
     gap: "20px",
   },
   siteTitle: {
+    ...fonts.delaGothicOne,
+    marginTop: "12px",
     color: "white",
     textDecoration: "none",
     fontWeight: "bold",
@@ -104,6 +109,7 @@ const styles = {
     flex: 1,
   },
   menuItem: {
+    ...fonts.delaGothicOne,
     fontSize: "1rem",
     padding: "8px 16px",
     color: "white",

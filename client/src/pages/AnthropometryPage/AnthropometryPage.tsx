@@ -6,6 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { AnthropometryApi } from '@/entities/anthropometry/api/AnthropometryApi';
 import { IAnthropometry } from '@/entities/anthropometry/model';
 import { useUser } from '@/entities/user/hooks/useUser';
+import { fonts } from '@/shared/styles/fonts';
 
 export default function AnthropometryPage(): React.JSX.Element {
   const { user } = useUser();
@@ -181,7 +182,7 @@ export default function AnthropometryPage(): React.JSX.Element {
 
   return (
     <Box sx={{ p: 3, maxWidth: '1200px', margin: '0 auto' }}>
-      <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold', color: 'white', textAlign: 'center' }}>
+      <Typography variant="h4" sx={{ mb: 3, color: 'white', textAlign: 'center', ...fonts.delaGothicOne }}>
         Антропометрия
       </Typography>
 
@@ -244,7 +245,7 @@ export default function AnthropometryPage(): React.JSX.Element {
           ))
         ) : (
           <Grid item xs={12}>
-            <Typography variant="body1" sx={{ textAlign: 'center', color: 'text.secondary' }}>
+            <Typography variant="body1" sx={{ textAlign: 'center', color: 'text.secondary', ...fonts.montserrat, }}>
               У вас пока нет карточек замеров
             </Typography>
           </Grid>

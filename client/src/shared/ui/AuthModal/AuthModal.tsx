@@ -11,8 +11,13 @@ interface AuthModalProps {
 export const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
   const navigate = useNavigate();
 
-  const handleConfirm = (): void => {
+  const handleLogin = (): void => {
     navigate(CLIENT_ROUTES.LOGIN);
+    onClose();
+  };
+
+  const handleSignUp = (): void => {
+    navigate(CLIENT_ROUTES.SIGN_UP);
     onClose();
   };
 
@@ -43,9 +48,34 @@ export const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
       padding: '0 20px',
     },
     actions: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '12px',
       justifyContent: 'center',
       padding: '20px 0 0',
     },
+    button: {
+      width: '100%',
+      padding: '8px 16px',
+      fontSize: '1rem',
+      textTransform: 'none',
+      borderRadius: '8px',
+      transition: 'all 0.3s ease',
+    },
+    loginButton: {
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      color: 'white',
+      '&:hover': {
+        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+      }
+    },
+    signUpButton: {
+      marginRight: '7px',
+      backgroundColor: 'rgba(160, 158, 158, 0.57)',
+      '&:hover': {
+        backgroundColor: 'rgb(160, 158, 158)',
+      }
+    }
   };
 
   return (
@@ -67,16 +97,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({ open, onClose }) => {
       <DialogActions sx={styles.actions}>
         <Button 
           variant="contained" 
-          color="primary" 
-          onClick={handleConfirm}
-          sx={{ 
-            backgroundColor: 'rgba(160, 158, 158, 0.57)',
-            '&:hover': {
-              backgroundColor: 'rgb(160, 158, 158)',
-            }
-          }}
+          onClick={handleLogin}
+          sx={{...styles.button, ...styles.loginButton}}
         >
           Войти
+        </Button>
+        <Button 
+          variant="contained" 
+          onClick={handleSignUp}
+          sx={{...styles.button, ...styles.signUpButton}}
+        >
+          Зарегистрироваться
         </Button>
       </DialogActions>
     </Dialog>

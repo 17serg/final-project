@@ -13,7 +13,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../../app/store";
 import { getUnreadCount, setChatPartner, addMessage } from '../../entities/chat/store/chatSlice';
 import { useLocation } from 'react-router-dom';
+import { fonts } from '@/shared/styles/fonts';
 import { useSocketChat } from './../../entities/chat/api/socketApi';
+
 
 const styles = {
   container: {
@@ -80,9 +82,10 @@ const styles = {
     color: 'white',
   },
   userEmail: {
-    fontSize: '1.2rem',
-    color: 'rgba(255, 255, 255, 0.7)',
-    marginBottom: '16px',
+    ...fonts.montserrat,
+    fontSize: "1.2rem",
+    color: "rgba(255, 255, 255, 0.7)",
+    marginBottom: "16px",
   },
   profileInfo: {
     display: 'flex',
@@ -90,13 +93,16 @@ const styles = {
     gap: '8px',
   },
   profileLabel: {
-    fontSize: '1.2rem',
-    color: 'rgba(255, 255, 255, 0.7)',
+    ...fonts.montserrat,
+    fontSize: "1.2rem",
+    color: "rgba(255, 255, 255, 0.73)",
   },
   profileValue: {
-    fontSize: '1.4rem',
-    color: 'rgba(255, 255, 255, 0.7)',
-    marginBottom: '8px',
+    ...fonts.delaGothicOne,
+    fontWeight: 500,
+    fontSize: "1.4rem",
+    color: "rgb(255, 255, 255)",
+    marginBottom: "8px",
   },
   statsContainer: {
     display: 'flex',
@@ -180,19 +186,23 @@ const styles = {
     position: 'relative',
     zIndex: 3,
   },
+  tabText: {
+    ...fonts.delaGothicOne,
+    fontSize: "1.3rem",
+    fontWeight: 500,
+  },
   tabPanel: {
-    width: '95.8%',
-    padding: '20px',
-    background:
-      'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
-    transition: 'all 0.3s ease',
-    backdropFilter: 'blur(9px)',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
-    borderRadius: '0 0 16px 16px',
-    marginTop: '0px',
-    border: '2px solid rgba(161, 161, 161, 0.93)',
-    borderTop: 'none',
-    position: 'relative',
+    width: "96%",
+    padding: "20px",
+    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+    transition: "all 0.3s ease",
+    backdropFilter: "blur(9px)",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
+    borderRadius: "0 0 16px 16px",
+    marginTop: "0px",
+    border: "2px solid rgba(161, 161, 161, 0.93)",
+    borderTop: "none",
+    position: "relative",
     zIndex: 1,
     minHeight: '80vh',
     right: '0',
@@ -388,12 +398,10 @@ export default function ProfilePage(): React.JSX.Element {
     return '#BAE1FF';
   };
 
-  const handleTabClick =
-    (index: number) =>
-    (event: React.MouseEvent): void => {
-      event.preventDefault();
-      setActiveTab((prev) => (prev === index ? null : index));
-    };
+  const handleTabClick = (index: number) => (event: React.MouseEvent): void => {
+    event.preventDefault();
+    setActiveTab(index);
+  };
 
   return (
     <Box sx={styles.container}>
@@ -412,8 +420,9 @@ export default function ProfilePage(): React.JSX.Element {
               mb: 2,
             }}
           >
-            <Typography variant="h1" sx={{ fontSize: '48px', fontWeight: 'bold' }}>
-              {user?.name?.[0] || 'U'}
+
+            <Typography variant="h1" sx={{ fontSize: "48px", ...fonts.delaGothicOne }}>
+              {user?.name?.[0] || "U"}
             </Typography>
           </Avatar>
 
@@ -466,55 +475,54 @@ export default function ProfilePage(): React.JSX.Element {
                 onClick={handleTabClick(0)}
                 sx={{ ...styles.tab, ...(activeTab === 0 ? styles.activeTab : {}) }}
               >
-                <Typography>Календарь тренировок</Typography>
+                <Typography sx={styles.tabText}>Календарь тренировок</Typography>
               </Box>
               <Box
                 onClick={handleTabClick(1)}
                 sx={{ ...styles.tab, ...(activeTab === 1 ? styles.activeTab : {}) }}
               >
-                <Typography>Журнал прогресса</Typography>
+                <Typography sx={styles.tabText}>Журнал прогресса</Typography>
               </Box>
               <Box
                 onClick={handleTabClick(2)}
                 sx={{ ...styles.tab, ...(activeTab === 2 ? styles.activeTab : {}) }}
               >
-                <Typography>Рекомендации</Typography>
+                <Typography sx={styles.tabText}>Рекомендации</Typography>
               </Box>
               <Box
-                onClick={handleTabClick(3)}
-                sx={{ ...styles.tab, ...(activeTab === 3 ? styles.activeTab : {}) }}
-              >
 
-                <Typography>
-                  {user?.trener ? "Чат с клиентом" : "Чат с тренером"}
-                </Typography>
+  onClick={handleTabClick(3)}
+  sx={{ ...styles.tab, ...(activeTab === 3 ? styles.activeTab : {}) }}
+>
+  <Typography sx={styles.tabText}>
+    {user?.trener ? "Чат с клиентом" : "Чат с тренером"}
+  </Typography>
 
-                {unreadMessagesCount > 0 && (
-                  <Box
-                    component="span"
-                    sx={{
+  {unreadMessagesCount > 0 && (
+    <Box
+      component="span"
+      sx={{
+        position: "absolute",
+        top: 4,
+        right: 8,
+        backgroundColor: "red",
+        color: "white",
+        borderRadius: "50%",
+        padding: "2px 6px",
+        fontSize: "12px",
+        fontWeight: "bold",
+        minWidth: "20px",
+        height: "20px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      {unreadMessagesCount}
+    </Box>
+  )}
+</Box>
 
-                      position: "absolute",
-                      top: 4,
-                      right: 8,
-                      backgroundColor: "red",
-                      color: "white",
-                      borderRadius: "50%",
-                      padding: "2px 6px",
-                      fontSize: "12px",
-                      fontWeight: "bold",
-                      minWidth: "20px",
-                      height: "20px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-
-                    }}
-                  >
-                    {unreadMessagesCount}
-                  </Box>
-                )}
-              </Box>
             </Box>
           </Box>
         </Box>
