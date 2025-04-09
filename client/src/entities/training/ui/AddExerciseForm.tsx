@@ -209,36 +209,47 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
   };
 
   return (
-
-    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2,
-        background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7))',
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{
+        mt: 2,
+        background:
+          'linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7))',
         backdropFilter: 'blur(10px)',
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
         border: '2px solid rgba(0, 0, 0, 0.2)',
-        transition: "all 0.3s ease",
-        borderRadius: "24px",
-        overflow: "hidden",
-        color: "rgba(0, 0, 0, 0.9)",
-        padding: "24px",
-        alignItems: "flex-start",
-     }}>
-      <Typography variant="h6" sx={{ 
-        paddingLeft: "16px",
-        color: "rgba(0, 0, 0, 0.9)",
-        fontWeight: "bold",
-        mb: 2
-      }} gutterBottom>
+        transition: 'all 0.3s ease',
+        borderRadius: '24px',
+        overflow: 'hidden',
+        color: 'rgba(0, 0, 0, 0.9)',
+        padding: '24px',
+        alignItems: 'flex-start',
+      }}
+    >
+      <Typography
+        variant="h6"
+        sx={{
+          paddingLeft: '16px',
+          color: 'rgba(0, 0, 0, 0.9)',
+          fontWeight: 'bold',
+          mb: 2,
+        }}
+        gutterBottom
+      >
         Добавить упражнение
       </Typography>
 
-      <FormControl fullWidth margin="normal"
+      <FormControl
+        fullWidth
+        margin="normal"
         sx={{
           '& .MuiInputLabel-root': {
-          color: 'rgba(0, 0, 0, 0.6)',
-          '&.Mui-focused': {
-            color: 'rgba(0, 0, 0, 0.9)',
+            color: 'rgba(0, 0, 0, 0.6)',
+            '&.Mui-focused': {
+              color: 'rgba(0, 0, 0, 0.9)',
+            },
           },
-        },
           '& .MuiOutlinedInput-root': {
             '& fieldset': {
               borderColor: 'rgba(0, 0, 0, 0.2)',
@@ -253,9 +264,9 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
         }}
       >
         <InputLabel>Категория</InputLabel>
-        <Select 
-          value={selectedCategory} 
-          onChange={handleCategoryChange} 
+        <Select
+          value={selectedCategory}
+          onChange={handleCategoryChange}
           label="Категория"
           sx={{
             '& .MuiSelect-select': {
@@ -274,29 +285,33 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
         </Select>
       </FormControl>
 
-      <FormControl fullWidth sx={{ mb: 2,
-        '& .MuiInputLabel-root': {
-          color: 'rgba(0, 0, 0, 0.6)',
-          '&.Mui-focused': {
-            color: 'rgba(0, 0, 0, 0.9)',
+      <FormControl
+        fullWidth
+        sx={{
+          mb: 2,
+          '& .MuiInputLabel-root': {
+            color: 'rgba(0, 0, 0, 0.6)',
+            '&.Mui-focused': {
+              color: 'rgba(0, 0, 0, 0.9)',
+            },
           },
-        },
-        '& .MuiOutlinedInput-root': {
-          '& fieldset': {
-            borderColor: 'rgba(0, 0, 0, 0.2)',
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: 'rgba(0, 0, 0, 0.2)',
+            },
+            '&:hover fieldset': {
+              borderColor: 'rgba(0, 0, 0, 0.4)',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: 'rgba(0, 0, 0, 0.6)',
+            },
           },
-          '&:hover fieldset': {
-            borderColor: 'rgba(0, 0, 0, 0.4)',
-          },
-          '&.Mui-focused fieldset': {
-            borderColor: 'rgba(0, 0, 0, 0.6)',
-          },
-        },
-      }}>
+        }}
+      >
         <InputLabel>Упражнение</InputLabel>
-        <Select 
-          value={exerciseId} 
-          onChange={handleExerciseChange} 
+        <Select
+          value={exerciseId}
+          onChange={handleExerciseChange}
           label="Упражнение"
           sx={{
             '& .MuiSelect-select': {
@@ -341,11 +356,11 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
           inputProps={{ min: 0 }}
           sx={{
             '& .MuiInputLabel-root': {
-          color: 'rgba(0, 0, 0, 0.6)',
-          '&.Mui-focused': {
-            color: 'rgba(0, 0, 0, 0.9)',
-          },
-        },
+              color: 'rgba(0, 0, 0, 0.6)',
+              '&.Mui-focused': {
+                color: 'rgba(0, 0, 0, 0.9)',
+              },
+            },
             '& .MuiOutlinedInput-root': {
               '& fieldset': {
                 borderColor: 'rgba(0, 0, 0, 0.2)',
@@ -373,8 +388,8 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
             sx={{
               '& .MuiInputLabel-root': {
                 color: 'rgba(0, 0, 0, 0.6)',
-              '&.Mui-focused': {
-              color: 'rgba(0, 0, 0, 0.9)',
+                '&.Mui-focused': {
+                  color: 'rgba(0, 0, 0, 0.9)',
                 },
               },
               '& .MuiOutlinedInput-root': {
@@ -403,10 +418,10 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
             sx={{
               '& .MuiInputLabel-root': {
                 color: 'rgba(0, 0, 0, 0.6)',
-              '&.Mui-focused': {
-                color: 'rgba(0, 0, 0, 0.9)',
+                '&.Mui-focused': {
+                  color: 'rgba(0, 0, 0, 0.9)',
+                },
               },
-            },
               '& .MuiOutlinedInput-root': {
                 '& fieldset': {
                   borderColor: 'rgba(0, 0, 0, 0.2)',
@@ -433,10 +448,10 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
             sx={{
               '& .MuiInputLabel-root': {
                 color: 'rgba(0, 0, 0, 0.6)',
-              '&.Mui-focused': {
-                color: 'rgba(0, 0, 0, 0.9)',
+                '&.Mui-focused': {
+                  color: 'rgba(0, 0, 0, 0.9)',
+                },
               },
-            },
               '& .MuiOutlinedInput-root': {
                 '& fieldset': {
                   borderColor: 'rgba(0, 0, 0, 0.2)',
@@ -453,11 +468,11 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
         </>
       )}
 
-      <Button 
-        type="submit" 
-        variant="contained" 
-        fullWidth 
-        sx={{ 
+      <Button
+        type="submit"
+        variant="contained"
+        fullWidth
+        sx={{
           mt: 2,
           py: 1.5,
           fontSize: '1.1rem',
