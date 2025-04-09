@@ -4,9 +4,9 @@ import { useNavigate } from "react-router";
 // import { CLIENT_ROUTES } from "@/shared/enums/clientRoutes";
 import { useUser } from '@/entities/user/hooks/useUser';
 import { fonts } from '@/shared/styles/fonts';
-import antropometric from "../../../public/screenshot/AnthropometryPage.png";
-import calendar from "../../../public/screenshot/calendar.png";
-import chat from "../../../public/screenshot/chat.png";
+import antropometric from "../../assets/screenshot/AnthropometryPage.png";
+import calendar from "../../assets/screenshot/calendar.png";
+import chat from "../../assets/screenshot/chat.png";
 
 const styles = {
   container: {

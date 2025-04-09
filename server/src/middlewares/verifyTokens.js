@@ -14,7 +14,7 @@ const verifyAccessToken = (req, res, next) => {
 
     const { user } = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
     console.log('Verified user:', user);
-    req.user = user;
+    res.locals.user = user;
     return next();
   } catch (error) {
     console.log('Invalid access token', error);

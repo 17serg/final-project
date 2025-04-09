@@ -14,11 +14,12 @@ class UserProfileController {
    */
   static async getProfile(req, res) {
     try {
-      // Получаем ID пользователя из токена
-      const { id: userId } = res.locals.user;
+      console.log('Getting profile, user:', res.locals.user);
+      const { id } = res.locals.user;
+      console.log('User ID:', id);
 
-      // Ищем профиль пользователя в базе данных
-      const profile = await UserProfile.findOne({ where: { userId } });
+      const profile = await UserProfile.findOne({ where: { userId: id } });
+      console.log('Found profile:', profile);
 
       if (!profile) {
         return res.status(404).json({ message: 'Профиль не найден' });
@@ -26,7 +27,7 @@ class UserProfileController {
 
       return res.json(profile);
     } catch (error) {
-      console.error('Error getting profile:', error);
+      console.error('Error in getProfile:', error);
       return res.status(500).json({ message: 'Ошибка сервера' });
     }
   }
