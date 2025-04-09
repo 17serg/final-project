@@ -305,19 +305,20 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
             width: 600,
             maxHeight: '80vh',
             overflowY: 'auto',
-            background: 'linear-gradient(to bottom, rgba(211, 211, 211, 0.29), rgba(133, 133, 133, 0.09) 70%)',
+            background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7))',
             transition: "all 0.3s ease",
-            backdropFilter: "blur(20px)",
-            borderRadius: '16px',
-            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+            backdropFilter: "blur(9px)",
+            borderRadius: '24px',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+            border: '2px solid rgba(161, 161, 161, 0.93)',
             overflow: 'hidden',
           }}
         >
           <Box 
             sx={{ 
-              backgroundColor: 'rgba(80, 80, 80, 0.75)', 
-              borderRadius: '16px 16px 0px 0px',
-              color: 'white',
+              backgroundColor: 'rgba(0, 0, 0, 0.05)',
+              borderRadius: '24px 24px 0px 0px',
+              color: 'rgba(0, 0, 0, 0.9)',
               fontWeight: 'bold',
               boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
               p: 2,
@@ -326,14 +327,14 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
               gap: 1
             }}
           >
-            <FitnessCenter sx={{ color: 'white' }} />
+            <FitnessCenter sx={{ color: 'rgba(0, 0, 0, 0.9)' }} />
             <Typography variant="h6" component="h2">
               Тренировочный день
             </Typography>
           </Box>
 
           <Box sx={{ p: 3 }}>
-            <Typography variant="body1" sx={{ mb: 3, color: 'rgba(255, 255, 255, 0.9)' }}>
+            <Typography variant="body1" sx={{ mb: 3, color: 'rgba(0, 0, 0, 0.9)' }}>
               {date.toLocaleDateString('ru-RU', {
                 day: 'numeric',
                 month: 'long',
@@ -341,7 +342,7 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
               })}
             </Typography>
 
-            <Divider sx={{ my: 2, borderColor: 'rgba(255, 255, 255, 0.2)' }} />
+            <Divider sx={{ my: 2, borderColor: 'rgba(0, 0, 0, 0.2)' }} />
 
             {error && (
               <Typography color="error" sx={{ mb: 2 }}>
@@ -351,18 +352,18 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
 
             {isLoadingTraining ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-                <CircularProgress size={24} sx={{ color: 'rgba(255, 255, 255, 0.9)' }} />
+                <CircularProgress size={24} sx={{ color: 'rgba(0, 0, 0, 0.9)' }} />
               </Box>
             ) : trainings.length > 0 ? (
               <Box sx={{ mb: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                  <Info color="info" fontSize="small" sx={{ color: 'rgba(255, 255, 255, 0.9)' }} />
-                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                  <Info color="info" fontSize="small" sx={{ color: 'rgba(0, 0, 0, 0.9)' }} />
+                  <Typography variant="body2" sx={{ color: 'rgba(0, 0, 0, 0.9)' }}>
                     Найдено {trainings.length} {trainings.length === 1 ? 'тренировка' : 'тренировки'}
                   </Typography>
                 </Box>
 
-                <Box sx={{ borderBottom: 1, borderColor: 'rgba(255, 255, 255, 0.2)', mb: 2 }}>
+                <Box sx={{ borderBottom: 1, borderColor: 'rgba(0, 0, 0, 0.2)', mb: 2 }}>
                   <Tabs
                     value={selectedTrainingIndex}
                     onChange={handleTabChange}
@@ -371,13 +372,13 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
                     scrollButtons="auto"
                     sx={{
                       '& .MuiTab-root': {
-                        color: 'rgba(255, 255, 255, 0.7)',
+                        color: 'rgba(0, 0, 0, 0.7)',
                         '&.Mui-selected': {
-                          color: 'rgba(255, 255, 255, 0.9)',
+                          color: 'rgba(0, 0, 0, 0.9)',
                         },
                       },
                       '& .MuiTabs-indicator': {
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
                       },
                     }}
                   >
@@ -401,7 +402,7 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
                         ) : (
                           <Error color="warning" />
                         )}
-                        <Typography variant="subtitle1" fontWeight="bold" sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                        <Typography variant="subtitle1" fontWeight="bold" sx={{ color: 'rgba(0, 0, 0, 0.9)' }}>
                           {training.complete ? 'Тренировка выполнена' : 'Тренировка не выполнена'}
                         </Typography>
                         <IconButton
@@ -412,29 +413,29 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
                           <Delete />
                         </IconButton>
                       </Box>
-                      <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                      <Typography variant="body2" sx={{ color: 'rgba(0, 0, 0, 0.7)' }}>
                         Создана: {formatDate(training.createdAt)}
                       </Typography>
                     </Box>
 
                     {isLoadingExercises[training.id] ? (
                       <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-                        <CircularProgress size={24} sx={{ color: 'rgba(255, 255, 255, 0.9)' }} />
+                        <CircularProgress size={24} sx={{ color: 'rgba(0, 0, 0, 0.9)' }} />
                       </Box>
                     ) : exercisesMap[training.id] && exercisesMap[training.id].length > 0 ? (
                       <Box sx={{ mt: 3 }}>
-                        <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1, color: 'rgba(255, 255, 255, 0.9)' }}>
+                        <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1, color: 'rgba(0, 0, 0, 0.9)' }}>
                           Упражнения в тренировке:
                         </Typography>
                         <TableContainer 
                           component={Paper} 
                           sx={{ 
                             maxHeight: 300,
-                            background: 'rgba(255, 255, 255, 0.1)',
-                            backdropFilter: 'blur(10px)',
+                            background: 'rgba(255, 255, 255, 0.3)',
+                            backdropFilter: 'blur(9px)',
                             '& .MuiTableCell-root': {
-                              color: 'rgba(255, 255, 255, 0.9)',
-                              borderColor: 'rgba(255, 255, 255, 0.2)',
+                              color: 'rgba(0, 0, 0, 0.9)',
+                              borderColor: 'rgba(0, 0, 0, 0.2)',
                             },
                             '& .MuiTableHead-root .MuiTableCell-root': {
                               fontWeight: 'bold',
@@ -466,7 +467,7 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
                         </TableContainer>
                       </Box>
                     ) : (
-                      <Typography variant="body2" sx={{ mt: 2, color: 'rgba(255, 255, 255, 0.7)' }}>
+                      <Typography variant="body2" sx={{ mt: 2, color: 'rgba(0, 0, 0, 0.7)' }}>
                         В тренировке пока нет упражнений
                       </Typography>
                     )}
@@ -479,11 +480,11 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
                         mt: 2,
                         py: 1.5,
                         fontSize: '1.1rem',
-                        color: 'rgba(255, 255, 255, 0.9)',
-                        borderColor: 'rgba(255, 255, 255, 0.5)',
+                        color: 'rgba(0, 0, 0, 0.9)',
+                        borderColor: 'rgba(0, 0, 0, 0.5)',
                         '&:hover': {
-                          borderColor: 'rgba(255, 255, 255, 0.8)',
-                          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                          borderColor: 'rgba(0, 0, 0, 0.8)',
+                          backgroundColor: 'rgba(0, 0, 0, 0.05)',
                         }
                       }}
                     >
@@ -494,7 +495,7 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
               </Box>
             ) : (
               <Box sx={{ mb: 3 }}>
-                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                <Typography variant="body2" sx={{ color: 'rgba(0, 0, 0, 0.7)' }}>
                   Для этого дня еще не создано ни одной тренировки
                 </Typography>
               </Box>
@@ -502,7 +503,7 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
 
             {loading ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-                <CircularProgress sx={{ color: 'rgba(255, 255, 255, 0.9)' }} />
+                <CircularProgress sx={{ color: 'rgba(0, 0, 0, 0.9)' }} />
               </Box>
             ) : (
               <Button
@@ -514,14 +515,15 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
                   mt: 2,
                   py: 1.5,
                   fontSize: '1.1rem',
-                  backgroundColor: 'rgba(128, 128, 128, 0.9)',
+                  backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                  color: 'white',
                   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                   '&:hover': {
-                    backgroundColor: 'rgba(128, 128, 128, 0.7)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
                     boxShadow: '0 6px 12px rgba(0, 0, 0, 0.25)',
                   },
                   '&.Mui-disabled': {
-                    backgroundColor: 'rgba(128, 128, 128, 0.5)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
                     color: 'rgba(255, 255, 255, 0.5)',
                   }
                 }}
@@ -539,26 +541,27 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
         aria-labelledby="delete-dialog-title"
         PaperProps={{
           sx: {
-            background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.29), rgba(143, 141, 141, 0.11) 70%)',
-            backdropFilter: "blur(20px)",
-            borderRadius: '16px',
-            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+            background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+            backdropFilter: "blur(9px)",
+            borderRadius: '24px',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+            border: '2px solid rgba(161, 161, 161, 0.93)',
           }
         }}
       >
         <DialogTitle 
           id="delete-dialog-title"
           sx={{ 
-            backgroundColor: 'rgba(80, 80, 80, 0.75)', 
-            borderRadius: '16px 16px 0px 0px',
-            color: 'white',
+            backgroundColor: 'rgba(0, 0, 0, 0.05)',
+            borderRadius: '24px 24px 0px 0px',
+            color: 'rgba(0, 0, 0, 0.9)',
             fontWeight: 'bold',
             boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
           }}
         >
           Подтверждение удаления
         </DialogTitle>
-        <DialogContent sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+        <DialogContent sx={{ color: 'rgba(0, 0, 0, 0.9)' }}>
           <Typography>
             Вы уверены, что хотите удалить эту тренировку? Это действие нельзя отменить.
           </Typography>
@@ -568,7 +571,7 @@ const TrainingDayModal = ({ open, onClose, date, dayId }: TrainingDayModalProps)
             onClick={handleDeleteCancel} 
             disabled={isDeleting}
             sx={{ 
-              color: 'rgba(167, 167, 167, 0.9)',
+              color: 'rgba(0, 0, 0, 0.7)',
               boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
               '&:hover': {
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',

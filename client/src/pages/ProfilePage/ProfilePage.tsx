@@ -7,7 +7,7 @@ import { getUserColor } from "@/shared/utils/userColor";
 import { ChatPage } from "../ChatPage/ChatPage";
 import { CalendarPage } from "../CalendarPage";
 import AnthropometryPage from "../AnthropometryPage/AnthropometryPage";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../../app/store";
 import { getUnreadCount, setChatPartner } from '../../entities/chat/store/chatSlice';
@@ -26,11 +26,24 @@ const styles = {
     paddingRight: "20px",
     gap: "0px",
     marginBottom: "0px",
-    
+    overflow: "overlay",
+    "&::-webkit-scrollbar": {
+      width: "8px",
+      backgroundColor: "transparent",
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "rgba(0, 0, 0, 0.2)",
+      borderRadius: "4px",
+    },
+    "&::-webkit-scrollbar-track": {
+      backgroundColor: "transparent",
+    },
   },
   profileCard: {
     width: "100%",
     maxWidth: "800px",
+    minHeight: "293px",
+    maxHeight: "293px",
     padding: "30px",
     borderRadius: "16px",
     background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
@@ -127,7 +140,7 @@ const styles = {
   },
   tab: {
     color: "white",
-    marginTop: "9px",
+    marginTop: "44px",
     fontSize: "1.1rem",
     fontWeight: 500,
     textTransform: "none",
@@ -177,6 +190,20 @@ const styles = {
     zIndex: 1,
     minHeight: "80vh",
     right: "0",
+    overflow: "overlay",
+    "&::-webkit-scrollbar": {
+      width: "8px",
+      backgroundColor: "transparent",
+      position: "absolute",
+      right: 0,
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "rgba(0, 0, 0, 0.2)",
+      borderRadius: "4px",
+    },
+    "&::-webkit-scrollbar-track": {
+      backgroundColor: "transparent",
+    },
     "& h6": {
       color: "white",
       textAlign: "center",
@@ -205,17 +232,17 @@ const styles = {
 //ds
 export default function ProfilePage(): React.JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const [profile, setProfile] = useState<IUserProfile | null>(null);
   const location = useLocation();
-  const [activeTab, setActiveTab] = React.useState<number | null>(null);
+  const [activeTab, setActiveTab] = React.useState<number | null>(0);
   const chatRef = React.useRef<HTMLDivElement>(null); // Добавляем ref для чата
+  const calendarRef = useRef<HTMLDivElement>(null);
 
   const userId = user?.id;
   const { messages } = useSelector((state: RootState) => state.chat);
 
   useEffect(() => {
-    console.log('ProfilePage location state:', location.state);
     if (location.state?.scrollToChat) {
       setActiveTab(3); // Открываем вкладку чата
       if (location.state?.trainerId && location.state?.openChatWithTrainer) {
@@ -241,11 +268,50 @@ export default function ProfilePage(): React.JSX.Element {
   ).length;
 
   useEffect(() => {
+    const loadProfile = async (): Promise<void> => {
+      try {
+        const response = await UserApi.getProfile();
+        setProfile(response.data);
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    };
+
+    if (user) {
+      loadProfile();
+    }
+  }, [user]);
+
+  // Добавляем новый useEffect для отслеживания изменений в профиле
+  useEffect(() => {
+    if (!profile && user) {
+      const loadProfile = async (): Promise<void> => {
+        try {
+          const response = await UserApi.getProfile();
+          setProfile(response.data);
+        } catch (error) {
+          console.error('Error loading profile:', error);
+        }
+      };
+      loadProfile();
+    }
+  }, [profile, user]);
+
+  useEffect(() => {
     const handleProfileUpdate = (): void => {
       const loadProfile = async (): Promise<void> => {
         try {
           const response = await UserApi.getProfile();
           setProfile(response.data);
+          // Обновляем данные пользователя в контексте
+          if (user) {
+            const updatedUser = {
+              ...user,
+              name: response.data.name || user.name,
+              email: response.data.email || user.email,
+            };
+            setUser(updatedUser);
+          }
         } catch (error) {
           console.error('Error loading profile:', error);
         }
@@ -260,25 +326,16 @@ export default function ProfilePage(): React.JSX.Element {
     window.addEventListener('profileUpdated', handleProfileUpdate);
 
     // Отписываемся при размонтировании компонента
-    return () => {
+    return (): void => {
       window.removeEventListener('profileUpdated', handleProfileUpdate);
     };
-  }, [user]);
+  }, [user, setUser]);
 
   useEffect(() => {
-    const loadProfile = async (): Promise<void> => {
-      try {
-        const response = await UserApi.getProfile();
-        setProfile(response.data);
-      } catch (error) {
-        console.error('Error loading profile:', error);
-      }
-    };
-
-    if (user) {
-      loadProfile();
+    if (location.state?.scrollToCalendar && calendarRef.current) {
+      calendarRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [user]);
+  }, [location.state]);
 
   if (!user) {
     return <Typography>Пользователь не найден</Typography>;
@@ -321,23 +378,25 @@ export default function ProfilePage(): React.JSX.Element {
         <Box sx={styles.header}>
           <Avatar
             src={getAvatarUrl()}
-            alt={user.name}
+            alt={user?.name || 'User'}
             sx={{
-              ...styles.avatar,
+              width: 120,
+              height: 120,
+              border: "4px solid rgba(0, 0, 0, 0.2)",
+              borderRadius: "16px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
               bgcolor: getUserAvatarColor(),
+              mb: 2,
             }}
           >
-            <Typography
-              variant="h1"
-              sx={{ fontSize: "120px", fontWeight: "bold" }}
-            >
-              {user.name?.[0] || "U"}
+            <Typography variant="h1" sx={{ fontSize: "48px", fontWeight: "bold" }}>
+              {user?.name?.[0] || "U"}
             </Typography>
           </Avatar>
 
           <Box sx={styles.userInfo}>
-            <Typography sx={styles.userName}>{user.name}</Typography>
-            <Typography sx={styles.userEmail}>{user.email}</Typography>
+            <Typography sx={styles.userName}>{user?.name || 'Пользователь'}</Typography>
+            <Typography sx={styles.userEmail}>{user?.email || ''}</Typography>
 
             <Box sx={styles.profileInfo}>
               <Typography sx={styles.profileLabel}>Пол</Typography>
@@ -403,41 +462,46 @@ export default function ProfilePage(): React.JSX.Element {
                 <Typography>Рекомендации</Typography>
               </Box>
               <Box
-                onClick={handleTabClick(3)}
-                sx={{ ...styles.tab, ...(activeTab === 3 ? styles.activeTab : {}) }}
-              >
-                <Typography>Чат с тренером</Typography>
+  onClick={handleTabClick(3)}
+  sx={{ ...styles.tab, ...(activeTab === 3 ? styles.activeTab : {}) }}
+>
+  <Typography>
+    {user?.trener ? "Чат с клиентом" : "Чат с тренером"}
+  </Typography>
 
-                {unreadMessagesCount > 0 && (
-                  <Box
-                    component="span"
-                    sx={{
-                      position: "absolute",
-                      top: 4,
-                      right: 8,
-                      backgroundColor: "red",
-                      color: "white",
-                      borderRadius: "50%",
-                      padding: "2px 6px",
-                      fontSize: "12px",
-                      fontWeight: "bold",
-                      minWidth: "20px",
-                      height: "20px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {unreadMessagesCount}
-                  </Box>
-                )}
-              </Box>
+  {unreadMessagesCount > 0 && (
+    <Box
+      component="span"
+      sx={{
+        position: "absolute",
+        top: 4,
+        right: 8,
+        backgroundColor: "red",
+        color: "white",
+        borderRadius: "50%",
+        padding: "2px 6px",
+        fontSize: "12px",
+        fontWeight: "bold",
+        minWidth: "20px",
+        height: "20px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      {unreadMessagesCount}
+    </Box>
+  )}
+</Box>
             </Box>
           </Box>
         </Box>
 
         {activeTab !== null && (
-          <Box sx={{ ...styles.tabPanel, marginBottom: "30px" }}>
+          <Box 
+            ref={activeTab === 0 ? calendarRef : undefined}
+            sx={{ ...styles.tabPanel, marginBottom: "30px" }}
+          >
             {activeTab === 0 && <CalendarPage />}
             {activeTab === 1 && <AnthropometryPage />}
             {activeTab === 2 && <Typography>Рекомендации</Typography>}

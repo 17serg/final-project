@@ -60,6 +60,12 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
                 p: 2,
                 mb: 2,
                 position: 'relative',
+                background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+                backdropFilter: 'blur(9px)',
+                borderRadius: '24px',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+                border: '2px solid rgba(161, 161, 161, 0.93)',
+                color: 'rgba(0, 0, 0, 0.9)',
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -68,7 +74,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
                     <Typography
                       variant="subtitle1"
                       sx={{
-                        color: 'primary.main',
+                        color: 'rgba(0, 0, 0, 0.9)',
                         fontWeight: 'bold',
                         minWidth: '30px',
                       }}
@@ -80,7 +86,13 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
                         size="small"
                         onClick={() => onMoveExercise(index, index - 1)}
                         disabled={index === 0}
-                        sx={{ p: 0.5 }}
+                        sx={{ 
+                          p: 0.5,
+                          color: 'rgba(0, 0, 0, 0.7)',
+                          '&:hover': {
+                            backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                          },
+                        }}
                       >
                         <ArrowUpwardIcon fontSize="small" />
                       </IconButton>
@@ -88,13 +100,26 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
                         size="small"
                         onClick={() => onMoveExercise(index, index + 1)}
                         disabled={index === exercises.length - 1}
-                        sx={{ p: 0.5 }}
+                        sx={{ 
+                          p: 0.5,
+                          color: 'rgba(0, 0, 0, 0.7)',
+                          '&:hover': {
+                            backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                          },
+                        }}
                       >
                         <ArrowDownwardIcon fontSize="small" />
                       </IconButton>
                     </Box>
                   </Box>
-                  <Typography variant="h6" sx={{ mr: 2 }}>
+                  <Typography 
+                    variant="h6" 
+                    sx={{ 
+                      mr: 2,
+                      color: 'rgba(0, 0, 0, 0.9)',
+                      fontWeight: 'bold',
+                    }}
+                  >
                     {exercise.Exercise.name}
                   </Typography>
                 </Box>
@@ -103,12 +128,18 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
                     primary={
                       <Box>
                         {exercise.Exercise.category === 'Кардио' ? (
-                          <Typography variant="body2">
+                          <Typography 
+                            variant="body2"
+                            sx={{ color: 'rgba(0, 0, 0, 0.7)' }}
+                          >
                             Длительность: {exercise.duration} мин
                           </Typography>
                         ) : (
                           <>
-                            <Typography variant="body2">
+                            <Typography 
+                              variant="body2"
+                              sx={{ color: 'rgba(0, 0, 0, 0.7)' }}
+                            >
                               Подходы: {exercise.sets} | Повторения: {exercise.reps} | Вес:{' '}
                               {exercise.weight} кг
                             </Typography>
@@ -124,7 +155,10 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
                       sx={{
                         transform: expandedExercise === exercise.id ? 'rotate(180deg)' : 'none',
                         transition: 'transform 0.3s',
-                        color: 'primary.main',
+                        color: 'rgba(0, 0, 0, 0.7)',
+                        '&:hover': {
+                          backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                        },
                         '& .MuiSvgIcon-root': {
                           fontSize: '1.5rem',
                           fontWeight: 'bold',
@@ -135,19 +169,30 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
                     </IconButton>
                   )}
                 </Box>
-                <IconButton onClick={() => onDeleteExercise(exercise.id)}>
+                <IconButton 
+                  onClick={() => onDeleteExercise(exercise.id)}
+                  sx={{
+                    color: 'rgba(0, 0, 0, 0.7)',
+                    '&:hover': {
+                      backgroundColor: 'rgba(211, 47, 47, 0.1)',
+                      color: 'rgba(211, 47, 47, 0.9)',
+                    },
+                  }}
+                >
                   <DeleteIcon />
                 </IconButton>
               </Box>
 
               {exercise.Exercise.category !== 'Кардио' && (
                 <Collapse in={expandedExercise === exercise.id}>
-                  <ExerciseSetList
-                    exerciseOfTrainingId={exercise.id}
-                    plannedSets={exercise.sets}
-                    plannedReps={exercise.reps}
-                    plannedWeight={exercise.weight || 0}
-                  />
+                  <Box sx={{ mt: 2 }}>
+                    <ExerciseSetList
+                      exerciseOfTrainingId={exercise.id}
+                      plannedSets={exercise.sets}
+                      plannedReps={exercise.reps}
+                      plannedWeight={exercise.weight || 0}
+                    />
+                  </Box>
                 </Collapse>
               )}
             </Paper>

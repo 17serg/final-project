@@ -245,35 +245,62 @@ export const TrainingPage = (): React.ReactElement => {
   return (
     <Container maxWidth="md">
       <Box sx={{ 
-        display: 'flex',
-        justifyContent: 'flex-end',
-        mb: 3,
-         
+        py: 4,
+        background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+        backdropFilter: 'blur(9px)',
+        borderRadius: '24px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+        border: '2px solid rgba(161, 161, 161, 0.93)',
+        padding: '24px',
+        marginBottom: '34px',
         }}>
-        <Button
-          variant="contained"
-          onClick={handleNavigateToCalendar}
-          sx={{
-            backgroundColor: 'rgb(42, 41, 223)',
-            '&:hover': {
-              backgroundColor: 'rgba(42, 41, 223, 0.8)',
-            },
-          }}
-        >
-          ◀ Вернуться в календарь
-        </Button>
-      </Box>
-      <Box sx={{ py: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 3, textAlign: 'center',color: 'white' }}>
-          Тренировочный план
-        </Typography>
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          mb: 3,
+        }}>
+          <Typography 
+            variant="h4" 
+            component="h1" 
+            sx={{ 
+              color: 'rgba(0, 0, 0, 0.9)',
+              fontWeight: 'bold',
+            }}
+          >
+            Тренировочный план
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={handleNavigateToCalendar}
+            sx={{
+              backgroundColor: 'rgba(0, 0, 0, 0.9)',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              },
+              py: 1,
+              px: 2,
+              fontSize: '0.9rem',
+              borderRadius: '12px',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+              minWidth: 'auto',
+            }}
+          >
+            ◀ Вернуться в календарь
+          </Button>
+        </Box>
 
         {training && training.day && (
           <Typography
             variant="body1"
-            color="text.secondary"
             paragraph
-            sx={{ mb: 4, textAlign: 'center' }}
+            sx={{ 
+              mb: 4, 
+              textAlign: 'center',
+              color: 'rgba(0, 0, 0, 0.7)',
+              fontSize: '1.2rem',
+            }}
           >
             Дата:{' '}
             {new Date(training.day.date).toLocaleDateString('ru-RU', {
@@ -290,25 +317,48 @@ export const TrainingPage = (): React.ReactElement => {
           onDeleteExercise={handleDeleteExercise}
         />
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
-          <Button variant="contained" color="primary" onClick={handleAddExercise}>
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          mt: 3,
+          gap: 2,
+        }}>
+          <Button 
+            variant="contained" 
+            onClick={handleAddExercise}
+            sx={{
+              backgroundColor: 'rgba(0, 0, 0, 0.9)',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              },
+              py: 1.5,
+              px: 3,
+              fontSize: '1.1rem',
+              borderRadius: '12px',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+            }}
+          >
             Добавить упражнение +
           </Button>
 
           {training && exercises.length > 0 && (
             <Button
               variant="contained"
-              color={training.complete ? 'error' : 'success'}
               onClick={training.complete ? handleCancelTraining : handleCompleteTraining}
               disabled={isUpdating}
-              sx={
-                training.complete
-                  ? {
-                      bgcolor: 'rgba(211, 47, 47, 0.8)',
-                      '&:hover': { bgcolor: 'rgba(211, 47, 47, 0.9)' },
-                    }
-                  : {}
-              }
+              sx={{
+                backgroundColor: training.complete ? 'rgba(211, 47, 47, 0.9)' : 'rgba(73, 124, 59, 0.9)',
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: training.complete ? 'rgba(211, 47, 47, 0.7)' : 'rgb(86, 146, 71)',
+                },
+                py: 1.5,
+                px: 3,
+                fontSize: '1.1rem',
+                borderRadius: '12px',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+              }}
             >
               {training.complete ? 'Отменить выполнение' : 'Тренировка выполнена'}
             </Button>
@@ -318,16 +368,52 @@ export const TrainingPage = (): React.ReactElement => {
         {showAddExerciseForm && <AddExerciseForm onSubmit={handleExerciseSubmit} />}
 
         {/* Диалог подтверждения отмены выполнения */}
-        <Dialog open={confirmDialog.open} onClose={() => setConfirmDialog({ open: false })}>
-          <DialogTitle>Подтверждение</DialogTitle>
+        <Dialog 
+          open={confirmDialog.open} 
+          onClose={() => setConfirmDialog({ open: false })}
+          PaperProps={{
+            sx: {
+              borderRadius: '24px',
+              background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+              backdropFilter: 'blur(9px)',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+              border: '2px solid rgba(161, 161, 161, 0.93)',
+            }
+          }}
+        >
+          <DialogTitle sx={{ color: 'rgba(0, 0, 0, 0.9)', fontWeight: 'bold' }}>
+            Подтверждение
+          </DialogTitle>
           <DialogContent>
-            <Typography>
+            <Typography sx={{ color: 'rgba(0, 0, 0, 0.7)' }}>
               Вы уверены, что хотите отменить выполнение тренировки? Это действие нельзя отменить.
             </Typography>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setConfirmDialog({ open: false })}>Отмена</Button>
-            <Button onClick={handleConfirmCancel} color="error" variant="contained">
+            <Button 
+              onClick={() => setConfirmDialog({ open: false })}
+              sx={{
+                color: 'rgba(0, 0, 0, 0.7)',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                },
+              }}
+            >
+              Отмена
+            </Button>
+            <Button 
+              onClick={handleConfirmCancel} 
+              sx={{
+                backgroundColor: 'rgba(211, 47, 47, 0.9)',
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: 'rgba(211, 47, 47, 0.7)',
+                },
+                py: 1,
+                px: 2,
+                borderRadius: '12px',
+              }}
+            >
               Подтвердить
             </Button>
           </DialogActions>
@@ -337,18 +423,49 @@ export const TrainingPage = (): React.ReactElement => {
         <Dialog
           open={deleteConfirmDialog.open}
           onClose={() => setDeleteConfirmDialog({ open: false, exerciseId: null })}
+          PaperProps={{
+            sx: {
+              borderRadius: '24px',
+              background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+              backdropFilter: 'blur(9px)',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+              border: '2px solid rgba(161, 161, 161, 0.93)',
+            }
+          }}
         >
-          <DialogTitle>Подтверждение удаления</DialogTitle>
+          <DialogTitle sx={{ color: 'rgba(0, 0, 0, 0.9)', fontWeight: 'bold' }}>
+            Подтверждение удаления
+          </DialogTitle>
           <DialogContent>
-            <Typography>
+            <Typography sx={{ color: 'rgba(0, 0, 0, 0.7)' }}>
               Вы уверены, что хотите удалить это упражнение? Это действие нельзя отменить.
             </Typography>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setDeleteConfirmDialog({ open: false, exerciseId: null })}>
+            <Button 
+              onClick={() => setDeleteConfirmDialog({ open: false, exerciseId: null })}
+              sx={{
+                color: 'rgba(0, 0, 0, 0.7)',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                },
+              }}
+            >
               Отмена
             </Button>
-            <Button onClick={handleConfirmDelete} color="error" variant="contained">
+            <Button 
+              onClick={handleConfirmDelete}
+              sx={{
+                backgroundColor: 'rgba(211, 47, 47, 0.9)',
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: 'rgba(211, 47, 47, 0.7)',
+                },
+                py: 1,
+                px: 2,
+                borderRadius: '12px',
+              }}
+            >
               Удалить
             </Button>
           </DialogActions>
@@ -363,7 +480,15 @@ export const TrainingPage = (): React.ReactElement => {
           <Alert
             onClose={() => setSnackbar({ ...snackbar, open: false })}
             severity={snackbar.severity}
-            sx={{ width: '100%' }}
+            sx={{ 
+              width: '100%',
+              borderRadius: '12px',
+              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              color: 'rgba(0, 0, 0, 0.9)',
+              '& .MuiAlert-icon': {
+                color: 'rgba(0, 0, 0, 0.7)',
+              },
+            }}
           >
             {snackbar.message}
           </Alert>

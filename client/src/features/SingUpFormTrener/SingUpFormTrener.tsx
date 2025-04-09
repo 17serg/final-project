@@ -136,12 +136,11 @@ export default function SingUpFormTrener(): React.JSX.Element {
           p: 4, 
           mt: 4, 
           mb: 4, 
-          borderRadius: 3,
+          borderRadius: '24px',
           background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
-          transition: "all 0.3s ease",
-          backdropFilter: "blur(9px)",
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-          border: '1px solid rgba(255, 255, 255, 0.18)',
+          backdropFilter: 'blur(10px)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+          border: '2px solid rgba(0, 0, 0, 0.2)',
         }}
       >
         <Typography 
@@ -178,11 +177,20 @@ export default function SingUpFormTrener(): React.JSX.Element {
             sx={{ 
               '& .MuiOutlinedInput-root': {
                 borderRadius: 2,
+                '& fieldset': {
+                  borderColor: 'rgba(255, 255, 255, 0.23)',
+                },
                 '&:hover fieldset': {
-                  borderColor: 'rgb(42, 41, 223)',
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: 'rgb(42, 41, 223)',
+                  borderColor: 'rgba(255, 255, 255, 0.9)',
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: 'rgba(255, 255, 255, 0.6)',
+                '&.Mui-focused': {
+                  color: 'rgba(255, 255, 255, 0.9)',
                 },
               },
             }}
@@ -200,11 +208,20 @@ export default function SingUpFormTrener(): React.JSX.Element {
             sx={{ 
               '& .MuiOutlinedInput-root': {
                 borderRadius: 2,
+                '& fieldset': {
+                  borderColor: 'rgba(255, 255, 255, 0.23)',
+                },
                 '&:hover fieldset': {
-                  borderColor: 'rgb(42, 41, 223)',
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: 'rgb(42, 41, 223)',
+                  borderColor: 'rgba(255, 255, 255, 0.9)',
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: 'rgba(255, 255, 255, 0.6)',
+                '&.Mui-focused': {
+                  color: 'rgba(255, 255, 255, 0.9)',
                 },
               },
             }}
@@ -224,11 +241,20 @@ export default function SingUpFormTrener(): React.JSX.Element {
             sx={{ 
               '& .MuiOutlinedInput-root': {
                 borderRadius: 2,
+                '& fieldset': {
+                  borderColor: 'rgba(255, 255, 255, 0.23)',
+                },
                 '&:hover fieldset': {
-                  borderColor: 'rgb(42, 41, 223)',
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: 'rgb(42, 41, 223)',
+                  borderColor: 'rgba(255, 255, 255, 0.9)',
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: 'rgba(255, 255, 255, 0.6)',
+                '&.Mui-focused': {
+                  color: 'rgba(255, 255, 255, 0.9)',
                 },
               },
             }}
@@ -247,11 +273,20 @@ export default function SingUpFormTrener(): React.JSX.Element {
             sx={{ 
               '& .MuiOutlinedInput-root': {
                 borderRadius: 2,
+                '& fieldset': {
+                  borderColor: 'rgba(255, 255, 255, 0.23)',
+                },
                 '&:hover fieldset': {
-                  borderColor: 'rgb(42, 41, 223)',
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: 'rgb(42, 41, 223)',
+                  borderColor: 'rgba(255, 255, 255, 0.9)',
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: 'rgba(255, 255, 255, 0.6)',
+                '&.Mui-focused': {
+                  color: 'rgba(255, 255, 255, 0.9)',
                 },
               },
             }}
@@ -270,11 +305,20 @@ export default function SingUpFormTrener(): React.JSX.Element {
             sx={{ 
               '& .MuiOutlinedInput-root': {
                 borderRadius: 2,
+                '& fieldset': {
+                  borderColor: 'rgba(255, 255, 255, 0.23)',
+                },
                 '&:hover fieldset': {
-                  borderColor: 'rgb(42, 41, 223)',
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: 'rgb(42, 41, 223)',
+                  borderColor: 'rgba(255, 255, 255, 0.9)',
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: 'rgba(255, 255, 255, 0.6)',
+                '&.Mui-focused': {
+                  color: 'rgba(255, 255, 255, 0.9)',
                 },
               },
             }}
@@ -293,11 +337,20 @@ export default function SingUpFormTrener(): React.JSX.Element {
             sx={{ 
               '& .MuiOutlinedInput-root': {
                 borderRadius: 2,
+                '& fieldset': {
+                  borderColor: 'rgba(255, 255, 255, 0.23)',
+                },
                 '&:hover fieldset': {
-                  borderColor: 'rgb(42, 41, 223)',
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: 'rgb(42, 41, 223)',
+                  borderColor: 'rgba(255, 255, 255, 0.9)',
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: 'rgba(255, 255, 255, 0.6)',
+                '&.Mui-focused': {
+                  color: 'rgba(255, 255, 255, 0.9)',
                 },
               },
             }}
@@ -308,15 +361,16 @@ export default function SingUpFormTrener(): React.JSX.Element {
             type="submit"
             sx={{ 
               mt: 3, 
-              backgroundColor: 'rgba(160, 158, 158, 0.57)',
+              backgroundColor: 'rgb(0, 0, 0)',
+              color: 'white',
               '&:hover': {
                 backgroundColor: 'rgb(160, 158, 158)',
               },
-              borderRadius: 2,
+              borderRadius: '8px',
               py: 1.5,
               px: 4,
               fontWeight: 'bold',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
               width: '100%',
             }}
           >
@@ -328,15 +382,17 @@ export default function SingUpFormTrener(): React.JSX.Element {
             onClick={() => navigate('/signup')}
             sx={{ 
               mt: 1, 
-              backgroundColor: 'rgba(128, 124, 124, 0.27)',
+              backgroundColor: 'rgb(56, 56, 56)',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+              color: 'white',
               '&:hover': {
                 backgroundColor: 'rgb(160, 158, 158)',
+                boxShadow: '0 6px 12px rgba(0, 0, 0, 0.4)',
               },
-              borderRadius: 2,
+              borderRadius: '8px',
               py: 1,
               px: 3,
               fontWeight: 'medium',
-              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.4)',
             }}
           >
             Если вы обычный пользователь

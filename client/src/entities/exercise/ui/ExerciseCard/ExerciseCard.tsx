@@ -9,11 +9,11 @@ interface ExerciseCardProps {
 
 const styles = {
   card: {
-    background:
-      'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
-    transition: 'all 0.3s ease',
-    backdropFilter: 'blur(9px)',
-    boxShadow: '0 6px 8px rgba(0, 0, 0, 0.4)',
+
+    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+    // transition: "all 0.3s ease",
+    backdropFilter: "blur(9px)",
+    boxShadow: "0 6px 8px rgba(0, 0, 0, 0.4)",
     maxWidth: 300,
     height: '100%',
     display: 'flex',
