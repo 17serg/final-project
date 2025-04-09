@@ -209,23 +209,28 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2,
-        background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
-        transition: "all 0.3s ease",
-        backdropFilter: "blur(9px)",
-        borderRadius: "16px",
-        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
-        overflow: "hidden",
-        color: "white",
-        padding: "20px",
-        alignItems: "flex-start",
-     }}>
-      <Typography variant="h6" sx={{ paddingLeft: "16px" }} gutterBottom>
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{
+        mt: 2,
+        background:
+          'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+        transition: 'all 0.3s ease',
+        backdropFilter: 'blur(9px)',
+        borderRadius: '16px',
+        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+        overflow: 'hidden',
+        color: 'white',
+        padding: '20px',
+        alignItems: 'flex-start',
+      }}
+    >
+      <Typography variant="h6" sx={{ paddingLeft: '16px' }} gutterBottom>
         Добавить упражнение
       </Typography>
 
-      <FormControl fullWidth margin="normal"
-      >
+      <FormControl fullWidth margin="normal">
         <InputLabel>Категория</InputLabel>
         <Select value={selectedCategory} onChange={handleCategoryChange} label="Категория">
           <MenuItem value="">
