@@ -243,7 +243,6 @@ export default function ProfilePage(): React.JSX.Element {
   const { messages } = useSelector((state: RootState) => state.chat);
 
   useEffect(() => {
-    console.log('ProfilePage location state:', location.state);
     if (location.state?.scrollToChat) {
       setActiveTab(3); // Открываем вкладку чата
       if (location.state?.trainerId && location.state?.openChatWithTrainer) {
@@ -463,35 +462,37 @@ export default function ProfilePage(): React.JSX.Element {
                 <Typography>Рекомендации</Typography>
               </Box>
               <Box
-                onClick={handleTabClick(3)}
-                sx={{ ...styles.tab, ...(activeTab === 3 ? styles.activeTab : {}) }}
-              >
-                <Typography>Чат с тренером</Typography>
+  onClick={handleTabClick(3)}
+  sx={{ ...styles.tab, ...(activeTab === 3 ? styles.activeTab : {}) }}
+>
+  <Typography>
+    {user?.trener ? "Чат с клиентом" : "Чат с тренером"}
+  </Typography>
 
-                {unreadMessagesCount > 0 && (
-                  <Box
-                    component="span"
-                    sx={{
-                      position: "absolute",
-                      top: 4,
-                      right: 8,
-                      backgroundColor: "red",
-                      color: "white",
-                      borderRadius: "50%",
-                      padding: "2px 6px",
-                      fontSize: "12px",
-                      fontWeight: "bold",
-                      minWidth: "20px",
-                      height: "20px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {unreadMessagesCount}
-                  </Box>
-                )}
-              </Box>
+  {unreadMessagesCount > 0 && (
+    <Box
+      component="span"
+      sx={{
+        position: "absolute",
+        top: 4,
+        right: 8,
+        backgroundColor: "red",
+        color: "white",
+        borderRadius: "50%",
+        padding: "2px 6px",
+        fontSize: "12px",
+        fontWeight: "bold",
+        minWidth: "20px",
+        height: "20px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      {unreadMessagesCount}
+    </Box>
+  )}
+</Box>
             </Box>
           </Box>
         </Box>
