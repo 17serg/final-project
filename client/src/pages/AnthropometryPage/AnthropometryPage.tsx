@@ -257,11 +257,11 @@ export default function AnthropometryPage(): React.JSX.Element {
           startIcon={<AddIcon />}
           onClick={() => setShowForm(true)}
           sx={{
-            backgroundColor: 'rgb(42, 41, 223)',
-            boxShadow: '0 4px 8px rgba(42, 41, 223, 0.3)',
+            backgroundColor: 'rgb(0, 0, 0)',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
             '&:hover': {
-              backgroundColor: 'rgba(42, 41, 223, 0.8)',
-              boxShadow: '0 6px 12px rgba(42, 41, 223, 0.4)',
+              backgroundColor: 'rgb(160, 158, 158)',
+              boxShadow: '0 6px 12px rgba(0, 0, 0, 0.4)',
             }
           }}
         >
@@ -407,11 +407,11 @@ export default function AnthropometryPage(): React.JSX.Element {
                   variant="contained"
                   fullWidth
                   sx={{
-                    backgroundColor: 'rgb(42, 41, 223)',
-                    boxShadow: '0 4px 8px rgba(42, 41, 223, 0.3)',
+                    backgroundColor: 'rgb(0, 0, 0)',
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
                     '&:hover': {
-                      backgroundColor: 'rgba(42, 41, 223, 0.8)',
-                      boxShadow: '0 6px 12px rgba(42, 41, 223, 0.4)',
+                      backgroundColor: 'rgb(160, 158, 158)',
+                      boxShadow: '0 6px 12px rgba(0, 0, 0, 0.4)',
                     }
                   }}
                 >

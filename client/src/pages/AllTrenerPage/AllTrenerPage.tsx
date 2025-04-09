@@ -21,6 +21,7 @@ const styles = {
     display: "flex",
     flexDirection: "column" as const,
     gap: "20px",
+    marginBottom: "25px",
   },
 };
 

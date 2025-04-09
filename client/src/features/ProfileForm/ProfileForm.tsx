@@ -166,36 +166,120 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
     return user ? getUserColor(user.name) : '#1976d2';
   };
 
+  const styles = {
+    dialog: {
+      '& .MuiDialog-paper': {
+        borderRadius: '24px',
+        padding: '20px',
+        background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7))',
+        backdropFilter: 'blur(10px)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+        border: '2px solid rgba(0, 0, 0, 0.2)',
+      },
+    },
+    dialogTitle: {
+      textAlign: 'center',
+      color: 'rgba(0, 0, 0, 0.9)',
+      fontSize: '1.5rem',
+      fontWeight: 'bold',
+      marginBottom: '20px',
+    },
+    dialogContent: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '20px',
+      padding: '20px',
+    },
+    dialogActions: {
+      padding: '20px',
+      justifyContent: 'center',
+    },
+    formControl: {
+      width: '100%',
+      '& .MuiOutlinedInput-root': {
+        '& fieldset': {
+          borderColor: 'rgba(0, 0, 0, 0.23)',
+        },
+        '&:hover fieldset': {
+          borderColor: 'rgba(0, 0, 0, 0.5)',
+        },
+        '&.Mui-focused fieldset': {
+          borderColor: 'rgba(0, 0, 0, 0.9)',
+        },
+      },
+      '& .MuiInputLabel-root': {
+        color: 'rgba(0, 0, 0, 0.6)',
+        '&.Mui-focused': {
+          color: 'rgba(0, 0, 0, 0.9)',
+        },
+      },
+    },
+    select: {
+      '& .MuiSelect-select': {
+        color: 'rgba(0, 0, 0, 0.9)',
+      },
+      '& .MuiOutlinedInput-notchedOutline': {
+        borderColor: 'rgba(0, 0, 0, 0.23)',
+      },
+      '&:hover .MuiOutlinedInput-notchedOutline': {
+        borderColor: 'rgba(0, 0, 0, 0.5)',
+      },
+      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+        borderColor: 'rgba(0, 0, 0, 0.9)',
+      },
+    },
+    textField: {
+      '& .MuiOutlinedInput-root': {
+        color: 'rgba(0, 0, 0, 0.9)',
+        '& fieldset': {
+          borderColor: 'rgba(0, 0, 0, 0.23)',
+        },
+        '&:hover fieldset': {
+          borderColor: 'rgba(0, 0, 0, 0.5)',
+        },
+        '&.Mui-focused fieldset': {
+          borderColor: 'rgba(0, 0, 0, 0.9)',
+        },
+      },
+      '& .MuiInputLabel-root': {
+        color: 'rgba(0, 0, 0, 0.6)',
+        '&.Mui-focused': {
+          color: 'rgba(0, 0, 0, 0.9)',
+        },
+      },
+    },
+    button: {
+      backgroundColor: 'rgb(0, 0, 0)',
+      color: 'white',
+      padding: '10px 30px',
+      borderRadius: '8px',
+      fontSize: '1rem',
+      fontWeight: 500,
+      textTransform: 'none',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+      transition: 'all 0.3s ease',
+      '&:hover': {
+        backgroundColor: 'rgb(160, 158, 158)',
+        boxShadow: '0 6px 12px rgba(0, 0, 0, 0.4)',
+      },
+    },
+  };
+
   return (
     <Dialog 
       open={open} 
       onClose={onClose}
       maxWidth="sm"
       fullWidth
-      PaperProps={{
-        sx: {
-          background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.29), rgba(143, 141, 141, 0.11) 70%)',
-          transition: "all 0.3s ease",
-          backdropFilter: "blur(20px)",
-          borderRadius: '16px',
-          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
-          overflow: 'hidden',
-        }
-      }}
+      PaperProps={styles.dialog}
     >
       <DialogTitle 
-        sx={{ 
-          backgroundColor: 'rgba(80, 80, 80, 0.75)', 
-          borderRadius: '16px 16px 0px 0px',
-          color: 'white',
-          fontWeight: 'bold',
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-        }}
+        sx={styles.dialogTitle}
       >
         Редактирование профиля
       </DialogTitle>
       <DialogContent>
-        <Box display="flex" flexDirection="column" alignItems="center" gap={3} sx={{ mt: 2 }}>
+        <Box display="flex" flexDirection="column" alignItems="center" gap={3} sx={styles.dialogContent}>
           <Box 
             sx={{ 
               position: 'relative', 
@@ -211,18 +295,20 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
             <Avatar
               src={previewUrl || ''}
               alt={user?.name || 'User'}
-              sx={{ 
-                width: 120, 
-                height: 120, 
+              sx={{
+                width: 100,
+                height: 100,
+                border: "4px solid rgba(0, 0, 0, 0.2)",
+                borderRadius: "16px",
+                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
                 bgcolor: getUserAvatarColor(),
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)',
-                  transform: 'scale(1.05)',
-                }
+                mb: 2,
               }}
-            />
+            >
+              <Typography variant="h1" sx={{ fontSize: "40px", fontWeight: "bold" }}>
+                {user?.name?.[0] || "U"}
+              </Typography>
+            </Avatar>
             <Box
               className="avatar-overlay"
               sx={{
@@ -235,12 +321,13 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                borderRadius: '50%',
+                borderRadius: '16px',
                 opacity: 0,
                 transition: 'opacity 0.3s ease',
+                height: '88%',
               }}
             >
-              <Typography variant="body2" color="white">
+              <Typography variant="body2" color="white" sx={{ fontSize: '0.8rem' }}>
                 Изменить фото
               </Typography>
             </Box>
@@ -254,7 +341,7 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
             style={{ display: 'none' }}
           />
           
-          <FormControl fullWidth>
+          <FormControl fullWidth sx={styles.formControl}>
             <InputLabel id="gender-label" sx={{ color: 'rgba(192, 192, 192, 0.9)' }}>Пол</InputLabel>
             <Select
               labelId="gender-label"
@@ -262,29 +349,7 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
               value={formData.gender}
               label="Пол"
               onChange={handleSelectChange}
-              sx={{ 
-                borderRadius: '8px',
-                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-                '&:hover': {
-                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                },
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'rgb(255, 255, 255)',
-                },
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'rgb(255, 255, 255)',
-                },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'rgb(177, 174, 174)',
-                  borderWidth: '1px',
-                },
-                '& .MuiSelect-select': {
-                  color: 'rgb(255, 255, 255)',
-                },
-                '& .MuiSvgIcon-root': {
-                  color: 'rgb(255, 255, 255)',
-                }
-              }}
+              sx={styles.select}
             >
               <MenuItem value="male">Мужской</MenuItem>
               <MenuItem value="female">Женский</MenuItem>
@@ -299,32 +364,7 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
             type="number"
             value={formData.trainingExperience}
             onChange={handleInputChange}
-            sx={{ 
-              mt: 2,
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '8px',
-                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-                '&:hover': {
-                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                },
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'rgb(255, 255, 255)',
-                },
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'rgb(255, 255, 255)',
-                },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'rgb(255, 255, 255)',
-                  borderWidth: '1px',
-                },
-                '& .MuiInputLabel-root': {
-                  color: 'rgba(255, 255, 255, 0.9)',
-                },
-                '& .MuiInputBase-input': {
-                  color: 'rgba(255, 255, 255, 0.9)',
-                }
-              }
-            }}
+            sx={styles.textField}
           />
 
           <TextField
@@ -335,44 +375,27 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
             rows={4}
             value={formData.about}
             onChange={handleInputChange}
-            sx={{ 
-              mt: 2,
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '8px',
-                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-                '&:hover': {
-                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                },
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'rgba(255, 255, 255, 0.7)',
-                },
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'rgba(255, 255, 255, 0.9)',
-                },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'rgba(255, 255, 255, 0.9)',
-                  borderWidth: '1px',
-                },
-                '& .MuiInputLabel-root': {
-                  color: 'rgba(255, 255, 255, 0.9)',
-                },
-                '& .MuiInputBase-input': {
-                  color: 'rgba(255, 255, 255, 0.9)',
-                }
-              }
-            }}
+            sx={styles.textField}
           />
         </Box>
       </DialogContent>
-      <DialogActions sx={{ p: 3 }}>
+      <DialogActions sx={styles.dialogActions}>
         <Button 
           onClick={onClose} 
-          sx={{ 
-            color: 'rgba(167, 167, 167, 0.9)',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-            '&:hover': {
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
-            }
+          sx={{
+            backgroundColor: 'rgb(56, 56, 56)',
+            color: 'white',
+            padding: '10px 30px',
+            borderRadius: '8px',
+            fontSize: '1rem',
+            fontWeight: 500,
+            textTransform: 'none',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+            transition: 'all 0.3s ease',
+          '&:hover': {
+            backgroundColor: 'rgb(160, 158, 158)',
+            boxShadow: '0 6px 12px rgba(0, 0, 0, 0.4)',
+      },
           }}
         >
           Отмена
@@ -380,14 +403,7 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
         <Button 
           onClick={handleSubmit} 
           variant="contained"
-          sx={{ 
-            backgroundColor: 'rgba(128, 128, 128, 0.9)',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-            '&:hover': {
-              backgroundColor: 'rgba(128, 128, 128, 0.7)',
-              boxShadow: '0 6px 12px rgba(0, 0, 0, 0.25)',
-            }
-          }}
+          sx={styles.button}
         >
           Сохранить
         </Button>
