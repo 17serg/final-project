@@ -1,21 +1,21 @@
 import { AdviceCard } from '@/entities/advice/ui/AdviceCard/AdviceCard';
-import * as React from "react";
-import { Box, Typography, Avatar, Paper } from "@mui/material";
-import { useUser } from "@/entities/user/hooks/useUser";
-import { UserApi } from "@/entities/user/api/UserApi";
-import { IUserProfile } from "@/entities/user/model";
-import { getUserColor } from "@/shared/utils/userColor";
-import { ChatPage } from "../ChatPage/ChatPage";
-import { CalendarPage } from "../CalendarPage";
-import AnthropometryPage from "../AnthropometryPage/AnthropometryPage";
-import { useEffect, useState, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState, AppDispatch } from "../../app/store";
+import * as React from 'react';
+import { Box, Typography, Avatar, Paper } from '@mui/material';
+import { useUser } from '@/entities/user/hooks/useUser';
+import { UserApi } from '@/entities/user/api/UserApi';
+import { IUserProfile } from '@/entities/user/model';
+import { getUserColor } from '@/shared/utils/userColor';
+import { ChatPage } from '../ChatPage/ChatPage';
+import { CalendarPage } from '../CalendarPage';
+import AnthropometryPage from '../AnthropometryPage/AnthropometryPage';
+import { useEffect, useState, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '../../app/store';
 import { getUnreadCount, setChatPartner, addMessage } from '../../entities/chat/store/chatSlice';
 import { useLocation } from 'react-router-dom';
 import { fonts } from '@/shared/styles/fonts';
 import { useSocketChat } from './../../entities/chat/api/socketApi';
-
+import { TrainingApi } from '@/entities/training/api/TrainingApi';
 
 const styles = {
   container: {
@@ -126,6 +126,7 @@ const styles = {
   },
   userEmail: {
     ...fonts.montserrat,
+
     fontSize: "1.2rem",
     color: "rgba(255, 255, 255, 0.7)",
     textAlign: 'center',
@@ -137,15 +138,15 @@ const styles = {
   },
   profileLabel: {
     ...fonts.montserrat,
-    fontSize: "1.2rem",
-    color: "rgba(255, 255, 255, 0.73)",
+    fontSize: '1.2rem',
+    color: 'rgba(255, 255, 255, 0.73)',
   },
   profileValue: {
     ...fonts.delaGothicOne,
     fontWeight: 500,
-    fontSize: "1.4rem",
-    color: "rgb(255, 255, 255)",
-    marginBottom: "8px",
+    fontSize: '1.4rem',
+    color: 'rgb(255, 255, 255)',
+    marginBottom: '8px',
   },
   statsContainer: {
     display: 'flex',
@@ -231,21 +232,22 @@ const styles = {
   },
   tabText: {
     ...fonts.delaGothicOne,
-    fontSize: "1.3rem",
+    fontSize: '1.3rem',
     fontWeight: 500,
   },
   tabPanel: {
-    width: "96%",
-    padding: "20px",
-    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
-    transition: "all 0.3s ease",
-    backdropFilter: "blur(9px)",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
-    borderRadius: "0 0 16px 16px",
-    marginTop: "0px",
-    border: "2px solid rgba(161, 161, 161, 0.93)",
-    borderTop: "none",
-    position: "relative",
+    width: '96%',
+    padding: '20px',
+    background:
+      'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+    transition: 'all 0.3s ease',
+    backdropFilter: 'blur(9px)',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+    borderRadius: '0 0 16px 16px',
+    marginTop: '0px',
+    border: '2px solid rgba(161, 161, 161, 0.93)',
+    borderTop: 'none',
+    position: 'relative',
     zIndex: 1,
     minHeight: '80vh',
     right: '0',
@@ -293,6 +295,7 @@ export default function ProfilePage(): React.JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const { user, setUser } = useUser();
   const [profile, setProfile] = useState<IUserProfile | null>(null);
+  const [trainingCount, setTrainingCount] = useState<number>(0);
   const location = useLocation();
   const [activeTab, setActiveTab] = React.useState<number | null>(0);
   const chatRef = React.useRef<HTMLDivElement>(null); // Добавляем ref для чата
@@ -336,8 +339,21 @@ export default function ProfilePage(): React.JSX.Element {
       }
     };
 
+    const loadTrainingCount = async (): Promise<void> => {
+      if (user?.id) {
+        try {
+          const trainings = await TrainingApi.getUserTrainings(user.id);
+          const completedTrainings = trainings.filter((training) => training.complete);
+          setTrainingCount(completedTrainings.length);
+        } catch (error) {
+          console.error('Error loading training count:', error);
+        }
+      }
+    };
+
     if (user) {
       loadProfile();
+      loadTrainingCount();
     }
   }, [user]);
 
@@ -345,14 +361,14 @@ export default function ProfilePage(): React.JSX.Element {
 
   useEffect(() => {
     const handleNewMessage = (message) => {
-      dispatch(addMessage(message)); 
-      dispatch(getUnreadCount(userId)); 
+      dispatch(addMessage(message));
+      dispatch(getUnreadCount(userId));
     };
 
-    onNewMessage(handleNewMessage); 
+    onNewMessage(handleNewMessage);
 
     return () => {
-      offNewMessage(handleNewMessage); 
+      offNewMessage(handleNewMessage);
     };
   }, [dispatch, userId, onNewMessage, offNewMessage]);
 
@@ -441,15 +457,18 @@ export default function ProfilePage(): React.JSX.Element {
     return '#BAE1FF';
   };
 
-  const handleTabClick = (index: number) => (event: React.MouseEvent): void => {
-    event.preventDefault();
-    setActiveTab(index);
-  };
+  const handleTabClick =
+    (index: number) =>
+    (event: React.MouseEvent): void => {
+      event.preventDefault();
+      setActiveTab(index);
+    };
 
   return (
     <Box sx={styles.container}>
       <Paper sx={styles.profileCard}>
         <Box sx={styles.header}>
+
           <Box sx={styles.leftInfo}>
             <Box sx={styles.infoItem}>
               <Typography sx={styles.infoLabel}>Пол</Typography>
@@ -504,11 +523,7 @@ export default function ProfilePage(): React.JSX.Element {
 
       <Box sx={styles.statsContainer}>
         <Paper sx={styles.statCard}>
-          <Typography sx={styles.statValue}>{profile?.personalRecords || 0}</Typography>
-          <Typography sx={styles.statLabel}>Личные рекорды</Typography>
-        </Paper>
-        <Paper sx={styles.statCard}>
-          <Typography sx={styles.statValue}>{profile?.trainingCount || 0}</Typography>
+          <Typography sx={styles.statValue}>{trainingCount}</Typography>
           <Typography sx={styles.statLabel}>Количество тренировок</Typography>
         </Paper>
       </Box>
@@ -551,6 +566,7 @@ export default function ProfilePage(): React.JSX.Element {
                 sx={{ ...styles.tab, ...(activeTab === 3 ? styles.activeTab : {}) }}
               >
                 <Typography sx={styles.tabText}>
+
                   {user?.trener ? "Чат с клиентом" : "Чат с тренером"}
                 </Typography>
 
@@ -558,6 +574,7 @@ export default function ProfilePage(): React.JSX.Element {
                   <Box
                     component="span"
                     sx={{
+
                       position: "absolute",
                       top: 4,
                       right: 8,

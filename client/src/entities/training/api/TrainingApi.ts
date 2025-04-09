@@ -35,10 +35,10 @@ export const TrainingApi = {
   },
 
   async getUserTrainings(userId: number) {
-    const response = await axiosInstance.get('/trainings', {
+    const response = await axiosInstance.get<Training[]>('/trainings', {
       params: { userId },
     });
-    return response;
+    return response.data;
   },
 
   async updateTrainingStatus(id: number, complete: boolean) {
