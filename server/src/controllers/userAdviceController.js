@@ -4,7 +4,16 @@ class UserAdviceController {
   // Получить все сохраненные советы пользователя
   static async getUserAdvices(req, res) {
     try {
-      const userId = req.user.id;
+      console.log('Getting user advices, user:', res.locals.user);
+
+      if (!res.locals.user || !res.locals.user.id) {
+        console.error('User not found in res.locals');
+        return res.status(401).json({ message: 'Пользователь не авторизован' });
+      }
+
+      const { id: userId } = res.locals.user;
+
+      console.log('User ID:', userId);
 
       const userAdvices = await UserAdvice.findAll({
         where: { userId },
@@ -34,8 +43,17 @@ class UserAdviceController {
   // Сохранить совет в коллекцию пользователя
   static async saveAdvice(req, res) {
     try {
-      const userId = req.user.id;
-      const adviceId = req.body.adviceId;
+      console.log('Saving advice, user:', res.locals.user);
+
+      if (!res.locals.user || !res.locals.user.id) {
+        console.error('User not found in res.locals');
+        return res.status(401).json({ message: 'Пользователь не авторизован' });
+      }
+
+      const { id: userId } = res.locals.user;
+      const { adviceId } = req.body;
+
+      console.log('User ID:', userId, 'Advice ID:', adviceId);
 
       if (!adviceId) {
         return res.status(400).json({
@@ -88,8 +106,17 @@ class UserAdviceController {
   // Удалить совет из коллекции пользователя
   static async removeAdvice(req, res) {
     try {
-      const userId = req.user.id;
-      const adviceId = req.params.adviceId;
+      console.log('Removing advice, user:', res.locals.user);
+
+      if (!res.locals.user || !res.locals.user.id) {
+        console.error('User not found in res.locals');
+        return res.status(401).json({ message: 'Пользователь не авторизован' });
+      }
+
+      const { id: userId } = res.locals.user;
+      const { adviceId } = req.params;
+
+      console.log('User ID:', userId, 'Advice ID:', adviceId);
 
       if (!adviceId) {
         return res.status(400).json({
@@ -128,8 +155,17 @@ class UserAdviceController {
   // Проверить, сохранен ли совет пользователем
   static async isAdviceSaved(req, res) {
     try {
-      const userId = req.user.id;
-      const adviceId = req.params.adviceId;
+      console.log('Checking if advice is saved, user:', res.locals.user);
+
+      if (!res.locals.user || !res.locals.user.id) {
+        console.error('User not found in res.locals');
+        return res.status(401).json({ message: 'Пользователь не авторизован' });
+      }
+
+      const { id: userId } = res.locals.user;
+      const { adviceId } = req.params;
+
+      console.log('User ID:', userId, 'Advice ID:', adviceId);
 
       if (!adviceId) {
         return res.status(400).json({
