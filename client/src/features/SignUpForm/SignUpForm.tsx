@@ -6,6 +6,7 @@ import { UserApi } from '@/entities/user/api/UserApi';
 import { IUserSignUpData } from '@/entities/user/model';
 import { setAccessToken } from '@/shared/lib/axiosInstance';
 import { CLIENT_ROUTES } from '@/shared/enums/clientRoutes';
+import { fonts } from '@/shared/styles/fonts';
 // import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 // import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 // import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -159,6 +160,7 @@ export default function SignUpForm(): React.JSX.Element {
           align="center" 
           gutterBottom
           sx={{ 
+            ...fonts.delaGothicOne,
             fontWeight: 'bold', 
             color: 'rgba(0, 0, 0, 0.9)',
             mb: 3

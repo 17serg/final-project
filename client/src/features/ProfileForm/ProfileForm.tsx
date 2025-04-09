@@ -117,7 +117,7 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
         // Отправляем событие обновления профиля
         window.dispatchEvent(new Event('profileUpdated'));
         
-        onClose();
+      onClose();
       }
     } catch (error) {
       console.error('Ошибка при обновлении профиля:', error);

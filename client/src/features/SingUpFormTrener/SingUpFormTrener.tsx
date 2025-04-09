@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import { useUser } from '@/entities/user/hooks/useUser';
 import { UserApi } from '@/entities/user/api/UserApi';
 import { setAccessToken } from '@/shared/lib/axiosInstance';
+import { fonts } from '@/shared/styles/fonts';
 
 export default function SingUpFormTrener(): React.JSX.Element {
   const navigate = useNavigate();
@@ -149,6 +150,7 @@ export default function SingUpFormTrener(): React.JSX.Element {
           align="center" 
           gutterBottom
           sx={{ 
+            ...fonts.delaGothicOne,
             fontWeight: 'bold', 
             color: 'white',
             mb: 3

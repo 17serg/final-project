@@ -3,44 +3,39 @@ import { Box, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router";
 // import { CLIENT_ROUTES } from "@/shared/enums/clientRoutes";
 import { useUser } from '@/entities/user/hooks/useUser';
+import { fonts } from '@/shared/styles/fonts';
+import antropometric from "../../../public/screenshot/AnthropometryPage.png";
+import calendar from "../../../public/screenshot/calendar.png";
+import chat from "../../../public/screenshot/chat.png";
 
 const styles = {
   container: {
-    height: "100vh",
+    minHeight: "100vh",
     width: "100%",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
     alignItems: "center",
     position: "relative",
-    overflow: "hidden",
+    padding: "40px 20px",
+  },
+  header: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    marginBottom: "80px",
   },
   title: {
-    position: "absolute",
-    top: "60%",
-    transform: "translateY(-50%)",
-    fontSize: "3rem",
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "white",
-    maxWidth: "90%",
-    wordWrap: "break-word",
-  },
-  subtitle: {
-    position: "absolute",
-    top: "70%",
-    transform: "translateY(-50%)",
-    fontSize: "1.5rem",
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "white",
-    maxWidth: "90%",
-    wordWrap: "break-word",
+    ...fonts.delaGothicOne,
+    fontWeight: '400',
+    lineHeight: '1.2',
+    fontSize: '3.5rem',
+    color: 'white',
+    textAlign: 'center',
+    marginBottom: '2rem',
+    marginTop: '35rem',
   },
   button: {
-    position: "absolute",
-    top: "75%",
-    transform: "translateY(-50%)",
     padding: "16px 32px",
     fontSize: "1.5rem",
     textDecoration: "none",
@@ -58,14 +53,59 @@ const styles = {
       border: "2px solid rgba(0, 0, 0, 0.2)",
     },
   },
-  buttonsContainer: {
-    position: "absolute",
-    top: "72%",
-    transform: "translateY(-50%)",
+  content: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    maxWidth: "1200px",
+    gap: "40px",
+    marginBottom: "80px",
+  },
+  textContent: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    gap: "20px",
+  },
+  subtitle: {
+    ...fonts.delaGothicOne,
+    fontSize: "2.5rem",
+    fontWeight: "400",
+    color: "white",
+    lineHeight: "1.2",
+  },
+  description: {
+    ...fonts.delaGothicOne,
+    fontSize: "1.2rem",
+    color: "white",
+    opacity: 0.9,
+    lineHeight: "1.5",
+  },
+  imageContainer: {
+    marginTop: "50px",
+    flex: 1,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    gap: "16px",
+  },
+  calendarImage: {
+    maxWidth: "100%",
+    height: "auto",
+    borderRadius: "16px",
+    boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
+  },
+  chatImage: {
+    maxWidth: "100%",
+    height: "auto",
+    borderRadius: "16px",
+    boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
+  },
+  antropometricImage: {
+    maxWidth: "100%",
+    height: "auto",
+    borderRadius: "16px",
+    boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
   },
 };
 
@@ -79,22 +119,79 @@ export function MainPage(): React.JSX.Element {
 
   return (
     <Box sx={styles.container}>
-      <Typography variant="h1" sx={styles.title}>
-        Фитнес должен быть доступен каждому
-      </Typography>
-      {!user && (
-        <>
-          <Box sx={styles.buttonsContainer}>
-            <Button
-              variant="contained"
-              onClick={() => handleNavigate('/signup')}
-              sx={styles.button}
-            >
-              Создать профиль
-            </Button>
-          </Box>
-        </>
-      )}
+      <Box sx={styles.header}>
+        <Typography variant="h1" sx={styles.title}>
+          ФИТНЕС ДОЛЖЕН БЫТЬ ДОСТУПЕН КАЖДОМУ
+        </Typography>
+        {!user && (
+          <Button
+            variant="contained"
+            onClick={() => handleNavigate('/signup')}
+            sx={styles.button}
+          >
+            Создать профиль
+          </Button>
+        )}
+      </Box>
+
+      <Box sx={styles.content}>
+        <Box sx={styles.textContent}>
+          <Typography sx={styles.subtitle}>
+            Календарь тренировок
+          </Typography>
+          <Typography sx={styles.description}>
+            Создать календарь тренировок под свои цели.
+            Планируй занятия, ставь напоминания 
+            и следи за графиком.
+          </Typography>
+        </Box>
+        <Box sx={styles.imageContainer}>
+          <img 
+            src={calendar} 
+            alt="Календарь тренировок" 
+            style={styles.calendarImage}
+          />
+        </Box>
+      </Box>
+
+      <Box sx={{...styles.content, flexDirection: 'row-reverse'}}>
+        <Box sx={styles.textContent}>
+          <Typography sx={styles.subtitle}>
+            Чат с тренером
+          </Typography>
+          <Typography sx={styles.description}>
+            Работать с персональным тренером онлайн.
+            Получай обратную связь, корректировки и 
+            мотивацию.
+          </Typography>
+        </Box>
+        <Box sx={styles.imageContainer}>
+          <img 
+            src={chat} 
+            alt="Чат с тренером" 
+            style={styles.chatImage}
+          />
+        </Box>
+      </Box>
+
+      <Box sx={styles.content}>
+        <Box sx={styles.textContent}>
+          <Typography sx={styles.subtitle}>
+            Замеры прогресса
+          </Typography>
+          <Typography sx={styles.description}>
+            Отслеживать прогресс с помощью замеров.
+            Фиксируй вес, объёмы и другие параметры
+          </Typography>
+        </Box>
+        <Box sx={styles.imageContainer}>
+          <img 
+            src={antropometric} 
+            alt="Замеры прогресса" 
+            style={styles.antropometricImage}
+          />
+        </Box>
+      </Box>
     </Box>
   );
 }

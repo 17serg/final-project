@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../../app/store";
 import { getUnreadCount, setChatPartner } from '../../entities/chat/store/chatSlice';
 import { useLocation } from 'react-router-dom';
+import { fonts } from '@/shared/styles/fonts';
 
 const styles = {
   container: {
@@ -78,6 +79,7 @@ const styles = {
     color: "white",
   },
   userEmail: {
+    ...fonts.montserrat,
     fontSize: "1.2rem",
     color: "rgba(255, 255, 255, 0.7)",
     marginBottom: "16px",
@@ -88,12 +90,15 @@ const styles = {
     gap: "8px",
   },
   profileLabel: {
+    ...fonts.montserrat,
     fontSize: "1.2rem",
-    color: "rgba(255, 255, 255, 0.7)",
+    color: "rgba(255, 255, 255, 0.73)",
   },
   profileValue: {
+    ...fonts.delaGothicOne,
+    fontWeight: 500,
     fontSize: "1.4rem",
-    color: "rgba(255, 255, 255, 0.7)",
+    color: "rgb(255, 255, 255)",
     marginBottom: "8px",
   },
   statsContainer: {
@@ -175,8 +180,13 @@ const styles = {
     position: "relative",
     zIndex: 3,
   },
+  tabText: {
+    ...fonts.delaGothicOne,
+    fontSize: "1.3rem",
+    fontWeight: 500,
+  },
   tabPanel: {
-    width: "95.8%",
+    width: "96%",
     padding: "20px",
     background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
     transition: "all 0.3s ease",
@@ -369,7 +379,7 @@ export default function ProfilePage(): React.JSX.Element {
 
   const handleTabClick = (index: number) => (event: React.MouseEvent): void => {
     event.preventDefault();
-    setActiveTab((prev) => (prev === index ? null : index));
+    setActiveTab(index);
   };
 
   return (
@@ -389,7 +399,7 @@ export default function ProfilePage(): React.JSX.Element {
               mb: 2,
             }}
           >
-            <Typography variant="h1" sx={{ fontSize: "48px", fontWeight: "bold" }}>
+            <Typography variant="h1" sx={{ fontSize: "48px", ...fonts.delaGothicOne }}>
               {user?.name?.[0] || "U"}
             </Typography>
           </Avatar>
@@ -447,25 +457,25 @@ export default function ProfilePage(): React.JSX.Element {
                 onClick={handleTabClick(0)}
                 sx={{ ...styles.tab, ...(activeTab === 0 ? styles.activeTab : {}) }}
               >
-                <Typography>Календарь тренировок</Typography>
+                <Typography sx={styles.tabText}>Календарь тренировок</Typography>
               </Box>
               <Box
                 onClick={handleTabClick(1)}
                 sx={{ ...styles.tab, ...(activeTab === 1 ? styles.activeTab : {}) }}
               >
-                <Typography>Журнал прогресса</Typography>
+                <Typography sx={styles.tabText}>Журнал прогресса</Typography>
               </Box>
               <Box
                 onClick={handleTabClick(2)}
                 sx={{ ...styles.tab, ...(activeTab === 2 ? styles.activeTab : {}) }}
               >
-                <Typography>Рекомендации</Typography>
+                <Typography sx={styles.tabText}>Рекомендации</Typography>
               </Box>
               <Box
   onClick={handleTabClick(3)}
   sx={{ ...styles.tab, ...(activeTab === 3 ? styles.activeTab : {}) }}
 >
-  <Typography>
+  <Typography sx={styles.tabText}>
     {user?.trener ? "Чат с клиентом" : "Чат с тренером"}
   </Typography>
 

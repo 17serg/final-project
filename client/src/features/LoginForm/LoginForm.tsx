@@ -5,6 +5,7 @@ import { useUser } from '@/entities/user/hooks/useUser';
 import { UserApi } from '@/entities/user/api/UserApi';
 import { setAccessToken } from '@/shared/lib/axiosInstance';
 import { useAppDispatch } from '@/shared/lib/reduxHooks';
+import { fonts } from '@/shared/styles/fonts';
 
 export default function LoginForm(): React.JSX.Element {
   const navigate = useNavigate();
@@ -90,6 +91,7 @@ export default function LoginForm(): React.JSX.Element {
           align="center" 
           gutterBottom
           sx={{ 
+            ...fonts.delaGothicOne,
             fontWeight: 'bold', 
             color: 'rgba(0, 0, 0, 0.9)',
             mb: 3
