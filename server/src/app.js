@@ -16,6 +16,8 @@ const anthropometryRouter = require('./routers/anthropometryRouter');
 const exerciseOfTrainingRouter = require('./routers/exerciseOfTrainingRoutes');
 const exerciseRouter = require('./routers/exerciseRoutes');
 const exerciseSetRouter = require('./routers/exerciseSetRoutes');
+const adviceRouter = require('./routers/adviceRouter');
+const userAdviceRoutes = require('./routers/userAdviceRoutes');
 
 const app = express();
 
@@ -38,5 +40,7 @@ app.use('/api/messages', messagesRouter);
 app.use('/api/anthropometry', anthropometryRouter);
 app.use('/api/exercises/', exerciseRouter);
 app.use('/api/exercise-sets/', exerciseSetRouter);
+app.use('/api/advice/', adviceRouter);
+app.use('/api/user-advices', userAdviceRoutes);
 
 module.exports = app;
