@@ -209,6 +209,7 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
   };
 
   return (
+
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2,
         background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7))',
         backdropFilter: 'blur(10px)',
