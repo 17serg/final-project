@@ -1,18 +1,19 @@
-import * as React from 'react';
-import { Box, Typography, Avatar, Paper } from '@mui/material';
-import { useUser } from '@/entities/user/hooks/useUser';
-import { UserApi } from '@/entities/user/api/UserApi';
-import { IUserProfile } from '@/entities/user/model';
-import { getUserColor } from '@/shared/utils/userColor';
-import { ChatPage } from '../ChatPage/ChatPage';
-import { CalendarPage } from '../CalendarPage';
-import AnthropometryPage from '../AnthropometryPage/AnthropometryPage';
-import { useEffect, useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '../../app/store';
-import { getUnreadCount, setChatPartner } from '../../entities/chat/store/chatSlice';
-import { useLocation } from 'react-router-dom';
 import { AdviceCard } from '@/entities/advice/ui/AdviceCard/AdviceCard';
+import * as React from "react";
+import { Box, Typography, Avatar, Paper } from "@mui/material";
+import { useUser } from "@/entities/user/hooks/useUser";
+import { UserApi } from "@/entities/user/api/UserApi";
+import { IUserProfile } from "@/entities/user/model";
+import { getUserColor } from "@/shared/utils/userColor";
+import { ChatPage } from "../ChatPage/ChatPage";
+import { CalendarPage } from "../CalendarPage";
+import AnthropometryPage from "../AnthropometryPage/AnthropometryPage";
+import { useEffect, useState, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "../../app/store";
+import { getUnreadCount, setChatPartner, addMessage } from '../../entities/chat/store/chatSlice';
+import { useLocation } from 'react-router-dom';
+import { useSocketChat } from './../../entities/chat/api/socketApi';
 
 const styles = {
   container: {
@@ -287,6 +288,21 @@ export default function ProfilePage(): React.JSX.Element {
     }
   }, [user]);
 
+  const { onNewMessage, offNewMessage } = useSocketChat();
+
+  useEffect(() => {
+    const handleNewMessage = (message) => {
+      dispatch(addMessage(message)); 
+      dispatch(getUnreadCount(userId)); 
+    };
+
+    onNewMessage(handleNewMessage); 
+
+    return () => {
+      offNewMessage(handleNewMessage); 
+    };
+  }, [dispatch, userId, onNewMessage, offNewMessage]);
+
   // Добавляем новый useEffect для отслеживания изменений в профиле
   useEffect(() => {
     if (!profile && user) {
@@ -468,26 +484,31 @@ export default function ProfilePage(): React.JSX.Element {
                 onClick={handleTabClick(3)}
                 sx={{ ...styles.tab, ...(activeTab === 3 ? styles.activeTab : {}) }}
               >
-                <Typography>{user?.trener ? 'Чат с клиентом' : 'Чат с тренером'}</Typography>
+
+                <Typography>
+                  {user?.trener ? "Чат с клиентом" : "Чат с тренером"}
+                </Typography>
 
                 {unreadMessagesCount > 0 && (
                   <Box
                     component="span"
                     sx={{
-                      position: 'absolute',
+
+                      position: "absolute",
                       top: 4,
                       right: 8,
-                      backgroundColor: 'red',
-                      color: 'white',
-                      borderRadius: '50%',
-                      padding: '2px 6px',
-                      fontSize: '12px',
-                      fontWeight: 'bold',
-                      minWidth: '20px',
-                      height: '20px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      backgroundColor: "red",
+                      color: "white",
+                      borderRadius: "50%",
+                      padding: "2px 6px",
+                      fontSize: "12px",
+                      fontWeight: "bold",
+                      minWidth: "20px",
+                      height: "20px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+
                     }}
                   >
                     {unreadMessagesCount}
