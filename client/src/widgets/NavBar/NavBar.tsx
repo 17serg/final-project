@@ -33,17 +33,19 @@ const styles = {
     padding: "8px 16px",
     transition: "all 0.3s ease",
     textTransform: "none",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    backgroundColor: "transparent",
     "&:hover": {
-      background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.55), rgba(187, 187, 187, 0.42) 70%)',
-      color: "white",
-      boxShadow: "0 6px 12px rgba(42, 41, 223, 0.3)",
+      backgroundColor: "rgba(255, 255, 255, 0.9)",
+      color: "rgba(0, 0, 0, 0.9)",
+      boxShadow: "0 6px 12px rgba(0, 0, 0, 0.2)",
+      border: "2px solid rgba(0, 0, 0, 0.2)",
     },
     "&.active": {
-      background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.55), rgba(187, 187, 187, 0.42) 70%)',
-      backdropFilter: "blur(9px)",
-      color: "white",
-      boxShadow: "0 6px 12px rgba(42, 41, 223, 0.3)",
+      backgroundColor: "rgba(255, 255, 255, 0.9)",
+      color: "rgba(0, 0, 0, 0.9)",
+      boxShadow: "0 6px 12px rgba(0, 0, 0, 0.2)",
+      border: "2px solid rgba(0, 0, 0, 0.2)",
     },
   },
   box: {
@@ -81,16 +83,18 @@ const styles = {
     fontWeight: 500,
     flex: 1,
     textTransform: "none",
-    border: "2px solid rgb(42, 41, 223)",
+    border: "2px solid white",
     borderRadius: "16px",
     padding: "8px 16px",
     transition: "all 0.3s ease",
     color: "white",
-    boxShadow: "0 4px 8px rgba(42, 41, 223, 0.2)",
+    backgroundColor: "transparent",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     "&:hover": {
-      backgroundColor: "rgb(42, 41, 223)",
-      color: "white",
-      boxShadow: "0 6px 12px rgba(42, 41, 223, 0.3)",
+      backgroundColor: "rgba(255, 255, 255, 0.9)",
+      color: "rgba(0, 0, 0, 0.9)",
+      boxShadow: "0 6px 12px rgba(0, 0, 0, 0.2)",
+      border: "2px solid rgba(0, 0, 0, 0.2)",
     },
   },
   typography: {
@@ -102,8 +106,10 @@ const styles = {
   menuItem: {
     fontSize: "1rem",
     padding: "8px 16px",
+    color: "white",
     "&:hover": {
-      backgroundColor: "rgba(42, 41, 223, 0.1)",
+      backgroundColor: "rgba(255, 255, 255, 0.9)",
+      color: "rgba(0, 0, 0, 0.9)",
     },
   },
   menu: {
@@ -111,7 +117,9 @@ const styles = {
       width: "100%",
       marginTop: "4px",
       borderRadius: "16px",
-      boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15)",
+      boxShadow: "0 8px 16px rgba(0, 0, 0, 0.1)",
+      backgroundColor: "transparent",
+      border: "2px solid white",
     },
   },
   avatar: {
@@ -338,8 +346,8 @@ export default function NavBar(): React.JSX.Element {
                           justifyContent: "space-between",
                           alignItems: "center",
                           "&:hover": {
-                            backgroundColor: 'rgba(160, 158, 158, 0.57)',
-                            color: "white",
+                            backgroundColor: "rgba(255, 255, 255, 0.9)",
+                            color: "rgba(0, 0, 0, 0.9)",
                           },
                         }}
                       >
@@ -351,6 +359,8 @@ export default function NavBar(): React.JSX.Element {
                             height: 42,
                             bgcolor: user ? getUserColor(user.email) : '#BAE1FF',
                             border: "2px solid rgba(161, 161, 161, 0.93)",
+                            borderRadius: "8px",
+                            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
                           }}
                         >
                           {user?.name?.[0] || "U"}
@@ -361,8 +371,8 @@ export default function NavBar(): React.JSX.Element {
                         sx={{
                           ...styles.menuItem,
                           "&:hover": {
-                            backgroundColor: 'rgba(160, 158, 158, 0.57)',
-                            color: "white",
+                            backgroundColor: "rgba(255, 255, 255, 0.9)",
+                            color: "rgba(0, 0, 0, 0.9)",
                           },
                         }}
                       >
@@ -373,8 +383,8 @@ export default function NavBar(): React.JSX.Element {
                         sx={{
                           ...styles.menuItem,
                           "&:hover": {
-                            backgroundColor: 'rgba(160, 158, 158, 0.57)',
-                            color: "white",
+                            backgroundColor: "rgba(255, 255, 255, 0.9)",
+                            color: "rgba(0, 0, 0, 0.9)",
                           },
                         }}
                       >

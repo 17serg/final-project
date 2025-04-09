@@ -187,7 +187,7 @@ export const Calendar = (): React.ReactElement => {
         </Box>
       </Box>
 
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', }}>
         {/* Заголовки дней недели */}
         <Box sx={{ display: 'flex', mb: 1, position: 'relative', zIndex: 1 }}>
           {DAYS_OF_WEEK.map((day) => (

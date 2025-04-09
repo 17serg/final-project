@@ -6,39 +6,51 @@ const styles = {
     position: 'fixed',
     top: 0,
     left: 0,
-    width: '100%',
-    height: '100%',
+    width: '100vw',
+    height: '100vh',
     zIndex: -1,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
-    transition: 'background-image 1s ease-in-out',
+    transition: 'opacity 1.5s ease-in-out',
+    overflow: 'hidden',
   },
   overlay: {
     position: 'fixed',
     top: 0,
     left: 0,
-    width: '100%',
-    height: '100%',
+    width: '100vw',
+    height: '100vh',
     background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%)',
     zIndex: -1,
+    overflow: 'hidden',
   }
 };
 
-
 export const AnimatedBackground: React.FC = () => {
   const [currentImage, setCurrentImage] = React.useState(0);
+  const [nextImage, setNextImage] = React.useState(1);
+  const [isTransitioning, setIsTransitioning] = React.useState(false);
   const images = [
-    '/background/IMG_5727.JPG',
-    '/background/IMG_5728.JPG'
+    '/background/IMG_5803.JPG',
+    '/background/IMG_5728.JPG',
+    '/background/IMG_5804.JPG',
+    '/background/IMG_5808.JPG',
+    '/background/IMG_5809.JPG',
   ];
 
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % images.length);
-    }, 15000);
+      const nextIndex = (currentImage + 1) % images.length;
+      setNextImage(nextIndex);
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentImage(nextIndex);
+        setIsTransitioning(false);
+      }, 1500);
+    }, 5000);
 
-    return () => clearInterval(interval);
-  }, []);
+    return (): void => clearInterval(interval);
+  }, [currentImage, images.length]);
 
   return (
     <>
@@ -46,6 +58,14 @@ export const AnimatedBackground: React.FC = () => {
         sx={{
           ...styles.background,
           backgroundImage: `url(${images[currentImage]})`,
+          opacity: 1,
+        }}
+      />
+      <Box
+        sx={{
+          ...styles.background,
+          backgroundImage: `url(${images[nextImage]})`,
+          opacity: isTransitioning ? 1 : 0,
         }}
       />
       <Box sx={styles.overlay} />
