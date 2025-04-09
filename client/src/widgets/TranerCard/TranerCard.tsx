@@ -248,7 +248,7 @@ export default function TranerCard({ char }: TranerCardProps): React.JSX.Element
             onClick={handleChatClick}
             sx={styles.chatButton}
           >
-            {isTrainer ? 'Написать тренеру' : 'Написать посетителю'}
+            {isTrainer ? 'Написать посетителю' : 'Написать тренеру'}
           </Button>
         </Box>
       </Box>
