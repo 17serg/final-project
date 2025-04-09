@@ -134,6 +134,7 @@ export function ChatPage(): React.JSX.Element {
 
   const handleKeyPress = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
+      e.preventDefault();
       handleSendMessage();
     }
   }, [handleSendMessage]);
@@ -263,12 +264,13 @@ export function ChatPage(): React.JSX.Element {
   );
 
   return (
-    <div style={{ display: 'flex', backgroundColor: '#f3f4f8', height: '50vh' }}>
+    <div style={{ display: 'flex', backgroundColor: '#f3f4f8', height: '50vh', borderRadius: '18px 18px 18px 18px' }}>
       {/* Список диалогов */}
       <div
   style={{
     width: '270px',
     borderRight: '1px solid #e0e0e0',
+    borderRadius: '15px 0 0 15px',
     paddingRight: '10px',
     backgroundColor: '#2c2c2c', // Темно-серый фон
     boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)',
@@ -294,7 +296,7 @@ export function ChatPage(): React.JSX.Element {
         boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.05)',
       }}
     >
-      <span style={{ flex: 1, fontWeight: '500', color: '#ffffff' , fontSize: '16px' ,  letterSpacing: '3px'}}>
+      <span style={{ flex: 1, fontWeight: '500', color: '#ffffff' , fontSize: '16px' ,  letterSpacing: '3px' }}>
         {partner.name} {partner.surname}
       </span>
       {unreadMessagesCount(partner.id) > 0 && (
@@ -321,7 +323,7 @@ export function ChatPage(): React.JSX.Element {
 </div>
   
       {/* Чат с собеседником */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '20px', backgroundColor: '#111' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '20px', backgroundColor: '#111', borderRadius: '0 15px 15px 0' }}>
   <h2 style={{ marginBottom: '20px', fontSize: '24px', color: '#999' }}>Чат</h2>
   {chatPartnerId ? (
     <>

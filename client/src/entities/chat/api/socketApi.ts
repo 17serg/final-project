@@ -14,7 +14,6 @@ export const useSocketChat = () => {
 
   useEffect(() => {
     socket.on('newMessage', (message) => {
-      // console.log(message)
       dispatch(addMessage(message));
     });
 
@@ -47,5 +46,13 @@ export const useSocketChat = () => {
     socket.emit('checkMessages', { userId, chatPartnerId });
   };
 
-  return { emitCheckMessages };
+  const onNewMessage = (callback: (message: any) => void): void => {
+    socket.on('newMessage', callback);
+  };
+
+  const offNewMessage = (callback: (message: any) => void): void => {
+    socket.off('newMessage', callback);
+  };
+
+  return { emitCheckMessages, onNewMessage, offNewMessage };
 };
