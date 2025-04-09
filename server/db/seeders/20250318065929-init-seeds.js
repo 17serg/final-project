@@ -133,8 +133,7 @@ module.exports = {
           createdAt: now,
           updatedAt: now,
         },
-      
-        
+
         {
           name: 'Тяга штанги в наклоне',
           description: 'Базовое упражнение для толщины спины',
@@ -183,7 +182,7 @@ module.exports = {
           createdAt: now,
           updatedAt: now,
         },
-      
+
         {
           name: 'Выпады с гантелями',
           description: 'Упражнение для проработки квадрицепсов и ягодиц',
@@ -220,7 +219,7 @@ module.exports = {
           createdAt: now,
           updatedAt: now,
         },
-      
+
         // Плечи
         {
           name: 'Армейский жим',
@@ -282,7 +281,7 @@ module.exports = {
           createdAt: now,
           updatedAt: now,
         },
-      
+
         // Руки (Бицепс / Трицепс)
         {
           name: 'Подъем штанги на бицепс',
@@ -344,7 +343,7 @@ module.exports = {
           createdAt: now,
           updatedAt: now,
         },
-      
+
         // Пресс
         {
           name: 'Скручивания',
@@ -406,7 +405,7 @@ module.exports = {
           createdAt: now,
           updatedAt: now,
         },
-      
+
         // Кардио
         {
           name: 'Бег на дорожке',
@@ -456,7 +455,7 @@ module.exports = {
           createdAt: now,
           updatedAt: now,
         },
-        
+
         {
           name: 'Пуловер с гантелью',
           description: 'Упражнение для растяжки грудных и развития широчайших',
@@ -481,7 +480,7 @@ module.exports = {
           createdAt: now,
           updatedAt: now,
         },
-        
+
         // Дополнение для Спины
         {
           name: 'Тяга верхнего блока широким хватом',
@@ -507,7 +506,7 @@ module.exports = {
           createdAt: now,
           updatedAt: now,
         },
-        
+
         // Дополнение для Ног
         {
           name: 'Болгарские сплит-приседания',
@@ -533,7 +532,7 @@ module.exports = {
           createdAt: now,
           updatedAt: now,
         },
-        
+
         // Дополнение для Плеч
         {
           name: 'Жим Арнольда',
@@ -559,7 +558,7 @@ module.exports = {
           createdAt: now,
           updatedAt: now,
         },
-        
+
         // Дополнение для Рук
         {
           name: 'Концентрированные подъемы на бицепс',
@@ -585,7 +584,7 @@ module.exports = {
           createdAt: now,
           updatedAt: now,
         },
-        
+
         // Дополнение для Пресса
         {
           name: 'Скручивания с роликом',
@@ -611,7 +610,7 @@ module.exports = {
           createdAt: now,
           updatedAt: now,
         },
-        
+
         // Дополнение для Кардио
         {
           name: 'Скалолаз',
@@ -637,7 +636,7 @@ module.exports = {
           createdAt: now,
           updatedAt: now,
         },
-        
+
         // Новая категория: Функциональные
         // {
         //   name: 'Турецкий подъем',
@@ -652,7 +651,6 @@ module.exports = {
         //   updatedAt: now,
         // },
 
-        
         // Новая категория: Предплечья/Запястья
         {
           name: 'Сгибания запястий со штангой',
@@ -666,7 +664,6 @@ module.exports = {
           createdAt: now,
           updatedAt: now,
         },
-
       ],
       {},
     );

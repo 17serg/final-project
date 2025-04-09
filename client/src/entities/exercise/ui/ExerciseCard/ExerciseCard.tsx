@@ -9,19 +9,16 @@ interface ExerciseCardProps {
 
 const styles = {
   card: {
-
-    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
-    // transition: "all 0.3s ease",
-    backdropFilter: "blur(9px)",
-    boxShadow: "0 6px 8px rgba(0, 0, 0, 0.4)",
+    background:
+      'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+    backdropFilter: 'blur(9px)',
+    boxShadow: '0 6px 8px rgba(0, 0, 0, 0.4)',
     maxWidth: 300,
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-
     transition: 'transform 0.2s',
     cursor: 'pointer',
-
     '&:hover': {
       transform: 'scale(1.02)',
     },
@@ -38,7 +35,7 @@ const styles = {
     left: 0,
     width: '100%',
     height: '100%',
-    objectFit: 'contain',
+    objectFit: 'cover',
     backgroundColor: '#f5f5f5',
   },
   content: {
@@ -158,7 +155,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise }) => {
   return (
     <>
       <Card sx={styles.card} onClick={handleOpenModal}>
-        <Box sx={{ position: 'relative' }}>
+        <Box sx={styles.mediaContainer}>
           <CardMedia
             component="img"
             sx={styles.media}
