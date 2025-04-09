@@ -45,9 +45,9 @@ const styles = {
   },
   profileCard: {
     width: '100%',
-    maxWidth: '800px',
-    minHeight: '293px',
-    maxHeight: '293px',
+    maxWidth: '1090px',
+    minHeight: '300px',
+    maxHeight: '300px',
     padding: '30px',
     borderRadius: '16px',
     background:
@@ -59,33 +59,76 @@ const styles = {
   header: {
     width: '100%',
     display: 'flex',
-    alignItems: 'flex-start',
-    gap: '20px',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '40px',
     marginBottom: '20px',
   },
   avatar: {
-    width: 300,
-    height: 300,
-    border: '4px solid rgba(160, 158, 158, 0.57)',
+    width: 200,
+    height: 200,
+    border: '4px solid rgba(0, 0, 0, 0.2)',
+    borderRadius: '16px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
     '& .MuiAvatar-root': {
-      fontSize: '120px',
+      fontSize: '80px',
     },
   },
-  userInfo: {
+  leftInfo: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px',
+    gap: '20px',
+    minWidth: '200px',
+    flex: 1,
+  },
+  rightInfo: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '20px',
+    minWidth: '200px',
+    flex: 1,
+  },
+  avatarContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  infoItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+  },
+  infoLabel: {
+    ...fonts.montserrat,
+    fontSize: "1.2rem",
+    color: "rgba(255, 255, 255, 0.7)",
+  },
+  infoValue: {
+    ...fonts.delaGothicOne,
+    fontSize: "1.4rem",
+    color: "white",
   },
   userName: {
+    ...fonts.delaGothicOne,
     fontSize: '2rem',
     fontWeight: 'bold',
     color: 'white',
+    textAlign: 'center',
+    marginTop: '20px',
+  },
+  userSurname: {
+    ...fonts.delaGothicOne,
+    fontSize: '1.8rem',
+    color: 'rgba(255, 255, 255, 0.73)',
+    textAlign: 'center',
+    marginBottom: '20px',
   },
   userEmail: {
     ...fonts.montserrat,
     fontSize: "1.2rem",
     color: "rgba(255, 255, 255, 0.7)",
-    marginBottom: "16px",
+    textAlign: 'center',
   },
   profileInfo: {
     display: 'flex',
@@ -407,42 +450,56 @@ export default function ProfilePage(): React.JSX.Element {
     <Box sx={styles.container}>
       <Paper sx={styles.profileCard}>
         <Box sx={styles.header}>
-          <Avatar
-            src={getAvatarUrl()}
-            alt={user?.name || 'User'}
-            sx={{
-              width: 120,
-              height: 120,
-              border: '4px solid rgba(0, 0, 0, 0.2)',
-              borderRadius: '16px',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-              bgcolor: getUserAvatarColor(),
-              mb: 2,
-            }}
-          >
-
-            <Typography variant="h1" sx={{ fontSize: "48px", ...fonts.delaGothicOne }}>
-              {user?.name?.[0] || "U"}
-            </Typography>
-          </Avatar>
-
-          <Box sx={styles.userInfo}>
-            <Typography sx={styles.userName}>{user?.name || 'Пользователь'}</Typography>
-            <Typography sx={styles.userEmail}>{user?.email || ''}</Typography>
-
-            <Box sx={styles.profileInfo}>
-              <Typography sx={styles.profileLabel}>Пол</Typography>
-              <Typography sx={styles.profileValue}>
+          <Box sx={styles.leftInfo}>
+            <Box sx={styles.infoItem}>
+              <Typography sx={styles.infoLabel}>Пол</Typography>
+              <Typography sx={styles.infoValue}>
                 {profile ? getGenderText(profile.gender) : 'Не указан'}
               </Typography>
-
-              <Typography sx={styles.profileLabel}>Стаж тренировок</Typography>
-              <Typography sx={styles.profileValue}>
+            </Box>
+            <Box sx={styles.infoItem}>
+              <Typography sx={styles.infoLabel}>
+                {user?.trener ? 'Стаж работы' : 'Стаж тренировок'}
+              </Typography>
+              <Typography sx={styles.infoValue}>
                 {profile ? `${profile.trainingExperience} лет` : 'Не указан'}
               </Typography>
             </Box>
           </Box>
+
+          <Box sx={styles.avatarContainer}>
+            <Avatar
+              src={getAvatarUrl()}
+              alt={user?.name || 'User'}
+              sx={{
+                ...styles.avatar,
+                bgcolor: getUserAvatarColor(),
+              }}
+            >
+              <Typography variant="h1" sx={{ fontSize: "80px", ...fonts.delaGothicOne }}>
+                {user?.name?.[0] || "U"}
+              </Typography>
+            </Avatar>
+          </Box>
+
+          <Box sx={styles.rightInfo}>
+            <Box sx={styles.infoItem}>
+              <Typography sx={styles.infoLabel}>Количество тренировок</Typography>
+              <Typography sx={styles.infoValue}>
+                {profile?.trainingCount || 0}
+              </Typography>
+            </Box>
+            <Box sx={styles.infoItem}>
+              <Typography sx={styles.infoLabel}>Email</Typography>
+              <Typography sx={styles.infoValue}>
+                {user?.email || ''}
+              </Typography>
+            </Box>
+          </Box>
         </Box>
+
+        <Typography sx={styles.userName}>{user?.name || 'Пользователь'}</Typography>
+        <Typography sx={styles.userSurname}>{user?.surname || ''}</Typography>
       </Paper>
 
       <Box sx={styles.statsContainer}>
@@ -490,39 +547,37 @@ export default function ProfilePage(): React.JSX.Element {
                 <Typography sx={styles.tabText}>Рекомендации</Typography>
               </Box>
               <Box
+                onClick={handleTabClick(3)}
+                sx={{ ...styles.tab, ...(activeTab === 3 ? styles.activeTab : {}) }}
+              >
+                <Typography sx={styles.tabText}>
+                  {user?.trener ? "Чат с клиентом" : "Чат с тренером"}
+                </Typography>
 
-  onClick={handleTabClick(3)}
-  sx={{ ...styles.tab, ...(activeTab === 3 ? styles.activeTab : {}) }}
->
-  <Typography sx={styles.tabText}>
-    {user?.trener ? "Чат с клиентом" : "Чат с тренером"}
-  </Typography>
-
-  {unreadMessagesCount > 0 && (
-    <Box
-      component="span"
-      sx={{
-        position: "absolute",
-        top: 4,
-        right: 8,
-        backgroundColor: "red",
-        color: "white",
-        borderRadius: "50%",
-        padding: "2px 6px",
-        fontSize: "12px",
-        fontWeight: "bold",
-        minWidth: "20px",
-        height: "20px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      {unreadMessagesCount}
-    </Box>
-  )}
-</Box>
-
+                {unreadMessagesCount > 0 && (
+                  <Box
+                    component="span"
+                    sx={{
+                      position: "absolute",
+                      top: 4,
+                      right: 8,
+                      backgroundColor: "red",
+                      color: "white",
+                      borderRadius: "50%",
+                      padding: "2px 6px",
+                      fontSize: "12px",
+                      fontWeight: "bold",
+                      minWidth: "20px",
+                      height: "20px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {unreadMessagesCount}
+                  </Box>
+                )}
+              </Box>
             </Box>
           </Box>
         </Box>
@@ -542,3 +597,4 @@ export default function ProfilePage(): React.JSX.Element {
     </Box>
   );
 }
+
