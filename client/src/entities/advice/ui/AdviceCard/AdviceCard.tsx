@@ -14,7 +14,7 @@ const styles = {
     borderRadius: '16px',
     padding: '24px',
     marginBottom: '20px',
-    minHeight: '200px',
+    minHeight: '230px',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -22,23 +22,35 @@ const styles = {
   adviceText: {
     fontSize: '1.2rem',
     lineHeight: 1.6,
-    color: 'rgba(0, 0, 0, 0.8)',
+    color: 'rgba(0, 0, 0, 0.9) !important',
     marginBottom: '20px',
   },
   button: {
-    background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+    background: 'black',
     color: 'white',
     padding: '10px 20px',
+    transition: 'all 0.2s ease',
+    transform: 'translateY(0)',
     '&:hover': {
-      background: 'linear-gradient(45deg, #1976D2 30%, #1CB5E0 90%)',
+      background: 'rgba(0, 0, 0, 0.8)',
+      transform: 'translateY(-2px)',
+    },
+    '&:active': {
+      transform: 'translateY(0)',
     },
   },
   favoriteButton: {
-    background: 'linear-gradient(45deg, #FF4081 30%, #FF80AB 90%)',
+    background: 'rgba(73, 124, 59, 0.9)',
     color: 'white',
     padding: '10px 20px',
+    transition: 'all 0.2s ease',
+    transform: 'translateY(0)',
     '&:hover': {
-      background: 'linear-gradient(45deg, #F50057 30%, #FF4081 90%)',
+      background: 'rgb(86, 146, 71)',
+      transform: 'translateY(-2px)',
+    },
+    '&:active': {
+      transform: 'translateY(0)',
     },
   },
   buttonsContainer: {
@@ -55,18 +67,34 @@ const styles = {
     padding: '16px',
     marginBottom: '10px',
     position: 'relative',
+    transition: 'all 0.3s ease',
+    transform: 'scale(1)',
+    '&:hover': {
+      transform: 'scale(1.01)',
+    },
   },
   deleteButton: {
     position: 'absolute',
     top: '8px',
     right: '8px',
-    color: '#FF4081',
+    color: 'rgba(0, 0, 0, 0.5)',
+    transition: 'all 0.2s ease',
+    transform: 'scale(1)',
     '&:hover': {
-      color: '#F50057',
+      color: 'red',
+      backgroundColor: 'rgba(255, 0, 0, 0.1)',
+      transform: 'scale(1.1)',
     },
   },
   savedAdviceContent: {
-    paddingRight: '40px', // Место для кнопки удаления
+    paddingRight: '40px',
+    color: 'rgba(0, 0, 0, 0.9)',
+  },
+  sectionTitle: {
+    fontSize: '2.0rem !important',
+    fontWeight: 'bold',
+    color: 'rgba(255, 255, 255, 0.9) !important',
+    marginBottom: '20px',
   },
 };
 
@@ -115,9 +143,32 @@ export const AdviceCard: React.FC = () => {
   const handleGetAdvice = async (): Promise<void> => {
     try {
       setLoading(true);
-      const response = await AdviceApi.getRandomAdvice();
-      if (response.data.success) {
-        setAdvice(response.data.data);
+      let newAdvice: Advice | null = null;
+      let attempts = 0;
+      const maxAttempts = 5; // Максимальное количество попыток
+
+      // Пытаемся получить новый совет, которого нет в избранном
+      while (attempts < maxAttempts) {
+        const response = await AdviceApi.getRandomAdvice();
+        if (response.data.success) {
+          const potentialAdvice = response.data.data;
+          // Проверяем, нет ли этого совета в избранном
+          const isAlreadySaved = savedAdvices.some(saved => saved.id === potentialAdvice.id);
+          
+          if (!isAlreadySaved) {
+            newAdvice = potentialAdvice;
+            break;
+          }
+        }
+        attempts++;
+      }
+
+      if (newAdvice) {
+        setAdvice(newAdvice);
+      } else {
+        // Если не удалось найти новый совет, показываем сообщение
+        setAdvice(null);
+        alert('Все доступные советы уже добавлены в избранное');
       }
     } catch (error) {
       console.error('Error fetching advice:', error);
@@ -133,11 +184,12 @@ export const AdviceCard: React.FC = () => {
       if (isSaved) {
         await UserAdviceApi.removeAdvice(advice.id);
         setIsSaved(false);
+        setSavedAdvices(prev => prev.filter(item => item.id !== advice.id));
       } else {
         await UserAdviceApi.saveAdvice(advice.id);
         setIsSaved(true);
+        setSavedAdvices(prev => [...prev, advice]);
       }
-      await loadSavedAdvices();
     } catch (error) {
       console.error('Error toggling advice save:', error);
     }
@@ -147,9 +199,8 @@ export const AdviceCard: React.FC = () => {
     try {
       setDeletingAdviceId(adviceId);
       await UserAdviceApi.removeAdvice(adviceId);
-      await loadSavedAdvices();
+      setSavedAdvices(prev => prev.filter(item => item.id !== adviceId));
 
-      // Если удаляем текущий совет, сбрасываем состояние isSaved
       if (advice && advice.id === adviceId) {
         setIsSaved(false);
       }
@@ -163,7 +214,7 @@ export const AdviceCard: React.FC = () => {
   return (
     <Box>
       <Card sx={styles.card}>
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5" sx={{ color: 'rgba(0, 0, 0, 0.9) !important', fontWeight: 'bold', marginBottom: '20px', fontSize: '2.0rem !important' }}>
           Совет дня
         </Typography>
         {advice ? (
@@ -195,11 +246,11 @@ export const AdviceCard: React.FC = () => {
       </Card>
 
       <Box sx={styles.savedAdvicesContainer}>
-        <Typography variant="h6" gutterBottom>
-          Сохраненные советы
+        <Typography variant="h6" sx={styles.sectionTitle}>
+          Избранное
         </Typography>
         {loadingSaved ? (
-          <Typography>Загрузка...</Typography>
+          <Typography sx={{ color: 'rgba(0, 0, 0, 0.9) !important', fontSize: '1rem' }}>Загрузка...</Typography>
         ) : savedAdvices.length > 0 ? (
           savedAdvices.map((savedAdvice) => (
             <Card key={savedAdvice.id} sx={styles.savedAdviceCard}>
@@ -211,12 +262,12 @@ export const AdviceCard: React.FC = () => {
                 <DeleteIcon />
               </IconButton>
               <Box sx={styles.savedAdviceContent}>
-                <Typography>{savedAdvice.text}</Typography>
+                <Typography sx={{ color: 'rgba(0, 0, 0, 0.9) !important', fontSize: '1rem' }}>{savedAdvice.text}</Typography>
               </Box>
             </Card>
           ))
         ) : (
-          <Typography>У вас пока нет сохраненных советов</Typography>
+          <Typography sx={{ color: 'rgb(255, 255, 255) !important', fontSize: '1rem' }}>У вас пока нет сохраненных советов</Typography>
         )}
       </Box>
     </Box>
