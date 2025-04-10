@@ -7,6 +7,8 @@ import { fonts } from '@/shared/styles/fonts';
 import antropometric from "../../assets/screenshot/AnthropometryPage.png";
 import calendar from "../../assets/screenshot/calendar.png";
 import chat from "../../assets/screenshot/chat.png";
+import advice from "../../assets/screenshot/advice.png"
+// import category from "../../assets/screenshot/category.png"
 
 const styles = {
   container: {
@@ -33,7 +35,7 @@ const styles = {
     color: 'white',
     textAlign: 'center',
     marginBottom: '2rem',
-    marginTop: '35rem',
+    marginTop: '28rem',
   },
   button: {
     padding: "16px 32px",
@@ -107,6 +109,37 @@ const styles = {
     borderRadius: "16px",
     boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
   },
+  capabilitiesTitle: {
+    ...fonts.delaGothicOne,
+    fontSize: "2.5rem",
+    fontWeight: "400",
+    color: "white",
+    textAlign: "center",
+    marginTop: "8rem",
+    marginBottom: "2rem",
+  },
+  divider: {
+    width: "100%",
+    maxWidth: "1200px",
+    height: "2px",
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    marginBottom: "80px",
+  },
+  categoryImage: {
+    maxWidth: "100%",
+    height: "auto",
+    borderRadius: "16px",
+    boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
+    background:'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+    transition: 'all 0.3s ease',
+    backdropFilter: 'blur(9px)',
+    padding: "20px",
+  },
+  imageStyle: {
+    borderRadius: "16px",
+    width: "100%",
+    height: "auto",
+  },
 };
 
 export function MainPage(): React.JSX.Element {
@@ -132,6 +165,10 @@ export function MainPage(): React.JSX.Element {
             Создать профиль
           </Button>
         )}
+        <Typography sx={styles.capabilitiesTitle}>
+          Наши возможности
+        </Typography>
+        <Box sx={styles.divider} />
       </Box>
 
       <Box sx={styles.content}>
@@ -192,6 +229,27 @@ export function MainPage(): React.JSX.Element {
           />
         </Box>
       </Box>
+
+      <Box sx={{...styles.content, flexDirection: 'row-reverse'}}>
+        <Box sx={styles.textContent}>
+          <Typography sx={styles.subtitle}>
+            Чат с тренером
+          </Typography>
+          <Typography sx={styles.description}>
+            Работать с персональным тренером онлайн.
+            Получай обратную связь, корректировки и 
+            мотивацию.
+          </Typography>
+        </Box>
+        <Box sx={styles.imageContainer}>
+          <img 
+            src={advice} 
+            alt="Чат с тренером" 
+            style={styles.chatImage}
+          />
+        </Box>
+      </Box>
+
     </Box>
   );
 }

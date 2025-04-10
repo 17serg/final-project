@@ -81,13 +81,13 @@ export default function CatalogExercisePage(): React.JSX.Element {
         borderWidth: '1px',
       },
       '& .MuiSelect-select': {
-        color: 'rgba(128, 128, 128, 0.9)',
+        color: 'white',
       },
       '& .MuiInputLabel-root': {
-        color: 'rgba(207, 207, 207, 0.9)',
+        color: 'white',
       },
       '& .MuiSvgIcon-root': {
-        color: 'rgba(207, 207, 207, 0.9)',
+        color: 'white',
       },
       '& .MuiOutlinedInput-root': {
         '&.Mui-focused': {
@@ -98,7 +98,7 @@ export default function CatalogExercisePage(): React.JSX.Element {
         },
       },
       '& .MuiMenuItem-root': {
-        color: 'rgba(128, 128, 128, 0.9)',
+        color: 'white',
         '&.Mui-selected': {
           backgroundColor: 'rgba(128, 128, 128, 0.2)',
         },

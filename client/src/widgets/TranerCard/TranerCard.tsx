@@ -31,10 +31,10 @@ const styles = {
     overflow: "hidden",
   },
   avatar: {
-    width: 100,
-    height: 100,
+    width: 120,
+    height: 120,
     border: "4px solid rgba(0, 0, 0, 0.2)",
-    borderRadius: "16px",
+    borderRadius: "150px",
     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
   },
   info: {
@@ -128,6 +128,22 @@ export default function TranerCard({ char }: TranerCardProps): React.JSX.Element
     }
   };
 
+  const getYearsText = (years: number): string => {
+    const lastDigit = years % 10;
+    const lastTwoDigits = years % 100;
+
+    if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+      return 'лет';
+    }
+    if (lastDigit === 1) {
+      return 'год';
+    }
+    if (lastDigit >= 2 && lastDigit <= 4) {
+      return 'года';
+    }
+    return 'лет';
+  };
+
   const getAvatarUrl = (): string => {
     if (char.UserProfile?.avatar) {
       const baseUrl = import.meta.env.VITE_API.replace('/api', '');
@@ -206,7 +222,7 @@ export default function TranerCard({ char }: TranerCardProps): React.JSX.Element
             Пол: {char.UserProfile ? getGenderText(char.UserProfile.gender) : 'Не указан'}
           </Typography>
           <Typography sx={styles.detail}>
-            {isTrainer ? 'Стаж тренировок' : 'Стаж работы'}: {char.UserProfile ? `${char.UserProfile.trainingExperience} лет` : 'Не указан'}
+            {isTrainer ? 'Стаж тренировок' : 'Стаж работы'}: {char.UserProfile ? `${char.UserProfile.trainingExperience} ${getYearsText(char.UserProfile.trainingExperience)}` : 'Не указан'}
           </Typography>
         </Box>
 
