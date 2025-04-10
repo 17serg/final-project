@@ -101,13 +101,13 @@ const styles = {
   },
   infoLabel: {
     ...fonts.montserrat,
-    fontSize: "1.2rem",
-    color: "rgba(255, 255, 255, 0.7)",
+    fontSize: '1.2rem',
+    color: 'rgba(255, 255, 255, 0.7)',
   },
   infoValue: {
     ...fonts.delaGothicOne,
-    fontSize: "1.4rem",
-    color: "white",
+    fontSize: '1.4rem',
+    color: 'white',
   },
   userName: {
     ...fonts.delaGothicOne,
@@ -127,8 +127,8 @@ const styles = {
   userEmail: {
     ...fonts.montserrat,
 
-    fontSize: "1.2rem",
-    color: "rgba(255, 255, 255, 0.7)",
+    fontSize: '1.2rem',
+    color: 'rgba(255, 255, 255, 0.7)',
     textAlign: 'center',
   },
   profileInfo: {
@@ -468,21 +468,39 @@ export default function ProfilePage(): React.JSX.Element {
     <Box sx={styles.container}>
       <Paper sx={styles.profileCard}>
         <Box sx={styles.header}>
-
           <Box sx={styles.leftInfo}>
             <Box sx={styles.infoItem}>
-              <Typography sx={styles.infoLabel}>Пол</Typography>
-              <Typography sx={styles.infoValue}>
-                {profile ? getGenderText(profile.gender) : 'Не указан'}
-              </Typography>
-            </Box>
-            <Box sx={styles.infoItem}>
-              <Typography sx={styles.infoLabel}>
-                {user?.trener ? 'Стаж работы' : 'Стаж тренировок'}
-              </Typography>
-              <Typography sx={styles.infoValue}>
-                {profile ? `${profile.trainingExperience} лет` : 'Не указан'}
-              </Typography>
+              <Paper
+                sx={{
+                  p: 1.5,
+                  borderRadius: '10px',
+                  background:
+                    'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+                  backdropFilter: 'blur(9px)',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.7)',
+                  textAlign: 'center',
+                  minWidth: '120px',
+                }}
+              >
+                <Typography
+                  sx={{
+                    ...styles.infoLabel,
+                    fontSize: '1rem',
+                  }}
+                >
+                  {user?.trener ? 'Стаж работы' : 'Стаж тренировок'}
+                </Typography>
+                <Typography
+                  sx={{
+                    ...styles.infoValue,
+                    fontSize: '1.3rem',
+                    fontWeight: 'bold',
+                    color: 'white',
+                  }}
+                >
+                  {profile ? `${profile.trainingExperience} лет` : 'Не указан'}
+                </Typography>
+              </Paper>
             </Box>
           </Box>
 
@@ -495,38 +513,101 @@ export default function ProfilePage(): React.JSX.Element {
                 bgcolor: getUserAvatarColor(),
               }}
             >
-              <Typography variant="h1" sx={{ fontSize: "80px", ...fonts.delaGothicOne }}>
-                {user?.name?.[0] || "U"}
+              <Typography variant="h1" sx={{ fontSize: '80px', ...fonts.delaGothicOne }}>
+                {user?.name?.[0] || 'U'}
               </Typography>
             </Avatar>
           </Box>
 
           <Box sx={styles.rightInfo}>
             <Box sx={styles.infoItem}>
-              <Typography sx={styles.infoLabel}>Количество тренировок</Typography>
-              <Typography sx={styles.infoValue}>
-                {profile?.trainingCount || 0}
-              </Typography>
-            </Box>
-            <Box sx={styles.infoItem}>
-              <Typography sx={styles.infoLabel}>Email</Typography>
-              <Typography sx={styles.infoValue}>
-                {user?.email || ''}
-              </Typography>
+              <Paper
+                sx={{
+                  p: 1.5,
+                  borderRadius: '10px',
+                  background:
+                    'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+                  backdropFilter: 'blur(9px)',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.7)',
+                  textAlign: 'center',
+                  minWidth: '120px',
+                }}
+              >
+                <Typography
+                  sx={{
+                    ...styles.infoLabel,
+                    fontSize: '1rem',
+                  }}
+                >
+                  Количество тренировок
+                </Typography>
+                <Typography
+                  sx={{
+                    ...styles.infoValue,
+                    fontSize: '1.8rem',
+                    fontWeight: 'bold',
+                    color: 'white',
+                  }}
+                >
+                  {trainingCount}
+                </Typography>
+              </Paper>
             </Box>
           </Box>
         </Box>
 
-        <Typography sx={styles.userName}>{user?.name || 'Пользователь'}</Typography>
-        <Typography sx={styles.userSurname}>{user?.surname || ''}</Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            mt: 1,
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'baseline',
+              gap: 1,
+            }}
+          >
+            <Typography
+              sx={{
+                ...styles.userName,
+                fontSize: '2.2rem',
+                fontWeight: 'bold',
+                color: 'white',
+                lineHeight: 1,
+              }}
+            >
+              {user?.name || 'Пользователь'}
+            </Typography>
+            <Typography
+              sx={{
+                ...styles.userSurname,
+                fontSize: '2.2rem',
+                fontWeight: 'bold',
+                color: 'white',
+                lineHeight: 1,
+              }}
+            >
+              {user?.surname || ''}
+            </Typography>
+          </Box>
+          <Typography
+            sx={{
+              ...styles.userEmail,
+              fontSize: '1.1rem',
+              color: 'rgba(255, 255, 255, 0.7)',
+              mt: 0.5,
+            }}
+          >
+            {user?.email || ''}
+          </Typography>
+        </Box>
       </Paper>
 
-      <Box sx={styles.statsContainer}>
-        <Paper sx={styles.statCard}>
-          <Typography sx={styles.statValue}>{trainingCount}</Typography>
-          <Typography sx={styles.statLabel}>Количество тренировок</Typography>
-        </Paper>
-      </Box>
       <Box
         ref={chatRef} // Присваиваем ref для прокрутки к чату
         sx={{
@@ -566,29 +647,27 @@ export default function ProfilePage(): React.JSX.Element {
                 sx={{ ...styles.tab, ...(activeTab === 3 ? styles.activeTab : {}) }}
               >
                 <Typography sx={styles.tabText}>
-
-                  {user?.trener ? "Чат с клиентом" : "Чат с тренером"}
+                  {user?.trener ? 'Чат с клиентом' : 'Чат с тренером'}
                 </Typography>
 
                 {unreadMessagesCount > 0 && (
                   <Box
                     component="span"
                     sx={{
-
-                      position: "absolute",
+                      position: 'absolute',
                       top: 4,
                       right: 8,
-                      backgroundColor: "red",
-                      color: "white",
-                      borderRadius: "50%",
-                      padding: "2px 6px",
-                      fontSize: "12px",
-                      fontWeight: "bold",
-                      minWidth: "20px",
-                      height: "20px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
+                      backgroundColor: 'red',
+                      color: 'white',
+                      borderRadius: '50%',
+                      padding: '2px 6px',
+                      fontSize: '12px',
+                      fontWeight: 'bold',
+                      minWidth: '20px',
+                      height: '20px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
                   >
                     {unreadMessagesCount}
@@ -614,4 +693,3 @@ export default function ProfilePage(): React.JSX.Element {
     </Box>
   );
 }
-
