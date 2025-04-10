@@ -124,10 +124,10 @@ export default function SignUpForm(): React.JSX.Element {
     };
     
     try {
-      const response = await UserApi.signup(data);
+    const response = await UserApi.signup(data);
       if (response.status === 200) {
         setUser(response.data.user);
-        setAccessToken(response.data.accessToken);
+    setAccessToken(response.data.accessToken);
         navigate(CLIENT_ROUTES.PROFILE);
       }
     } catch (error: any) {

@@ -655,7 +655,7 @@ export default function ProfilePage(): React.JSX.Element {
                 onClick={handleTabClick(2)}
                 sx={{ ...styles.tab, ...(activeTab === 2 ? styles.activeTab : {}) }}
               >
-                <Typography sx={styles.tabText}>Рекомендации</Typography>
+                <Typography sx={styles.tabText}>Советы</Typography>
               </Box>
               <Box
                 onClick={handleTabClick(3)}

@@ -233,12 +233,10 @@ export function MainPage(): React.JSX.Element {
       <Box sx={{...styles.content, flexDirection: 'row-reverse'}}>
         <Box sx={styles.textContent}>
           <Typography sx={styles.subtitle}>
-            Чат с тренером
+          Фитнес-советы 
           </Typography>
           <Typography sx={styles.description}>
-            Работать с персональным тренером онлайн.
-            Получай обратную связь, корректировки и 
-            мотивацию.
+          Получай отборные фитнес-советы и добавляй в избранное то, что хочешь внедрить в свою тренировку
           </Typography>
         </Box>
         <Box sx={styles.imageContainer}>
