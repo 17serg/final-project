@@ -173,7 +173,7 @@ export default function TranerCard({ char }: TranerCardProps): React.JSX.Element
             onClick={toggleExpand} 
             sx={styles.readMoreButton}
           >
-            {isExpanded ? 'Свернуть' : 'Прочитать'}
+            {isExpanded ? 'Свернуть' : 'Прочитать' }
           </Button>
         )}
       </>
@@ -212,15 +212,17 @@ export default function TranerCard({ char }: TranerCardProps): React.JSX.Element
 
         {renderAboutText()}
 
-        <Box sx={styles.buttonsContainer}>
-          <Button
-            variant="contained"
-            onClick={handleChatClick}
-            sx={styles.chatButton}
-          >
-            {isTrainer ? 'Написать посетителю' : 'Написать тренеру'}
-          </Button>
-        </Box>
+        {!isTrainer && ( // Условие для отображения кнопки только если пользователь не тренер
+          <Box sx={styles.buttonsContainer}>
+            <Button
+              variant="contained"
+              onClick={handleChatClick}
+              sx={styles.chatButton}
+            >
+              Написать тренеру
+            </Button>
+          </Box>
+        )}
       </Box>
     </Paper>
   );
