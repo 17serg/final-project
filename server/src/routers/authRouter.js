@@ -1,5 +1,5 @@
 const express = require('express');
-const { User} = require('../../db/models');
+const { User } = require('../../db/models');
 const bcrypt = require('bcrypt');
 const generateTokens = require('../utils/generateTokens');
 const cookieConfig = require('../configs/cookie.config');
@@ -8,15 +8,20 @@ const authRouter = express.Router();
 
 authRouter.route('/signup').post(async (req, res) => {
   try {
-    const { name, email, password, surname ,birthDate, trener
-    } = req.body;
-    console.log(req.body, '+++++++++++++++++++++++')
+    const { name, email, password, surname, birthDate, trener } = req.body;
+    console.log(req.body, '+++++++++++++++++++++++');
     if (!name || !email || !password || !surname || !birthDate) {
       return res.status(400).json({ message: 'Все поля обязательны' });
     }
     const [user, created] = await User.findOrCreate({
       where: { email },
-      defaults: { name, surname , birthDate, trener, password: await bcrypt.hash(password, 5)},
+      defaults: {
+        name,
+        surname,
+        birthDate,
+        trener,
+        password: await bcrypt.hash(password, 5),
+      },
     });
     console.log(name, '==========================');
 

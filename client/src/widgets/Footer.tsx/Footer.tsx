@@ -25,6 +25,7 @@ const styles: CSSProperties = {
 };
 
 const copyrightStyle: CSSProperties = {
+  ...fonts.delaGothicOne,
   fontSize: "1.2rem",
   fontWeight: "bold"
 };

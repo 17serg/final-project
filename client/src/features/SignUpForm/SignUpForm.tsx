@@ -124,14 +124,20 @@ export default function SignUpForm(): React.JSX.Element {
     };
     
     try {
-    const response = await UserApi.signup(data);
+      const response = await UserApi.signup(data);
       if (response.status === 200) {
         setUser(response.data.user);
-    setAccessToken(response.data.accessToken);
+        setAccessToken(response.data.accessToken);
         navigate(CLIENT_ROUTES.PROFILE);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Ошибка при регистрации:', error);
+      if (error.response?.data?.message === 'Email уже используется') {
+        setFormErrors(prev => ({
+          ...prev,
+          email: 'Этот email уже занят'
+        }));
+      }
     }
   };
 
