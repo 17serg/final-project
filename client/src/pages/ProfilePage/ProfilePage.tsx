@@ -15,6 +15,7 @@ import { getUnreadCount, setChatPartner, addMessage } from '../../entities/chat/
 import { useLocation } from 'react-router-dom';
 import { fonts } from '@/shared/styles/fonts';
 import { useSocketChat } from './../../entities/chat/api/socketApi';
+import {  Message } from './../../entities/chat/model/index'
 
 
 const styles = {
@@ -301,8 +302,9 @@ export default function ProfilePage(): React.JSX.Element {
   const { onNewMessage, offNewMessage } = useSocketChat();
 
   useEffect(() => {
-    const handleNewMessage = (message) => {
+    const handleNewMessage = (message: Message) => {
       dispatch(addMessage(message)); 
+      console.log(userId)
       dispatch(getUnreadCount(userId)); 
     };
 

@@ -11,13 +11,13 @@ import {
   leaveChat,
   addReaction,
   getUnreadCount,
-  Message
 } from '../../entities/chat/store/chatSlice';
 import { RootState, AppDispatch } from '../../app/store';
 import { useUser } from '@/entities/user/hooks/useUser';
 import { useSocketChat } from './../../entities/chat/api/socketApi';
 import { useLocation } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
+import {  Message } from './../../entities/chat/model/index'
 
 
 const REACTIONS = [
@@ -32,6 +32,7 @@ export function ChatPage(): React.JSX.Element {
   const { emitCheckMessages } = useSocketChat();
   const userId = user?.id;
   const isTrainer = user?.trener;
+  const [openReactionMessageId, setOpenReactionMessageId] = useState<number | null>(null); 
 
   const { messages, trainers, usersWithChats } = useSelector((state: RootState) => state.chat);
 
@@ -172,51 +173,17 @@ export function ChatPage(): React.JSX.Element {
       </div>
     );
   }, [handleAddReaction]);
+
+  const handleMessageClick = (msgId: number) => {
+    // Если кликнули на то же сообщение, закрываем его
+    if (openReactionMessageId === msgId) {
+      setOpenReactionMessageId(null);
+    } else {
+      // Иначе открываем новое сообщение и закрываем предыдущее
+      setOpenReactionMessageId(msgId);
+    }
+  };
   
-
-  const ReactionPicker = useCallback(({ messageId }: { messageId: number }) => {
-    const [isOpen, setIsOpen] = useState(false);
-
-    return (
-      <div style={{ position: 'relative' }}>
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          style={{ padding: '2px 5px', cursor: 'pointer' }}
-        >
-          😊
-        </button>
-        {isOpen && (
-          <div
-            style={{
-              position: 'absolute',
-              bottom: '100%',
-              left: '0',
-              backgroundColor: 'white',
-              border: '1px solid gray',
-              borderRadius: '5px',
-              padding: '5px',
-              display: 'flex',
-              gap: '5px',
-              zIndex: 1000,
-            }}
-          >
-            {REACTIONS.map((reaction) => (
-              <span
-                key={reaction}
-                onClick={() => {
-                  handleAddReaction(messageId, reaction);
-                  setIsOpen(false);
-                }}
-                style={{ cursor: 'pointer' }}
-              >
-                {reaction}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }, [handleAddReaction]);
 
   const chatList = useMemo(() => isTrainer ? usersWithChats : trainers, [isTrainer, usersWithChats, trainers]);
 
@@ -266,220 +233,79 @@ export function ChatPage(): React.JSX.Element {
   return (
     <div style={{ display: 'flex', backgroundColor: '#f3f4f8', height: '50vh', borderRadius: '18px 18px 18px 18px' }}>
       {/* Список диалогов */}
-      <div
-  style={{
-    width: '270px',
-    borderRight: '1px solid #e0e0e0',
-    borderRadius: '15px 0 0 15px',
-    paddingRight: '10px',
-    backgroundColor: '#2c2c2c', // Темно-серый фон
-    boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)',
-  }}
->
-  <h3 style={{ padding: '15px 0', textAlign: 'center', color: '#ffffff' }}>Диалоги</h3>
-  {chatList.map((partner) => (
-    <button
-      key={partner.id}
-      onClick={() => setChatPartnerId(partner.id)}
-      style={{
-        display: 'flex',
-        width: '100%',
-        padding: '15px',
-        margin: '5px 0',
-        border: 'none',
-        backgroundColor: chatPartnerId === partner.id ? '#3c3c3c' : '#2c2c2c', // Выделенный чат светлее
-        cursor: 'pointer',
-        borderRadius: '10px',
-        transition: 'background-color 0.3s ease',
-        alignItems: 'center',
-        position: 'relative',
-        boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.05)',
-      }}
-    >
-      <span style={{ flex: 1, fontWeight: '500', color: '#ffffff' , fontSize: '16px' ,  letterSpacing: '3px' }}>
-        {partner.name} {partner.surname}
-      </span>
-      {unreadMessagesCount(partner.id) > 0 && (
-        <span
-          style={{
-            position: 'absolute',
-            right: '10px',
-            top: '10px',
-            backgroundColor: '#ff4747',
-            color: 'white',
-            borderRadius: '50%',
-            padding: '5px 8px',
-            fontSize: '12px',
-            fontWeight: 'bold',
-            minWidth: '20px',
-            textAlign: 'center',
-          }}
-        >
-          {unreadMessagesCount(partner.id)}
-        </span>
-      )}
-    </button>
-  ))}
-</div>
-  
+      <div style={{ width: '270px', borderRight: '1px solid #e0e0e0', borderRadius: '15px 0 0 15px', paddingRight: '10px', backgroundColor: '#2c2c2c', boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)' }}>
+        <h3 style={{ padding: '15px 0', textAlign: 'center', color: '#ffffff' }}>Диалоги</h3>
+        {chatList.map((partner) => (
+          <button key={partner.id} onClick={() => setChatPartnerId(partner.id)} style={{ display: 'flex', width: '100%', padding: '15px', margin: '5px 0', border: 'none', backgroundColor: chatPartnerId === partner.id ? '#3c3c3c' : '#2c2c2c', cursor: 'pointer', borderRadius: '10px', transition: 'background-color 0.3s ease', alignItems: 'center', position: 'relative', boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.05)' }}>
+            <span style={{ flex: 1, fontWeight: '500', color: '#ffffff', fontSize: '16px', letterSpacing: '3px' }}>
+              {partner.name} {partner.surname}
+            </span>
+            {unreadMessagesCount(partner.id) > 0 && (
+              <span style={{ position: 'absolute', right: '10px', top: '10px', backgroundColor: '#ff4747', color: 'white', borderRadius: '50%', padding: '5px 8px', fontSize: '12px', fontWeight: 'bold', minWidth: '20px', textAlign: 'center' }}>
+                {unreadMessagesCount(partner.id)}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
       {/* Чат с собеседником */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '20px', backgroundColor: '#111', borderRadius: '0 15px 15px 0' }}>
-  <h2 style={{ marginBottom: '20px', fontSize: '24px', color: '#999' }}>Чат</h2>
-  {chatPartnerId ? (
-    <>
-      {loadingMessages ? (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-          <CircularProgress />
-        </div>
-      ) : (
-        <div
-          ref={messagesContainerRef}
-          style={{
-            height: '35vh',
-            overflowY: 'auto',
-            borderRadius: '10px',
-            backgroundColor: '#2c2c2c',
-            padding: '15px',
-            boxShadow: '0px 3px 15px rgba(0, 0, 0, 0.1)',
-            display: 'flex',
-            flexDirection: 'column-reverse',
-          }}
-        >
-          {filteredMessages.map((msg, index) => (
-            <div
-              key={`${msg.id}-${userId}-${index}`}
-              style={{
-                padding: '8px 15px',
-                borderRadius: '20px',
-                backgroundColor: msg.senderId === userId ? '#3c3c3c' : '#1c1c1c',
-                margin: '5px 0',
-                maxWidth: '80%',
-                alignSelf: msg.senderId === userId ? 'flex-end' : 'flex-start',
-                position: 'relative',
-                cursor: 'pointer',
-              }}
-              onClick={() => {
-                const reactions = document.getElementById(`reactions-${msg.id}`);
-                if (reactions) {
-                  reactions.style.display = reactions.style.display === 'none' ? 'flex' : 'none';
-                }
-              }}
-            >
-              <p
-                style={{
-                  margin: '0',
-                  fontSize: '14px',
-                  color: '#ffffff',
-                  lineHeight: '1.4',
-                }}
-              >
-                <strong style={{ color: msg.senderId === userId ? '#4CAF50' : '#2196F3' }}>
-
-                </strong> {msg.text}
-              </p>
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'flex-end', 
-                alignItems: 'center',
-                marginTop: '5px'
-              }}>
-                <span style={{ 
-                  fontSize: '12px', 
-                  color: '#888',
-                  marginRight: '5px'
-                }}>
-                  {formatTime(msg.createdAt)}
-                </span>
-                {msg.senderId === userId && (
-                  <DoubleCheckIcon read={msg.isRead} />
-                )}
+        <h2 style={{ marginBottom: '20px', fontSize: '24px', color: '#999' }}>Чат</h2>
+        {chatPartnerId ? (
+          <>
+            {loadingMessages ? (
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                <CircularProgress />
               </div>
-              <div
-                id={`reactions-${msg.id}`}
-                style={{
-                  display: 'none',
-                  position: 'absolute',
-                  bottom: '100%',
-                  left: msg.senderId === userId ? 'auto' : '0',
-                  right: msg.senderId === userId ? '0' : 'auto',
-                  backgroundColor: '#2c2c2c',
-                  border: '1px solid #444',
-                  borderRadius: '5px',
-                  padding: '5px',
-                  gap: '5px',
-                  zIndex: 1000,
-                  flexWrap: 'wrap',
-                  width: '200px',
-                }}
-              >
-                {REACTIONS.map((reaction) => (
-                  <span
-                    key={reaction}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddReaction(msg.id!, reaction);
-                      const reactions = document.getElementById(`reactions-${msg.id}`);
-                      if (reactions) {
-                        reactions.style.display = 'none';
-                      }
-                    }}
-                    style={{ 
-                      cursor: 'pointer',
-                      fontSize: '20px',
-                      padding: '5px',
-                      borderRadius: '5px',
-                      // '&:hover': {
-                      //   backgroundColor: '#3c3c3c'
-                      // }
-                    }}
-                  >
-                    {reaction}
-                  </span>
+            ) : (
+              <div ref={messagesContainerRef} style={{ height: '35vh', overflowY: 'auto', borderRadius: '10px', backgroundColor: '#2c2c2c', padding: '15px', boxShadow: '0px 3px 15px rgba(0, 0, 0, 0.1)', display: 'flex', flexDirection: 'column-reverse' }}>
+                {filteredMessages.map((msg, index) => (
+                  <div key={`${msg.id}-${userId}-${index}`} style={{ padding: '10px 15px', borderRadius: '20px', backgroundColor: msg.senderId === userId ? '#3c3c3c' : '#1c1c1c', margin: '8px 0', maxWidth: '80%', alignSelf: msg.senderId === userId ? 'flex-end' : 'flex-start', position: 'relative', cursor: 'pointer' }} onClick={() => handleMessageClick(msg.id!)}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <p style={{ margin: '0', fontSize: '16px', color: '#ffffff', lineHeight: '1.5', flex: 1 }}>
+                        {msg.text}
+                      </p>
+                      <span style={{ fontSize: '12px', color: '#888', marginLeft: '10px', whiteSpace: 'nowrap' }}>
+                        {formatTime(msg.createdAt)}
+                      </span>
+                      {msg.senderId === userId && (
+                        <div style={{ marginLeft: '5px' }}>
+                          <DoubleCheckIcon read={msg.isRead} />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Popup с реакциями */}
+                    <div id={`reaction-popup-${msg.id}`} style={{ width: '250px', display: openReactionMessageId === msg.id ? 'flex' : 'none', position: 'absolute', top: '-100px', right: msg.senderId === userId ? '0' : 'auto', left: msg.senderId !== userId ? '0' : 'auto', backgroundColor: '#2c2c2c', border: '1px solid #444', borderRadius: '10px', padding: '5px 8px', zIndex: 1000, flexWrap: 'wrap', gap: '5px', boxShadow: '0 2px 6px rgba(0,0,0,0.3)' }}>
+                      {REACTIONS.map((reaction) => (
+                        <span key={reaction} onClick={(e) => { e.stopPropagation(); handleAddReaction(msg.id!, reaction); const popup = document.getElementById(`reaction-popup-${msg.id}`); if (popup) popup.style.display = 'none'; }} style={{ cursor: 'pointer', fontSize: '18px', padding: '2px' }}>
+                          {reaction}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Уже добавленные реакции (под сообщением) */}
+                    <div style={{ marginTop: '5px' }}>
+                      <MessageReactions message={msg} />
+                    </div>
+                  </div>
                 ))}
+                <div ref={messagesEndRef} />
               </div>
-              <MessageReactions message={msg} />
-            </div>
-          ))}
-          <div ref={messagesEndRef} />
-        </div>
-      )}
+            )}
 
-      <div style={{ display: 'flex', marginTop: '15px' }}>
-        <input
-          value={text}
-          onChange={handleTextChange}
-          onKeyDown={handleKeyPress}
-          style={{
-            flex: 1,
-            padding: '10px',
-            borderRadius: '20px',
-            border: '1px solid #444',
-            fontSize: '14px',
-            marginRight: '10px',
-            backgroundColor: '#2c2c2c',
-            color: '#ffffff',
-          }}
-        />
-        <button
-          onClick={handleSendMessage}
-          style={{
-            padding: '10px 20px',
-            borderRadius: '20px',
-            backgroundColor: '#4CAF50',
-            color: 'white',
-            border: 'none',
-            cursor: 'pointer',
-            transition: 'background-color 0.3s',
-          }}
-        >
-          Отправить
-        </button>
+            <div style={{ display: 'flex', marginTop: '15px' }}>
+              <input value={text} onChange={handleTextChange} onKeyDown={handleKeyPress} style={{ flex: 1, padding: '10px', borderRadius: '15px', border: '1px solid #444', fontSize: '14px', marginRight: '10px', backgroundColor: '#2c2c2c', color: '#ffffff' }} />
+              <button onClick={handleSendMessage} style={{ padding: '10px 20px', borderRadius: '15px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer', transition: 'background-color 0.3s' }}>
+                Отправить
+              </button>
+            </div>
+          </>
+        ) : (
+          <p style={{ color: '#777' }}>Выберите диалог</p>
+        )}
       </div>
-    </>
-  ) : (
-    <p style={{ color: '#777' }}>Выберите диалог</p>
-  )}
-</div>
     </div>
   );
 }
