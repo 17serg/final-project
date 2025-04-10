@@ -13,6 +13,28 @@ interface ProfileFormProps {
   userId: number;
 }
 
+interface IUserProfile {
+  avatar: string;
+  gender: string;
+  trainingExperience: number | string;
+  userId: number;
+  personalRecords: number;
+  trainingCount: number;
+  about: string;
+  name: string;
+  email: string;
+  id: number;
+  UserProfile: {
+    avatar: string;
+    gender: string;
+    trainingExperience: number | string;
+    personalRecords: number;
+    trainingCount: number;
+    userId: number;
+    about: string;
+  };
+}
+
 export default function ProfileForm({ open, onClose, userId }: ProfileFormProps): React.JSX.Element {
   const { user, setUser } = useContext(UserContext) as UserContextType;
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -129,14 +151,40 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === 'trainingExperience' ? (value === '' ? 0 : Number(value)) : value,
-      UserProfile: {
-        ...prev.UserProfile,
-        [name]: name === 'trainingExperience' ? (value === '' ? 0 : Number(value)) : value
+    if (name === 'trainingExperience') {
+      // Разрешаем пустое значение или положительное число
+      if (value === '') {
+        setFormData((prev) => ({
+          ...prev,
+          [name]: '',
+          UserProfile: {
+            ...prev.UserProfile,
+            [name]: ''
+          }
+        }));
+      } else {
+        const numValue = Number(value);
+        if (numValue >= 0 && !isNaN(numValue)) {
+          setFormData((prev) => ({
+            ...prev,
+            [name]: numValue,
+            UserProfile: {
+              ...prev.UserProfile,
+              [name]: numValue
+            }
+          }));
+        }
       }
-    }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+        UserProfile: {
+          ...prev.UserProfile,
+          [name]: value
+        }
+      }));
+    }
   };
 
   const handleSelectChange = (event: SelectChangeEvent): void => {
@@ -166,15 +214,32 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
     return user ? getUserColor(user.name) : '#1976d2';
   };
 
+  const getYearsText = (years: number): string => {
+    const lastDigit = years % 10;
+    const lastTwoDigits = years % 100;
+
+    if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+      return 'лет';
+    }
+    if (lastDigit === 1) {
+      return 'год';
+    }
+    if (lastDigit >= 2 && lastDigit <= 4) {
+      return 'года';
+    }
+    return 'лет';
+  };
+
   const styles = {
     dialog: {
       '& .MuiDialog-paper': {
-        borderRadius: '24px',
+        borderRadius: '24px !important',
         padding: '20px',
         background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7))',
         backdropFilter: 'blur(10px)',
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
         border: '2px solid rgba(0, 0, 0, 0.2)',
+        overflow: 'hidden',
       },
     },
     dialogTitle: {
@@ -183,16 +248,25 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
       fontSize: '1.5rem',
       fontWeight: 'bold',
       marginBottom: '20px',
+      padding: '0 20px',
     },
     dialogContent: {
+      borderRadius: '24px',
       display: 'flex',
       flexDirection: 'column',
       gap: '20px',
       padding: '20px',
+      '&.MuiDialogContent-root': {
+        borderRadius: '24px',
+      }
     },
     dialogActions: {
       padding: '20px',
       justifyContent: 'center',
+      borderRadius: '24px',
+      '&.MuiDialogActions-root': {
+        borderRadius: '24px',
+      }
     },
     formControl: {
       width: '100%',
@@ -271,7 +345,7 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
       onClose={onClose}
       maxWidth="sm"
       fullWidth
-      PaperProps={styles.dialog}
+      sx={styles.dialog}
     >
       <DialogTitle 
         sx={styles.dialogTitle}
@@ -296,10 +370,10 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
               src={previewUrl || ''}
               alt={user?.name || 'User'}
               sx={{
-                width: 100,
-                height: 100,
+                width: 150,
+                height: 150,
                 border: "4px solid rgba(0, 0, 0, 0.2)",
-                borderRadius: "16px",
+                borderRadius: "150px",
                 boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
                 bgcolor: getUserAvatarColor(),
                 mb: 2,
@@ -321,10 +395,10 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                borderRadius: '16px',
+                borderRadius: '150px',
                 opacity: 0,
                 transition: 'opacity 0.3s ease',
-                height: '88%',
+                height: '90%',
               }}
             >
               <Typography variant="body2" color="white" sx={{ fontSize: '0.8rem' }}>
@@ -359,12 +433,16 @@ export default function ProfileForm({ open, onClose, userId }: ProfileFormProps)
           
           <TextField
             fullWidth
-            label={user?.trener ? "Стаж работы (лет)" : "Опыт тренировок (лет)"}
+            label={user?.trener ? `Стаж работы (${getYearsText(Number(formData.trainingExperience))})` : `Стаж тренировок (${getYearsText(Number(formData.trainingExperience))})`}
             name="trainingExperience"
-            type="number"
-            value={formData.trainingExperience}
+            type="text"
+            value={formData.trainingExperience === 0 ? '' : formData.trainingExperience}
             onChange={handleInputChange}
             sx={styles.textField}
+            inputProps={{
+              inputMode: 'numeric',
+              pattern: '[0-9]*'
+            }}
           />
 
           <TextField

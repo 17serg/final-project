@@ -68,7 +68,7 @@ const styles = {
     width: 200,
     height: 200,
     border: '4px solid rgba(0, 0, 0, 0.2)',
-    borderRadius: '16px',
+    borderRadius: '150px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
     '& .MuiAvatar-root': {
       fontSize: '80px',
@@ -115,18 +115,17 @@ const styles = {
     fontWeight: 'bold',
     color: 'white',
     textAlign: 'center',
-    marginTop: '20px',
+    marginTop: '0px',
   },
   userSurname: {
     ...fonts.delaGothicOne,
     fontSize: '1.8rem',
     color: 'rgba(255, 255, 255, 0.73)',
     textAlign: 'center',
-    marginBottom: '20px',
+    marginBottom: '10px',
   },
   userEmail: {
     ...fonts.montserrat,
-
     fontSize: '1.2rem',
     color: 'rgba(255, 255, 255, 0.7)',
     textAlign: 'center',
@@ -224,8 +223,7 @@ const styles = {
   activeTab: {
     color: 'white',
     fontWeight: 'bold',
-    background:
-      'linear-gradient(to bottom, rgba(255, 255, 255, 0.55), rgba(187, 187, 187, 0.42) 70%)',
+    background:'linear-gradient(to bottom, rgba(255, 255, 255, 0.55), rgba(187, 187, 187, 0.42) 70%)',
     marginBottom: '0px',
     position: 'relative',
     zIndex: 3,
@@ -238,8 +236,7 @@ const styles = {
   tabPanel: {
     width: '96%',
     padding: '20px',
-    background:
-      'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+    background:'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
     transition: 'all 0.3s ease',
     backdropFilter: 'blur(9px)',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
@@ -464,6 +461,22 @@ export default function ProfilePage(): React.JSX.Element {
       setActiveTab(index);
     };
 
+  const getYearsText = (years: number): string => {
+    const lastDigit = years % 10;
+    const lastTwoDigits = years % 100;
+
+    if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+      return 'лет';
+    }
+    if (lastDigit === 1) {
+      return 'год';
+    }
+    if (lastDigit >= 2 && lastDigit <= 4) {
+      return 'года';
+    }
+    return 'лет';
+  };
+
   return (
     <Box sx={styles.container}>
       <Paper sx={styles.profileCard}>
@@ -474,8 +487,7 @@ export default function ProfilePage(): React.JSX.Element {
                 sx={{
                   p: 1.5,
                   borderRadius: '10px',
-                  background:
-                    'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+                  background:'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
                   backdropFilter: 'blur(9px)',
                   boxShadow: '0 4px 6px rgba(0, 0, 0, 0.7)',
                   textAlign: 'center',
@@ -498,7 +510,7 @@ export default function ProfilePage(): React.JSX.Element {
                     color: 'white',
                   }}
                 >
-                  {profile ? `${profile.trainingExperience} лет` : 'Не указан'}
+                  {profile ? `${profile.trainingExperience} ${getYearsText(profile.trainingExperience)}` : 'Не указан'}
                 </Typography>
               </Paper>
             </Box>

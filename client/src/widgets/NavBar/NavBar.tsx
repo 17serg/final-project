@@ -131,9 +131,10 @@ const styles = {
   avatar: {
     cursor: "pointer",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+    borderRadius: "150px",
     transition: "all 0.3s ease",
     "&:hover": {
-      boxShadow: "0 6px 12px rgba(0, 0, 0, 0.3)",
+      boxShadow: "0 6px 12px rgba(255, 255, 255, 0.3)",
       transform: "scale(1.05)",
     },
   },
@@ -365,7 +366,7 @@ export default function NavBar(): React.JSX.Element {
                             height: 42,
                             bgcolor: user ? getUserColor(user.email) : '#BAE1FF',
                             border: "2px solid rgba(161, 161, 161, 0.93)",
-                            borderRadius: "8px",
+                            borderRadius: "150px",
                             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
                           }}
                         >

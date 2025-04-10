@@ -13,6 +13,8 @@ const styles = {
     marginBottom: 4,
   },
   categoryTitle: {
+    fontSize: '3rem',
+    color: 'white',
     marginBottom: 2,
     paddingBottom: 1,
     borderBottom: '2px solid rgb(160, 158, 158)',
