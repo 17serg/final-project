@@ -1,5 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Card, CardContent, Typography, Button, TextField, Grid, IconButton, Alert, Snackbar, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  TextField,
+  Grid,
+  IconButton,
+  Alert,
+  Snackbar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -12,6 +27,7 @@ export default function AnthropometryPage(): React.JSX.Element {
   const { user } = useUser();
   const [measurements, setMeasurements] = useState<IAnthropometry[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [selectedMeasurement, setSelectedMeasurement] = useState<IAnthropometry | null>(null);
   const [formData, setFormData] = useState<IAnthropometry>({
     date: new Date().toISOString().split('T')[0],
     weight: '',
@@ -19,7 +35,7 @@ export default function AnthropometryPage(): React.JSX.Element {
     chest: '',
     waist: '',
     hips: '',
-    userId: user?.id || 0
+    userId: user?.id || 0,
   });
   const [error, setError] = useState<string | null>(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -34,20 +50,27 @@ export default function AnthropometryPage(): React.JSX.Element {
     try {
       const data = await AnthropometryApi.getMeasurements();
       console.log('Полученные данные антропометрии:', data);
-      
+
       // Преобразуем поле breast в chest для отображения
-      const transformedData = data.map(item => {
+      const transformedData = data.map((item) => {
         console.log('Обработка элемента:', item);
         const transformed = {
           ...item,
-          chest: item.breast !== undefined ? item.breast : item.chest
+          chest: item.breast !== undefined ? item.breast : item.chest,
         };
         console.log('Преобразованный элемент:', transformed);
         return transformed;
       });
-      
-      console.log('Итоговые данные после преобразования:', transformedData);
-      setMeasurements(transformedData || []);
+
+      // Сортируем замеры от старых к новым
+      const sortedData = transformedData.sort((a, b) => {
+        const dateA = new Date(a.date).getTime();
+        const dateB = new Date(b.date).getTime();
+        return dateA - dateB;
+      });
+
+      console.log('Итоговые данные после преобразования:', sortedData);
+      setMeasurements(sortedData || []);
     } catch (error) {
       console.error('Ошибка при загрузке замеров:', error);
       setMeasurements([]);
@@ -60,7 +83,7 @@ export default function AnthropometryPage(): React.JSX.Element {
     const { name, value } = event.target;
     setFormData((prev: IAnthropometry) => ({
       ...prev,
-      [name]: name === 'date' ? value : value
+      [name]: name === 'date' ? value : value,
     }));
   };
 
@@ -80,11 +103,15 @@ export default function AnthropometryPage(): React.JSX.Element {
       // Преобразуем строковые значения в числа перед отправкой
       const dataToSubmit = {
         ...formData,
-        weight: typeof formData.weight === 'string' ? parseFloat(formData.weight) || 0 : formData.weight,
-        height: typeof formData.height === 'string' ? parseFloat(formData.height) || 0 : formData.height,
-        chest: typeof formData.chest === 'string' ? parseFloat(formData.chest) || 0 : formData.chest,
-        waist: typeof formData.waist === 'string' ? parseFloat(formData.waist) || 0 : formData.waist,
-        hips: typeof formData.hips === 'string' ? parseFloat(formData.hips) || 0 : formData.hips
+        weight:
+          typeof formData.weight === 'string' ? parseFloat(formData.weight) || 0 : formData.weight,
+        height:
+          typeof formData.height === 'string' ? parseFloat(formData.height) || 0 : formData.height,
+        chest:
+          typeof formData.chest === 'string' ? parseFloat(formData.chest) || 0 : formData.chest,
+        waist:
+          typeof formData.waist === 'string' ? parseFloat(formData.waist) || 0 : formData.waist,
+        hips: typeof formData.hips === 'string' ? parseFloat(formData.hips) || 0 : formData.hips,
       };
 
       console.log('Данные для отправки на сервер:', dataToSubmit);
@@ -99,7 +126,7 @@ export default function AnthropometryPage(): React.JSX.Element {
         chest: '',
         waist: '',
         hips: '',
-        userId: user?.id || 0
+        userId: user?.id || 0,
       });
     } catch (error) {
       console.error('Ошибка при добавлении замера:', error);
@@ -119,7 +146,7 @@ export default function AnthropometryPage(): React.JSX.Element {
 
   const handleDeleteConfirm = async (): Promise<void> => {
     if (!measurementToDelete || !measurementToDelete.id) return;
-    
+
     try {
       await AnthropometryApi.deleteMeasurement(measurementToDelete.id);
       await loadMeasurements();
@@ -139,14 +166,14 @@ export default function AnthropometryPage(): React.JSX.Element {
 
   const formatDate = (dateValue: string | number): string => {
     console.log('Форматирование даты, входное значение:', dateValue, 'тип:', typeof dateValue);
-    
+
     try {
       let date: Date;
-      
+
       // Если dateValue - это число (timestamp)
       if (typeof dateValue === 'number') {
         date = new Date(dateValue);
-      } 
+      }
       // Если dateValue - это строка в формате YYYY-MM-DD
       else if (typeof dateValue === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
         const [year, month, day] = dateValue.split('-').map(Number);
@@ -159,18 +186,18 @@ export default function AnthropometryPage(): React.JSX.Element {
         console.error('Неизвестный формат даты:', dateValue);
         return 'Дата не указана';
       }
-      
+
       // Проверяем, что дата валидна
       if (isNaN(date.getTime())) {
         console.error('Некорректная дата:', dateValue);
         return 'Дата не указана';
       }
-      
+
       // Форматируем дату в DD.MM.YYYY
       const day = date.getDate().toString().padStart(2, '0');
       const month = (date.getMonth() + 1).toString().padStart(2, '0');
       const year = date.getFullYear();
-      
+
       const formattedDate = `${day}.${month}.${year}`;
       console.log('Отформатированная дата:', formattedDate);
       return formattedDate;
@@ -180,72 +207,273 @@ export default function AnthropometryPage(): React.JSX.Element {
     }
   };
 
+  const handleAddMeasurement = (): void => {
+    if (measurements && measurements.length > 0) {
+      // Сортируем замеры по дате в порядке убывания (самый новый первый)
+      const sortedMeasurements = [...measurements].sort((a, b) => {
+        const dateA = new Date(a.date).getTime();
+        const dateB = new Date(b.date).getTime();
+        return dateB - dateA;
+      });
+
+      // Берем самый последний замер
+      const lastMeasurement = sortedMeasurements[0];
+
+      setFormData({
+        date: new Date().toISOString().split('T')[0],
+        weight: lastMeasurement.weight,
+        height: lastMeasurement.height,
+        chest: lastMeasurement.chest || '',
+        waist: lastMeasurement.waist || '',
+        hips: lastMeasurement.hips || '',
+        userId: user?.id || 0,
+      });
+    } else {
+      // Если замеров нет, используем пустые значения
+      setFormData({
+        date: new Date().toISOString().split('T')[0],
+        weight: '',
+        height: '',
+        chest: '',
+        waist: '',
+        hips: '',
+        userId: user?.id || 0,
+      });
+    }
+    setShowForm(true);
+  };
+
+  const calculateDifference = (current: number, previous: number): string | null => {
+    if (!current || !previous) return null;
+    const diff = Math.round(current - previous);
+    if (diff === 0) return null;
+    return diff > 0 ? `+${diff}` : diff.toString();
+  };
+
+  const getDifferenceColor = (diff: string | null): string => {
+    if (!diff) return '';
+    return diff.startsWith('+') ? 'rgb(76, 175, 80)' : 'rgb(244, 67, 54)';
+  };
+
+  const handleMeasurementClick = (measurement: IAnthropometry): void => {
+    setSelectedMeasurement(measurement);
+  };
+
+  const handleCloseComparison = (): void => {
+    setSelectedMeasurement(null);
+  };
+
   return (
     <Box sx={{ p: 3, maxWidth: '1200px', margin: '0 auto' }}>
-      <Typography variant="h4" sx={{ mb: 3, color: 'white', textAlign: 'center', ...fonts.delaGothicOne }}>
+      <Typography
+        variant="h4"
+        sx={{ mb: 3, color: 'white', textAlign: 'center', ...fonts.delaGothicOne }}
+      >
         Антропометрия
       </Typography>
 
       <Grid container spacing={3}>
         {measurements && measurements.length > 0 ? (
-          measurements.map((measurement) => (
-            <Grid item xs={12} sm={6} md={4} key={measurement.id}>
-              <Card 
-                sx={{ 
-                  height: '100%',
-                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                  borderRadius: '16px',
-                  transition: 'all 0.3s ease',
-                  position: 'relative',
-                  '&:hover': {
-                    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)',
-                    transform: 'translateY(-2px)'
-                  }
-                }}
-              >
-                <IconButton
-                  onClick={() => handleDeleteClick(measurement)}
+          measurements.map((measurement, index) => {
+            const isLastMeasurement = index === measurements.length - 1;
+            const showComparison =
+              isLastMeasurement && selectedMeasurement && selectedMeasurement.id !== measurement.id;
+            const isSelected = selectedMeasurement && selectedMeasurement.id === measurement.id;
+
+            return (
+              <Grid item xs={12} sm={6} md={4} key={measurement.id}>
+                <Card
+                  onClick={() => handleMeasurementClick(measurement)}
                   sx={{
-                    position: 'absolute',
-                    right: 8,
-                    top: 8,
-                    color: 'rgba(0, 0, 0, 0.5)',
+                    height: '100%',
+                    boxShadow: isSelected
+                      ? '0 6px 12px rgba(42, 41, 223, 0.3)'
+                      : isLastMeasurement
+                      ? '0 6px 12px rgba(76, 175, 80, 0.3)'
+                      : '0 4px 8px rgba(0, 0, 0, 0.1)',
+                    borderRadius: '16px',
+                    transition: 'all 0.3s ease',
+                    position: 'relative',
+                    cursor: 'pointer',
+                    border: isSelected
+                      ? '2px solid rgb(42, 41, 223)'
+                      : isLastMeasurement
+                      ? '2px solid rgb(76, 175, 80)'
+                      : 'none',
+                    backgroundColor: isSelected
+                      ? 'rgba(42, 41, 223, 0.1)'
+                      : isLastMeasurement
+                      ? 'rgba(76, 175, 80, 0.1)'
+                      : 'rgba(240, 240, 240, 0.7)',
                     '&:hover': {
-                      color: 'red',
-                      backgroundColor: 'rgba(255, 0, 0, 0.1)'
-                    }
+                      boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)',
+                      transform: 'translateY(-2px)',
+                      backgroundColor: isSelected
+                        ? 'rgba(42, 41, 223, 0.15)'
+                        : isLastMeasurement
+                        ? 'rgba(76, 175, 80, 0.15)'
+                        : 'rgba(240, 240, 240, 0.9)',
+                    },
                   }}
                 >
-                  <DeleteIcon />
-                </IconButton>
-                <CardContent>
-                  <Typography variant="h5" sx={{ mb: 2, color: 'black !important', textAlign: 'center', fontWeight: 'bold' }}>
-                    {formatDate(measurement.date)}
-                  </Typography>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, alignItems: 'flex-start' }}>
-                    <Typography variant="body1" sx={{ color: 'black !important', textAlign: 'left' }}>
-                      <strong>Вес:</strong> {measurement.weight} кг
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteClick(measurement);
+                    }}
+                    sx={{
+                      position: 'absolute',
+                      right: 8,
+                      top: 8,
+                      color: 'rgba(0, 0, 0, 0.5)',
+                      '&:hover': {
+                        color: 'red',
+                        backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                      },
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                  <CardContent>
+                    <Typography
+                      variant="h5"
+                      sx={{
+                        mb: 2,
+                        color: isSelected
+                          ? 'rgb(42, 41, 223) !important'
+                          : isLastMeasurement
+                          ? 'rgb(76, 175, 80) !important'
+                          : 'black !important',
+                        textAlign: 'center',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      {formatDate(measurement.date)}
                     </Typography>
-                    <Typography variant="body1" sx={{ color: 'black !important', textAlign: 'left' }}>
-                      <strong>Рост:</strong> {measurement.height} см
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: 'black !important', textAlign: 'left' }}>
-                      <strong>Грудь:</strong> {measurement.chest !== undefined && measurement.chest !== null && measurement.chest !== '' ? `${measurement.chest} см` : 'Не указано'}
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: 'black !important', textAlign: 'left' }}>
-                      <strong>Талия:</strong> {measurement.waist !== undefined && measurement.waist !== null && measurement.waist !== '' ? `${measurement.waist} см` : 'Не указано'}
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: 'black !important', textAlign: 'left' }}>
-                      <strong>Бёдра:</strong> {measurement.hips !== undefined && measurement.hips !== null && measurement.hips !== '' ? `${measurement.hips} см` : 'Не указано'}
-                    </Typography>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 1,
+                        alignItems: 'flex-start',
+                      }}
+                    >
+                      <Typography
+                        variant="body1"
+                        sx={{ color: 'black !important', textAlign: 'left' }}
+                      >
+                        <strong>Вес:</strong> {measurement.weight} кг
+                        {showComparison && (
+                          <span
+                            style={{
+                              marginLeft: '8px',
+                              color: getDifferenceColor(
+                                calculateDifference(measurement.weight, selectedMeasurement.weight),
+                              ),
+                            }}
+                          >
+                            {calculateDifference(measurement.weight, selectedMeasurement.weight) &&
+                              `(${calculateDifference(
+                                measurement.weight,
+                                selectedMeasurement.weight,
+                              )})`}
+                          </span>
+                        )}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{ color: 'black !important', textAlign: 'left' }}
+                      >
+                        <strong>Рост:</strong> {measurement.height} см
+                        {showComparison && (
+                          <span
+                            style={{
+                              marginLeft: '8px',
+                              color: getDifferenceColor(
+                                calculateDifference(measurement.height, selectedMeasurement.height),
+                              ),
+                            }}
+                          >
+                            {calculateDifference(measurement.height, selectedMeasurement.height) &&
+                              `(${calculateDifference(
+                                measurement.height,
+                                selectedMeasurement.height,
+                              )})`}
+                          </span>
+                        )}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{ color: 'black !important', textAlign: 'left' }}
+                      >
+                        <strong>Грудь:</strong>{' '}
+                        {measurement.chest !== undefined &&
+                        measurement.chest !== null &&
+                        measurement.chest !== ''
+                          ? `${measurement.chest} см${
+                              showComparison && selectedMeasurement.chest
+                                ? calculateDifference(measurement.chest, selectedMeasurement.chest)
+                                  ? ` (${calculateDifference(
+                                      measurement.chest,
+                                      selectedMeasurement.chest,
+                                    )})`
+                                  : ''
+                                : ''
+                            }`
+                          : 'Не указано'}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{ color: 'black !important', textAlign: 'left' }}
+                      >
+                        <strong>Талия:</strong>{' '}
+                        {measurement.waist !== undefined &&
+                        measurement.waist !== null &&
+                        measurement.waist !== ''
+                          ? `${measurement.waist} см${
+                              showComparison && selectedMeasurement.waist
+                                ? calculateDifference(measurement.waist, selectedMeasurement.waist)
+                                  ? ` (${calculateDifference(
+                                      measurement.waist,
+                                      selectedMeasurement.waist,
+                                    )})`
+                                  : ''
+                                : ''
+                            }`
+                          : 'Не указано'}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{ color: 'black !important', textAlign: 'left' }}
+                      >
+                        <strong>Бёдра:</strong>{' '}
+                        {measurement.hips !== undefined &&
+                        measurement.hips !== null &&
+                        measurement.hips !== ''
+                          ? `${measurement.hips} см${
+                              showComparison && selectedMeasurement.hips
+                                ? calculateDifference(measurement.hips, selectedMeasurement.hips)
+                                  ? ` (${calculateDifference(
+                                      measurement.hips,
+                                      selectedMeasurement.hips,
+                                    )})`
+                                  : ''
+                                : ''
+                            }`
+                          : 'Не указано'}
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            );
+          })
         ) : (
           <Grid item xs={12}>
-            <Typography variant="body1" sx={{ textAlign: 'center', color: 'text.secondary', ...fonts.montserrat, }}>
+            <Typography
+              variant="body1"
+              sx={{ textAlign: 'center', color: 'text.secondary', ...fonts.montserrat }}
+            >
               У вас пока нет карточек замеров
             </Typography>
           </Grid>
@@ -256,14 +484,14 @@ export default function AnthropometryPage(): React.JSX.Element {
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={() => setShowForm(true)}
+          onClick={handleAddMeasurement}
           sx={{
             backgroundColor: 'rgb(0, 0, 0)',
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
             '&:hover': {
               backgroundColor: 'rgb(160, 158, 158)',
               boxShadow: '0 6px 12px rgba(0, 0, 0, 0.4)',
-            }
+            },
           }}
         >
           Добавить замер
@@ -271,13 +499,13 @@ export default function AnthropometryPage(): React.JSX.Element {
       </Box>
 
       {showForm && (
-        <Card 
-          sx={{ 
+        <Card
+          sx={{
             mt: 3,
             p: 3,
             boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)',
             borderRadius: '16px',
-            position: 'relative'
+            position: 'relative',
           }}
         >
           <IconButton
@@ -285,7 +513,7 @@ export default function AnthropometryPage(): React.JSX.Element {
             sx={{
               position: 'absolute',
               right: 8,
-              top: 8
+              top: 8,
             }}
           >
             <CloseIcon />
@@ -311,7 +539,7 @@ export default function AnthropometryPage(): React.JSX.Element {
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '8px',
                       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-                    }
+                    },
                   }}
                 />
               </Grid>
@@ -329,7 +557,7 @@ export default function AnthropometryPage(): React.JSX.Element {
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '8px',
                       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-                    }
+                    },
                   }}
                 />
               </Grid>
@@ -347,7 +575,7 @@ export default function AnthropometryPage(): React.JSX.Element {
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '8px',
                       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-                    }
+                    },
                   }}
                 />
               </Grid>
@@ -364,7 +592,7 @@ export default function AnthropometryPage(): React.JSX.Element {
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '8px',
                       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-                    }
+                    },
                   }}
                 />
               </Grid>
@@ -381,7 +609,7 @@ export default function AnthropometryPage(): React.JSX.Element {
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '8px',
                       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-                    }
+                    },
                   }}
                 />
               </Grid>
@@ -398,7 +626,7 @@ export default function AnthropometryPage(): React.JSX.Element {
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '8px',
                       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-                    }
+                    },
                   }}
                 />
               </Grid>
@@ -413,7 +641,7 @@ export default function AnthropometryPage(): React.JSX.Element {
                     '&:hover': {
                       backgroundColor: 'rgb(160, 158, 158)',
                       boxShadow: '0 6px 12px rgba(0, 0, 0, 0.4)',
-                    }
+                    },
                   }}
                 >
                   Сохранить
@@ -430,42 +658,44 @@ export default function AnthropometryPage(): React.JSX.Element {
         onClose={handleDeleteCancel}
         PaperProps={{
           sx: {
-            borderRadius: '16px',
-            boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
-            maxWidth: '400px',
-            width: '100%'
-          }
+            borderRadius: '24px',
+            backgroundColor: 'white',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+            border: '2px solid rgba(161, 161, 161, 0.93)',
+          },
         }}
       >
-        <DialogTitle sx={{ color: 'rgb(42, 41, 223)', fontWeight: 'bold' }}>
+        <DialogTitle sx={{ color: 'rgba(0, 0, 0, 0.9)', fontWeight: 'bold' }}>
           Подтверждение удаления
         </DialogTitle>
         <DialogContent>
-          <Typography>
-            Хотите удалить карту замера?
+          <Typography sx={{ color: 'rgba(0, 0, 0, 0.7)' }}>
+            Вы уверены, что хотите удалить этот замер? Это действие нельзя отменить.
           </Typography>
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button 
+        <DialogActions>
+          <Button
             onClick={handleDeleteCancel}
-            sx={{ 
-              color: 'text.secondary',
+            sx={{
+              color: 'rgba(0, 0, 0, 0.7)',
               '&:hover': {
-                backgroundColor: 'rgba(0, 0, 0, 0.05)'
-              }
+                backgroundColor: 'rgba(0, 0, 0, 0.05)',
+              },
             }}
           >
-            Отменить
+            Отмена
           </Button>
-          <Button 
+          <Button
             onClick={handleDeleteConfirm}
-            variant="contained"
-            color="error"
-            sx={{ 
-              backgroundColor: 'rgb(211, 47, 47)',
+            sx={{
+              backgroundColor: 'rgba(211, 47, 47, 0.9)',
+              color: 'white',
               '&:hover': {
-                backgroundColor: 'rgb(180, 40, 40)'
-              }
+                backgroundColor: 'rgba(211, 47, 47, 0.7)',
+              },
+              py: 1,
+              px: 2,
+              borderRadius: '12px',
             }}
           >
             Удалить
@@ -473,9 +703,9 @@ export default function AnthropometryPage(): React.JSX.Element {
         </DialogActions>
       </Dialog>
 
-      <Snackbar 
-        open={openSnackbar} 
-        autoHideDuration={6000} 
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >

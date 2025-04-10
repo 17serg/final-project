@@ -285,64 +285,66 @@ const AddExerciseForm = ({ onSubmit }: AddExerciseFormProps) => {
         </Select>
       </FormControl>
 
-      <FormControl
-        fullWidth
-        sx={{
-          mb: 2,
-          '& .MuiInputLabel-root': {
-            color: 'rgba(0, 0, 0, 0.6)',
-            '&.Mui-focused': {
-              color: 'rgba(0, 0, 0, 0.9)',
-            },
-          },
-          '& .MuiOutlinedInput-root': {
-            '& fieldset': {
-              borderColor: 'rgba(0, 0, 0, 0.2)',
-            },
-            '&:hover fieldset': {
-              borderColor: 'rgba(0, 0, 0, 0.4)',
-            },
-            '&.Mui-focused fieldset': {
-              borderColor: 'rgba(0, 0, 0, 0.6)',
-            },
-          },
-        }}
-      >
-        <InputLabel>Упражнение</InputLabel>
-        <Select
-          value={exerciseId}
-          onChange={handleExerciseChange}
-          label="Упражнение"
+      {selectedCategory && (
+        <FormControl
+          fullWidth
           sx={{
-            '& .MuiSelect-select': {
-              color: 'rgba(0, 0, 0, 0.9)',
+            mb: 2,
+            '& .MuiInputLabel-root': {
+              color: 'rgba(0, 0, 0, 0.6)',
+              '&.Mui-focused': {
+                color: 'rgba(0, 0, 0, 0.9)',
+              },
+            },
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: 'rgba(0, 0, 0, 0.2)',
+              },
+              '&:hover fieldset': {
+                borderColor: 'rgba(0, 0, 0, 0.4)',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: 'rgba(0, 0, 0, 0.6)',
+              },
             },
           }}
         >
-          {exercises.map((exercise) => (
-            <MenuItem key={exercise.id} value={exercise.id}>
-              <Box sx={styles.exerciseOption}>
-                <Box sx={{ ...styles.imageContainer, ...styles.imageContainerHover }}>
-                  <Avatar
-                    src={getImageUrl(exercise.image)}
-                    variant="rounded"
-                    sx={styles.exerciseImage}
-                    onClick={(e) => handleImageClick(e, exercise.image)}
-                  />
-                  <IconButton
-                    size="small"
-                    sx={styles.zoomIcon}
-                    onClick={(e) => handleImageClick(e, exercise.image)}
-                  >
-                    <SearchIcon fontSize="small" />
-                  </IconButton>
+          <InputLabel>Упражнение</InputLabel>
+          <Select
+            value={exerciseId}
+            onChange={handleExerciseChange}
+            label="Упражнение"
+            sx={{
+              '& .MuiSelect-select': {
+                color: 'rgba(0, 0, 0, 0.9)',
+              },
+            }}
+          >
+            {exercises.map((exercise) => (
+              <MenuItem key={exercise.id} value={exercise.id}>
+                <Box sx={styles.exerciseOption}>
+                  <Box sx={{ ...styles.imageContainer, ...styles.imageContainerHover }}>
+                    <Avatar
+                      src={getImageUrl(exercise.image)}
+                      variant="rounded"
+                      sx={styles.exerciseImage}
+                      onClick={(e) => handleImageClick(e, exercise.image)}
+                    />
+                    <IconButton
+                      size="small"
+                      sx={styles.zoomIcon}
+                      onClick={(e) => handleImageClick(e, exercise.image)}
+                    >
+                      <SearchIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                  <Typography sx={{ color: 'rgba(0, 0, 0, 0.9)' }}>{exercise.name}</Typography>
                 </Box>
-                <Typography sx={{ color: 'rgba(0, 0, 0, 0.9)' }}>{exercise.name}</Typography>
-              </Box>
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )}
 
       {selectedCategory === 'Кардио' ? (
         <TextField

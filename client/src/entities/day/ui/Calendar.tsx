@@ -187,7 +187,7 @@ export const Calendar = (): React.ReactElement => {
         </Box>
       </Box>
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         {/* Заголовки дней недели */}
         <Box sx={{ display: 'flex', mb: 1, position: 'relative', zIndex: 1 }}>
           {DAYS_OF_WEEK.map((day) => (
@@ -264,11 +264,27 @@ export const Calendar = (): React.ReactElement => {
                       <Typography
                         variant="h5"
                         sx={{
-                          color: isCurrentDay(date) ? 'primary.main' : 'text.primary',
+                          color: isCurrentDay(date) ? 'rgba(0, 0, 0, 0.9)' : 'text.primary',
                           fontWeight: isCurrentDay(date) ? 'bold' : 'normal',
                           fontSize: '1.5rem',
-                          textShadow: '0px 0px 1px rgba(0,0,0,0.1)',
+                          textShadow: isCurrentDay(date)
+                            ? '0px 0px 2px rgba(0,0,0,0.2)'
+                            : '0px 0px 1px rgba(0,0,0,0.1)',
                           mb: 1,
+                          position: 'relative',
+                          '&::after': isCurrentDay(date)
+                            ? {
+                                content: '""',
+                                position: 'absolute',
+                                bottom: '4px',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                width: '24px',
+                                height: '3px',
+                                backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                                borderRadius: '2px',
+                              }
+                            : {},
                         }}
                       >
                         {date.getDate()}
@@ -279,7 +295,9 @@ export const Calendar = (): React.ReactElement => {
                             sx={{
                               position: 'absolute',
                               bottom: 8,
-                              color: isCompletedTrainingDay(date) ? 'success.main' : 'primary.main',
+                              color: isCompletedTrainingDay(date)
+                                ? 'success.main'
+                                : 'rgba(0, 0, 0, 0.9)',
                               fontSize: '1.5rem',
                             }}
                           />
@@ -289,7 +307,9 @@ export const Calendar = (): React.ReactElement => {
                               position: 'absolute',
                               top: 4,
                               right: 4,
-                              color: isCompletedTrainingDay(date) ? 'success.main' : 'primary.main',
+                              color: isCompletedTrainingDay(date)
+                                ? 'success.main'
+                                : 'rgba(0, 0, 0, 0.9)',
                             }}
                             onClick={(e) => {
                               e.stopPropagation();
