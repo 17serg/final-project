@@ -48,6 +48,8 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
   const [editingSet, setEditingSet] = useState<ExerciseSet | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [setToDelete, setSetToDelete] = useState<number | null>(null);
   const [formData, setFormData] = useState<Partial<ExerciseSet>>({
     actualWeight: plannedWeight || 50,
     actualReps: plannedReps || 10,
@@ -195,15 +197,80 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
 
   // Удаление подхода
   const handleDeleteSet = async (id: number): Promise<void> => {
-    if (window.confirm('Вы уверены, что хотите удалить этот подход?')) {
-      try {
-        await ExerciseSetApi.deleteExerciseSet(id);
-        await fetchExerciseSets();
-      } catch (error) {
-        console.error('Ошибка при удалении подхода:', error);
-        setError('Не удалось удалить подход');
-      }
+    // Находим подход, который пытаемся удалить
+    const setToDelete = exerciseSets.find((set) => set.id === id);
+
+    if (!setToDelete) return;
+
+    // Проверяем, является ли подход последним в списке
+    const isLastSet =
+      setToDelete.setNumber === Math.max(...exerciseSets.map((set) => set.setNumber));
+
+    if (!isLastSet) {
+      setError('Можно удалить только последний подход');
+      return;
     }
+
+    setSetToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async (): Promise<void> => {
+    if (setToDelete === null) return;
+
+    try {
+      // Удаляем подход с сервера
+      await ExerciseSetApi.deleteExerciseSet(setToDelete);
+
+      // Получаем обновленный список подходов
+      const response = await ExerciseSetApi.getExerciseSets(exerciseOfTrainingId);
+
+      if (response.data.success && Array.isArray(response.data.data)) {
+        // Сортируем подходы по номеру
+        const sortedSets = [...response.data.data].sort((a, b) => a.setNumber - b.setNumber);
+
+        // Пересчитываем порядковые номера
+        const updatedSets = sortedSets.map((set, index) => ({
+          ...set,
+          setNumber: index + 1,
+        }));
+
+        // Обновляем локальное состояние с пересчитанными номерами
+        setExerciseSets(updatedSets);
+
+        // Создаем новые подходы с обновленными номерами
+        for (let i = 0; i < updatedSets.length; i++) {
+          const set = updatedSets[i];
+          const newSetNumber = i + 1;
+
+          // Если номер изменился, создаем новый подход с правильным номером
+          if (set.setNumber !== newSetNumber) {
+            // Создаем новый подход с обновленным номером
+            await ExerciseSetApi.createExerciseSet(exerciseOfTrainingId, {
+              setNumber: newSetNumber,
+              actualWeight: set.actualWeight || undefined,
+              actualReps: set.actualReps || undefined,
+              isCompleted: set.isCompleted,
+              notes: set.notes || undefined,
+            });
+
+            // Удаляем старый подход
+            await ExerciseSetApi.deleteExerciseSet(set.id);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Ошибка при удалении подхода:', error);
+      setError('Не удалось удалить подход');
+    } finally {
+      setDeleteDialogOpen(false);
+      setSetToDelete(null);
+    }
+  };
+
+  const handleCancelDelete = (): void => {
+    setDeleteDialogOpen(false);
+    setSetToDelete(null);
   };
 
   // Оптимизированное обновление веса и повторений с debounce
@@ -246,21 +313,26 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
 
   const handleAddSet = async (): Promise<void> => {
     try {
-      const newSetNumber = exerciseSets.length + 1;
+      // Определяем следующий порядковый номер, учитывая существующие подходы
+      const nextSetNumber =
+        exerciseSets.length > 0 ? Math.max(...exerciseSets.map((set) => set.setNumber)) + 1 : 1;
+
+      // Создаем новый подход с дефолтными значениями
       const newSet: CreateExerciseSetDto = {
-        setNumber: newSetNumber,
+        setNumber: nextSetNumber,
         actualWeight: plannedWeight || 50,
         actualReps: plannedReps || 10,
         isCompleted: false,
+        notes: '',
       };
 
       // Оптимистичное обновление UI
       const optimisticSet: ExerciseSet = {
-        id: Date.now(), // Временный ID
+        id: Date.now(),
         exerciseOfTrainingId,
-        setNumber: newSetNumber,
-        actualWeight: newSet.actualWeight,
-        actualReps: newSet.actualReps,
+        setNumber: nextSetNumber,
+        actualWeight: newSet.actualWeight || null,
+        actualReps: newSet.actualReps || null,
         isCompleted: false,
         notes: '',
         executionDate: new Date().toISOString().split('T')[0],
@@ -275,9 +347,14 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
       const response = await ExerciseSetApi.createExerciseSet(exerciseOfTrainingId, newSet);
 
       // Обновляем локальное состояние с реальными данными с сервера
-      if (response.data) {
+      if (response.data.success) {
+        const updatedSet: ExerciseSet = {
+          ...response.data.data,
+          setNumber: nextSetNumber,
+        };
+
         setExerciseSets((prevSets) =>
-          prevSets.map((set) => (set.id === optimisticSet.id ? response.data : set)),
+          prevSets.map((set) => (set.id === optimisticSet.id ? updatedSet : set)),
         );
       }
     } catch (error) {
@@ -307,7 +384,19 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
 
   return (
     <Box sx={{ mt: 2 }}>
-      <TableContainer component={Paper}>
+      <TableContainer
+        component={Paper}
+        sx={{
+          mt: 2,
+          background:
+            'linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7))',
+          backdropFilter: 'blur(10px)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+          border: '2px solid rgba(0, 0, 0, 0.2)',
+          borderRadius: '24px',
+          overflow: 'hidden',
+        }}
+      >
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -363,34 +452,43 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
                   <Checkbox
                     checked={set.isCompleted}
                     onChange={() => handleToggleCompleted(set)}
-                    color="primary"
+                    sx={{
+                      color: 'rgba(0, 0, 0, 0.3)',
+                      '&.Mui-checked': {
+                        color: 'rgb(76, 175, 80)',
+                      },
+                      '&:hover': {
+                        color: 'rgba(76, 175, 80, 0.5)',
+                      },
+                    }}
                   />
                 </TableCell>
                 <TableCell>
-                  <TextField
-                    size="small"
-                    value={set.notes || ''}
-                    onChange={(e) => {
-                      ExerciseSetApi.updateExerciseSet(set.id, { notes: e.target.value })
-                        .then(() => fetchExerciseSets())
-                        .catch((error) =>
-                          console.error('Ошибка при обновлении примечаний:', error),
+                  <Tooltip title={set.notes || ''} placement="top" arrow>
+                    <TextField
+                      size="small"
+                      value={set.notes || ''}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Обновляем локальное состояние немедленно
+                        setExerciseSets((prevSets) =>
+                          prevSets.map((s) => (s.id === set.id ? { ...s, notes: value } : s)),
                         );
-                    }}
-                    sx={{ width: '200px' }}
-                  />
+                        // Отправляем обновление на сервер с задержкой
+                        debouncedUpdateSet(set.id, { notes: value });
+                      }}
+                      sx={{ width: '200px' }}
+                    />
+                  </Tooltip>
                 </TableCell>
                 <TableCell align="right">
-                  <Tooltip title="Редактировать">
-                    <IconButton size="small" onClick={() => handleEditSet(set)}>
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Удалить">
-                    <IconButton size="small" onClick={() => handleDeleteSet(set.id)}>
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
+                  {set.setNumber === Math.max(...exerciseSets.map((s) => s.setNumber)) && (
+                    <Tooltip title="Удалить">
+                      <IconButton size="small" onClick={() => handleDeleteSet(set.id)}>
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
                 </TableCell>
               </TableRow>
             ))}
@@ -430,6 +528,15 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
                   checked={formData.isCompleted}
                   onChange={handleInputChange}
                   name="isCompleted"
+                  sx={{
+                    color: 'rgba(0, 0, 0, 0.3)',
+                    '&.Mui-checked': {
+                      color: 'rgb(76, 175, 80)',
+                    },
+                    '&:hover': {
+                      color: 'rgba(76, 175, 80, 0.5)',
+                    },
+                  }}
                 />
                 <Typography>Выполнено</Typography>
               </Box>
@@ -455,7 +562,78 @@ const ExerciseSetList: React.FC<ExerciseSetListProps> = ({
         </DialogActions>
       </Dialog>
 
-      <Button variant="outlined" onClick={handleAddSet} sx={{ mt: 2 }} startIcon={<AddIcon />}>
+      {/* Диалог подтверждения удаления */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleCancelDelete}
+        PaperProps={{
+          sx: {
+            borderRadius: '24px',
+            background:
+              'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+            backdropFilter: 'blur(9px)',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+            border: '2px solid rgba(161, 161, 161, 0.93)',
+          },
+        }}
+      >
+        <DialogTitle sx={{ color: 'rgba(0, 0, 0, 0.9)', fontWeight: 'bold' }}>
+          Подтверждение удаления
+        </DialogTitle>
+        <DialogContent>
+          <Typography sx={{ color: 'rgba(0, 0, 0, 0.7)' }}>
+            Вы уверены, что хотите удалить этот подход? Это действие нельзя отменить.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleCancelDelete}
+            sx={{
+              color: 'rgba(0, 0, 0, 0.7)',
+              '&:hover': {
+                backgroundColor: 'rgba(0, 0, 0, 0.05)',
+              },
+            }}
+          >
+            Отмена
+          </Button>
+          <Button
+            onClick={handleConfirmDelete}
+            sx={{
+              backgroundColor: 'rgba(211, 47, 47, 0.9)',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: 'rgba(211, 47, 47, 0.7)',
+              },
+              py: 1,
+              px: 2,
+              borderRadius: '12px',
+            }}
+          >
+            Удалить
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Button
+        variant="contained"
+        onClick={handleAddSet}
+        sx={{
+          mt: 2,
+          py: 1,
+          px: 2,
+          fontSize: '0.9rem',
+          backgroundColor: 'rgba(0, 0, 0, 0.9)',
+          color: 'white',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+          borderRadius: '8px',
+          '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            boxShadow: '0 6px 12px rgba(0, 0, 0, 0.25)',
+          },
+        }}
+        startIcon={<AddIcon />}
+      >
         Добавить подход
       </Button>
     </Box>

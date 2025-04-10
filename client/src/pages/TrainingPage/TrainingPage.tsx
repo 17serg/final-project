@@ -151,19 +151,8 @@ export const TrainingPage = (): React.ReactElement => {
       // Обновляем состояние тренировки
       const response = await TrainingApi.getTrainingById(Number(trainingId));
       setTraining(response.data);
-
-      setSnackbar({
-        open: true,
-        message: 'Тренировка отмечена как выполненная',
-        severity: 'success',
-      });
     } catch (error) {
       console.error('Ошибка при обновлении статуса тренировки:', error);
-      setSnackbar({
-        open: true,
-        message: 'Не удалось обновить статус тренировки',
-        severity: 'error',
-      });
     } finally {
       setIsUpdating(false);
     }
@@ -183,19 +172,8 @@ export const TrainingPage = (): React.ReactElement => {
       // Обновляем состояние тренировки
       const response = await TrainingApi.getTrainingById(Number(trainingId));
       setTraining(response.data);
-
-      setSnackbar({
-        open: true,
-        message: 'Статус тренировки отменен',
-        severity: 'success',
-      });
     } catch (error) {
       console.error('Ошибка при обновлении статуса тренировки:', error);
-      setSnackbar({
-        open: true,
-        message: 'Не удалось обновить статус тренировки',
-        severity: 'error',
-      });
     } finally {
       setIsUpdating(false);
       setConfirmDialog({ open: false });
@@ -244,26 +222,31 @@ export const TrainingPage = (): React.ReactElement => {
 
   return (
     <Container maxWidth="md">
-      <Box sx={{ 
-        py: 4,
-        background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
-        backdropFilter: 'blur(9px)',
-        borderRadius: '24px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
-        border: '2px solid rgba(161, 161, 161, 0.93)',
-        padding: '24px',
-        marginBottom: '34px',
-        }}>
-        <Box sx={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          mb: 3,
-        }}>
-          <Typography 
-            variant="h4" 
-            component="h1" 
-            sx={{ 
+      <Box
+        sx={{
+          py: 4,
+          background:
+            'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+          backdropFilter: 'blur(9px)',
+          borderRadius: '24px',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+          border: '2px solid rgba(161, 161, 161, 0.93)',
+          padding: '24px',
+          marginBottom: '34px',
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 3,
+          }}
+        >
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{
               color: 'rgba(0, 0, 0, 0.9)',
               fontWeight: 'bold',
             }}
@@ -295,8 +278,8 @@ export const TrainingPage = (): React.ReactElement => {
           <Typography
             variant="body1"
             paragraph
-            sx={{ 
-              mb: 4, 
+            sx={{
+              mb: 4,
               textAlign: 'center',
               color: 'rgba(0, 0, 0, 0.7)',
               fontSize: '1.2rem',
@@ -317,14 +300,16 @@ export const TrainingPage = (): React.ReactElement => {
           onDeleteExercise={handleDeleteExercise}
         />
 
-        <Box sx={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          mt: 3,
-          gap: 2,
-        }}>
-          <Button 
-            variant="contained" 
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            mt: 3,
+            gap: 2,
+          }}
+        >
+          <Button
+            variant="contained"
             onClick={handleAddExercise}
             sx={{
               backgroundColor: 'rgba(0, 0, 0, 0.9)',
@@ -348,10 +333,14 @@ export const TrainingPage = (): React.ReactElement => {
               onClick={training.complete ? handleCancelTraining : handleCompleteTraining}
               disabled={isUpdating}
               sx={{
-                backgroundColor: training.complete ? 'rgba(211, 47, 47, 0.9)' : 'rgba(73, 124, 59, 0.9)',
+                backgroundColor: training.complete
+                  ? 'rgba(211, 47, 47, 0.9)'
+                  : 'rgba(73, 124, 59, 0.9)',
                 color: 'white',
                 '&:hover': {
-                  backgroundColor: training.complete ? 'rgba(211, 47, 47, 0.7)' : 'rgb(86, 146, 71)',
+                  backgroundColor: training.complete
+                    ? 'rgba(211, 47, 47, 0.7)'
+                    : 'rgb(86, 146, 71)',
                 },
                 py: 1.5,
                 px: 3,
@@ -368,17 +357,18 @@ export const TrainingPage = (): React.ReactElement => {
         {showAddExerciseForm && <AddExerciseForm onSubmit={handleExerciseSubmit} />}
 
         {/* Диалог подтверждения отмены выполнения */}
-        <Dialog 
-          open={confirmDialog.open} 
+        <Dialog
+          open={confirmDialog.open}
           onClose={() => setConfirmDialog({ open: false })}
           PaperProps={{
             sx: {
               borderRadius: '24px',
-              background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+              background:
+                'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
               backdropFilter: 'blur(9px)',
               boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
               border: '2px solid rgba(161, 161, 161, 0.93)',
-            }
+            },
           }}
         >
           <DialogTitle sx={{ color: 'rgba(0, 0, 0, 0.9)', fontWeight: 'bold' }}>
@@ -390,7 +380,7 @@ export const TrainingPage = (): React.ReactElement => {
             </Typography>
           </DialogContent>
           <DialogActions>
-            <Button 
+            <Button
               onClick={() => setConfirmDialog({ open: false })}
               sx={{
                 color: 'rgba(0, 0, 0, 0.7)',
@@ -401,8 +391,8 @@ export const TrainingPage = (): React.ReactElement => {
             >
               Отмена
             </Button>
-            <Button 
-              onClick={handleConfirmCancel} 
+            <Button
+              onClick={handleConfirmCancel}
               sx={{
                 backgroundColor: 'rgba(211, 47, 47, 0.9)',
                 color: 'white',
@@ -426,11 +416,12 @@ export const TrainingPage = (): React.ReactElement => {
           PaperProps={{
             sx: {
               borderRadius: '24px',
-              background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
+              background:
+                'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
               backdropFilter: 'blur(9px)',
               boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
               border: '2px solid rgba(161, 161, 161, 0.93)',
-            }
+            },
           }}
         >
           <DialogTitle sx={{ color: 'rgba(0, 0, 0, 0.9)', fontWeight: 'bold' }}>
@@ -442,7 +433,7 @@ export const TrainingPage = (): React.ReactElement => {
             </Typography>
           </DialogContent>
           <DialogActions>
-            <Button 
+            <Button
               onClick={() => setDeleteConfirmDialog({ open: false, exerciseId: null })}
               sx={{
                 color: 'rgba(0, 0, 0, 0.7)',
@@ -453,7 +444,7 @@ export const TrainingPage = (): React.ReactElement => {
             >
               Отмена
             </Button>
-            <Button 
+            <Button
               onClick={handleConfirmDelete}
               sx={{
                 backgroundColor: 'rgba(211, 47, 47, 0.9)',
@@ -480,7 +471,7 @@ export const TrainingPage = (): React.ReactElement => {
           <Alert
             onClose={() => setSnackbar({ ...snackbar, open: false })}
             severity={snackbar.severity}
-            sx={{ 
+            sx={{
               width: '100%',
               borderRadius: '12px',
               backgroundColor: 'rgba(255, 255, 255, 0.9)',
