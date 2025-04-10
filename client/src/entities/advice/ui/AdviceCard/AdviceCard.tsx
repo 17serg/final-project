@@ -215,7 +215,7 @@ export const AdviceCard: React.FC = () => {
     <Box>
       <Card sx={styles.card}>
         <Typography variant="h5" sx={{ color: 'rgba(0, 0, 0, 0.9) !important', fontWeight: 'bold', marginBottom: '20px', fontSize: '2.0rem !important' }}>
-          Совет дня
+          Фитнес-советы
         </Typography>
         {advice ? (
           <Typography sx={styles.adviceText}>{advice.text}</Typography>

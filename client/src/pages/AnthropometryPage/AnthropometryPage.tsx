@@ -62,11 +62,11 @@ export default function AnthropometryPage(): React.JSX.Element {
         return transformed;
       });
 
-      // Сортируем замеры от старых к новым
+      // Сортируем замеры от новых к старым
       const sortedData = transformedData.sort((a, b) => {
         const dateA = new Date(a.date).getTime();
         const dateB = new Date(b.date).getTime();
-        return dateA - dateB;
+        return dateB - dateA;
       });
 
       console.log('Итоговые данные после преобразования:', sortedData);
@@ -275,7 +275,7 @@ export default function AnthropometryPage(): React.JSX.Element {
       <Grid container spacing={3}>
         {measurements && measurements.length > 0 ? (
           measurements.map((measurement, index) => {
-            const isLastMeasurement = index === measurements.length - 1;
+            const isLastMeasurement = index === 0;
             const showComparison =
               isLastMeasurement && selectedMeasurement && selectedMeasurement.id !== measurement.id;
             const isSelected = selectedMeasurement && selectedMeasurement.id === measurement.id;
@@ -410,17 +410,24 @@ export default function AnthropometryPage(): React.JSX.Element {
                         {measurement.chest !== undefined &&
                         measurement.chest !== null &&
                         measurement.chest !== ''
-                          ? `${measurement.chest} см${
-                              showComparison && selectedMeasurement.chest
-                                ? calculateDifference(measurement.chest, selectedMeasurement.chest)
-                                  ? ` (${calculateDifference(
-                                      measurement.chest,
-                                      selectedMeasurement.chest,
-                                    )})`
-                                  : ''
-                                : ''
-                            }`
+                          ? `${measurement.chest} см`
                           : 'Не указано'}
+                        {showComparison && selectedMeasurement.chest && (
+                          <span
+                            style={{
+                              marginLeft: '8px',
+                              color: getDifferenceColor(
+                                calculateDifference(measurement.chest, selectedMeasurement.chest),
+                              ),
+                            }}
+                          >
+                            {calculateDifference(measurement.chest, selectedMeasurement.chest) &&
+                              `(${calculateDifference(
+                                measurement.chest,
+                                selectedMeasurement.chest,
+                              )})`}
+                          </span>
+                        )}
                       </Typography>
                       <Typography
                         variant="body1"
@@ -430,17 +437,24 @@ export default function AnthropometryPage(): React.JSX.Element {
                         {measurement.waist !== undefined &&
                         measurement.waist !== null &&
                         measurement.waist !== ''
-                          ? `${measurement.waist} см${
-                              showComparison && selectedMeasurement.waist
-                                ? calculateDifference(measurement.waist, selectedMeasurement.waist)
-                                  ? ` (${calculateDifference(
-                                      measurement.waist,
-                                      selectedMeasurement.waist,
-                                    )})`
-                                  : ''
-                                : ''
-                            }`
+                          ? `${measurement.waist} см`
                           : 'Не указано'}
+                        {showComparison && selectedMeasurement.waist && (
+                          <span
+                            style={{
+                              marginLeft: '8px',
+                              color: getDifferenceColor(
+                                calculateDifference(measurement.waist, selectedMeasurement.waist),
+                              ),
+                            }}
+                          >
+                            {calculateDifference(measurement.waist, selectedMeasurement.waist) &&
+                              `(${calculateDifference(
+                                measurement.waist,
+                                selectedMeasurement.waist,
+                              )})`}
+                          </span>
+                        )}
                       </Typography>
                       <Typography
                         variant="body1"
@@ -450,17 +464,24 @@ export default function AnthropometryPage(): React.JSX.Element {
                         {measurement.hips !== undefined &&
                         measurement.hips !== null &&
                         measurement.hips !== ''
-                          ? `${measurement.hips} см${
-                              showComparison && selectedMeasurement.hips
-                                ? calculateDifference(measurement.hips, selectedMeasurement.hips)
-                                  ? ` (${calculateDifference(
-                                      measurement.hips,
-                                      selectedMeasurement.hips,
-                                    )})`
-                                  : ''
-                                : ''
-                            }`
+                          ? `${measurement.hips} см`
                           : 'Не указано'}
+                        {showComparison && selectedMeasurement.hips && (
+                          <span
+                            style={{
+                              marginLeft: '8px',
+                              color: getDifferenceColor(
+                                calculateDifference(measurement.hips, selectedMeasurement.hips),
+                              ),
+                            }}
+                          >
+                            {calculateDifference(measurement.hips, selectedMeasurement.hips) &&
+                              `(${calculateDifference(
+                                measurement.hips,
+                                selectedMeasurement.hips,
+                              )})`}
+                          </span>
+                        )}
                       </Typography>
                     </Box>
                   </CardContent>
