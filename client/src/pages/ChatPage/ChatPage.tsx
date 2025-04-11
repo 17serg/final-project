@@ -18,6 +18,7 @@ import { useSocketChat } from './../../entities/chat/api/socketApi';
 import { useLocation } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
 import {  Message } from './../../entities/chat/model/index'
+import { fonts } from '@/shared/styles/fonts';
 
 
 const REACTIONS = [
@@ -234,14 +235,15 @@ export function ChatPage(): React.JSX.Element {
     <div style={{ display: 'flex', backgroundColor: '#f3f4f8', height: '50vh', borderRadius: '18px 18px 18px 18px' }}>
       {/* Список диалогов */}
       <div style={{ width: '270px', borderRight: '1px solid #e0e0e0', borderRadius: '15px 0 0 15px', paddingRight: '10px', backgroundColor: '#2c2c2c', boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)' }}>
-        <h3 style={{ padding: '15px 0', textAlign: 'center', color: '#ffffff' }}>Диалоги</h3>
+        <h3 style={{ ...fonts.delaGothicOne, padding: '5px 0', textAlign: 'center', color: '#ffffff',fontSize: '25px' }}>Диалоги</h3>
+        <div style={{ height: '2px', backgroundColor: 'rgba(255, 255, 255, 0.2)', margin: '10px 0', minWidth: '280px' }} />
         {chatList.map((partner) => (
-          <button key={partner.id} onClick={() => setChatPartnerId(partner.id)} style={{ display: 'flex', width: '100%', padding: '15px', margin: '5px 0', border: 'none', backgroundColor: chatPartnerId === partner.id ? '#3c3c3c' : '#2c2c2c', cursor: 'pointer', borderRadius: '10px', transition: 'background-color 0.3s ease', alignItems: 'center', position: 'relative', boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.05)' }}>
-            <span style={{ flex: 1, fontWeight: '500', color: '#ffffff', fontSize: '16px', letterSpacing: '3px' }}>
+          <button key={partner.id} onClick={() => setChatPartnerId(partner.id)} style={{ display: 'flex',marginLeft: '5px',width: '100%', padding: '15px', margin: '5px 0', border: 'none', backgroundColor: chatPartnerId === partner.id ? 'rgba(255, 255, 255, 0.9)' : '#3c3c3c', cursor: 'pointer', borderRadius: '10px', transition: 'background-color 0.3s ease', alignItems: 'center', position: 'relative', boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.05)' }}>
+            <span style={{ flex: 1, fontWeight: '500', color: chatPartnerId === partner.id ? 'rgba(0, 0, 0, 0.9)' : '#ffffff', fontSize: '16px', letterSpacing: '3px', }}>
               {partner.name} {partner.surname}
             </span>
             {unreadMessagesCount(partner.id) > 0 && (
-              <span style={{ position: 'absolute', right: '10px', top: '10px', backgroundColor: '#ff4747', color: 'white', borderRadius: '50%', padding: '5px 8px', fontSize: '12px', fontWeight: 'bold', minWidth: '20px', textAlign: 'center' }}>
+              <span style={{ position: 'absolute', right: '10px', top: '10px', backgroundColor: 'rgb(211, 47, 47)', color: 'white', borderRadius: '250px', padding: '1px 5px', fontSize: '16px', fontWeight: 'bold', minWidth: '22px',textAlign: 'center', height: '29px',display: 'flex', alignItems: 'center', justifyContent: 'center', }}>
                 {unreadMessagesCount(partner.id)}
               </span>
             )}
@@ -251,7 +253,7 @@ export function ChatPage(): React.JSX.Element {
 
       {/* Чат с собеседником */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '20px', backgroundColor: '#111', borderRadius: '0 15px 15px 0' }}>
-        <h2 style={{ marginBottom: '20px', fontSize: '24px', color: '#999' }}>Чат</h2>
+        <h2 style={{ ...fonts.delaGothicOne, marginBottom: '20px', fontSize: '24px', color: 'white', marginTop: '10px' }}>Чат</h2>
         {chatPartnerId ? (
           <>
             {loadingMessages ? (
@@ -261,16 +263,16 @@ export function ChatPage(): React.JSX.Element {
             ) : (
               <div ref={messagesContainerRef} style={{ height: '35vh', overflowY: 'auto', borderRadius: '10px', backgroundColor: '#2c2c2c', padding: '15px', boxShadow: '0px 3px 15px rgba(0, 0, 0, 0.1)', display: 'flex', flexDirection: 'column-reverse' }}>
                 {filteredMessages.map((msg, index) => (
-                  <div key={`${msg.id}-${userId}-${index}`} style={{ padding: '10px 15px', borderRadius: '20px', backgroundColor: msg.senderId === userId ? '#3c3c3c' : '#1c1c1c', margin: '8px 0', maxWidth: '80%', alignSelf: msg.senderId === userId ? 'flex-end' : 'flex-start', position: 'relative', cursor: 'pointer' }} onClick={() => handleMessageClick(msg.id!)}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <p style={{ margin: '0', fontSize: '16px', color: '#ffffff', lineHeight: '1.5', flex: 1 }}>
+                  <div key={`${msg.id}-${userId}-${index}`} style={{ padding: '10px 15px', borderRadius: '20px', backgroundColor: msg.senderId === userId ? '#3c3c3c' : '#1c1c1c', margin: '8px 0', maxWidth: '80%', alignSelf: msg.senderId === userId ? 'flex-end' : 'flex-start', position: 'relative', cursor: 'pointer', minWidth: '200px' }} onClick={() => handleMessageClick(msg.id!)}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxHeight: '25px' }}>
+                      <p style={{ ...fonts.delaGothicOne, margin: '0', fontSize: '17px', color: 'white', lineHeight: '1.5', flex: 1, paddingTop: '5px' }}>
                         {msg.text}
                       </p>
-                      <span style={{ fontSize: '12px', color: '#888', marginLeft: '10px', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: '12px', color: '#888', marginLeft: '10px', whiteSpace: 'nowrap', paddingTop: '16%', marginBottom: '0px', paddingBottom: '0px',  }}>
                         {formatTime(msg.createdAt)}
                       </span>
                       {msg.senderId === userId && (
-                        <div style={{ marginLeft: '5px' }}>
+                        <div style={{ marginLeft: '5px',paddingTop: '33px' }}>
                           <DoubleCheckIcon read={msg.isRead} />
                         </div>
                       )}
@@ -297,13 +299,13 @@ export function ChatPage(): React.JSX.Element {
 
             <div style={{ display: 'flex', marginTop: '15px' }}>
               <input value={text} onChange={handleTextChange} onKeyDown={handleKeyPress} style={{ flex: 1, padding: '10px', borderRadius: '15px', border: '1px solid #444', fontSize: '14px', marginRight: '10px', backgroundColor: '#2c2c2c', color: '#ffffff' }} />
-              <button onClick={handleSendMessage} style={{ padding: '10px 20px', borderRadius: '15px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer', transition: 'background-color 0.3s' }}>
+              <button onClick={handleSendMessage} style={{ padding: '10px 20px', borderRadius: '15px', backgroundColor: 'rgb(86, 146, 71)', color: 'white', border: 'none', cursor: 'pointer', transition: 'background-color 0.3s' }}>
                 Отправить
               </button>
             </div>
           </>
         ) : (
-          <p style={{ color: '#777' }}>Выберите диалог</p>
+          <p style={{ ...fonts.delaGothicOne, color: 'white', paddingTop:'16%' }}>Выберите диалог</p>
         )}
       </div>
     </div>
