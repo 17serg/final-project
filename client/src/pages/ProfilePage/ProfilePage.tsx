@@ -235,7 +235,7 @@ const styles = {
     fontWeight: 500,
   },
   tabPanel: {
-    width: '96%',
+    width: '95.8%',
     padding: '20px',
     background:'linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(128, 128, 128, 0.7) 70%)',
     transition: 'all 0.3s ease',
@@ -669,17 +669,18 @@ export default function ProfilePage(): React.JSX.Element {
                   <Box
                     component="span"
                     sx={{
+                      ...fonts.delaGothicOne,
                       position: 'absolute',
                       top: 4,
                       right: 8,
-                      backgroundColor: 'red',
+                      backgroundColor: 'rgb(211, 47, 47)',
                       color: 'white',
-                      borderRadius: '50%',
+                      borderRadius: '250px',
                       padding: '2px 6px',
-                      fontSize: '12px',
+                      fontSize: '18px',
                       fontWeight: 'bold',
                       minWidth: '20px',
-                      height: '20px',
+                      height: '28px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',

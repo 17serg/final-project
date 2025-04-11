@@ -20,7 +20,7 @@
 /* Для Firefox */
 * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(42, 41, 223, 0.5) transparent;
+    scrollbar-color: rgb(0, 0, 0) transparent;
 }
 
 /* Предотвращение смещения контента при появлении скроллбара */
